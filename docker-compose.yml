@@ -16,7 +16,7 @@ services:
       - center-net
 
   postgres:
-    image: postgres:15
+    image: postgres:9.6
     container_name: postgres-container
     environment:
       POSTGRES_DB: center

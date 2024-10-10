@@ -1,5 +1,5 @@
 # Используем официальный образ PHP с поддержкой Apache
-FROM php:8.2-apache
+FROM php:7.1-apache
 
 # Установка зависимостей для работы с PostgreSQL
 RUN apt-get update && apt-get install -y \
