@@ -1,0 +1,15 @@
+<div class="list-buttons">
+        {% if rolePerms is defined %}
+                {% if rolePerms["update"] == true %}
+        <button type="submit" class="btn btn-save" form="create_data" title="Сохранить" />
+                {% endif %}
+        {% elseif app.user.role is defined %}
+                {% if app.user.role == 1 %}
+        <button type="submit" class="btn btn-save" form="create_data" title="Сохранить" />
+                {% endif %}
+        {% endif %}
+        {% if urlBack is defined and urlBack != "" %}
+        <button class="btn btn-return" onclick="window.location.replace('{{urlBack}}')"  title="Вернуться" />
+       {% endif %}
+</div>
+

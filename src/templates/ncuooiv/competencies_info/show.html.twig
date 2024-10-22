@@ -1,0 +1,67 @@
+{% extends 'ncuooiv/layout.html.twig' %}  
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+<script>
+</script>
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li>Общая информация</li>
+    <li>Область компетенции</li>
+{% endblock %}
+
+{% block subtitle %}
+	<h5>Область компетенции</h5>
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrTabs = ["tab_oiv_common", "tab_competencies_info_show"];
+{% endblock %}
+
+{% block foivContent %}
+
+    <div class="contentHolder">
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        
+        {#% if foiv.ModifiedDate  is defined %}<p>Дата последнего изменения: {{ foiv.ModifiedDate|date("d.m.Y (H:i:s)")}}</p>{% endif %#}
+        
+        
+        <table class="table table-info tbl_oiv_fields">
+         {% if fields is defined %}
+            {% for field in fields %}
+                {% if field.data is defined %}
+            <tr>
+                <td>
+                    {{field.name}}:
+                </td>
+                <td id='{{field.IdFldShort}}'>
+                    {% autoescape %}
+
+                <div class="field_wraper" id="field_wraper_{{field.IdFldShort}}">
+                    <div id="field_data_{{field.IdFldShort}}">                        
+                        {{ field.data|raw }}
+                    </div>
+                </div>
+                    {% endautoescape %}                
+                <div onclick="oivHideShow('{{field.IdFldShort}}')" class="field_btn" id="field_btn_{{field.IdFldShort}}" data-field="{{field.IdFldShort}}"></div>
+                </td>
+            </tr>
+                {% endif %}
+            {% endfor %}
+        {% endif %}       
+        </table>
+        
+        
+        {% include 'ncuooiv_buttons_show.twig' ignore missing with {
+            'urlEdit': urlEdit
+        } %}
+        
+    </div> <!-- \ contentHolder -->
+
+{% endblock %}

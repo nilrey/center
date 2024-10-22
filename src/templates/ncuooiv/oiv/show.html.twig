@@ -1,0 +1,61 @@
+{% extends 'ncuooiv/new_layout.html.twig' %}  
+
+{% block stylesheets %}
+    {{ parent() }}
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+{% endblock %}
+
+{% block subtitle %}
+	Карточка ФОИВ
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrMenus = ["block_oiv_common"];
+    var arrTabs = ["tab_oiv_common", "tab_oiv_show"];
+{% endblock %}
+
+{% block foivContent %}
+   
+    <!--
+    <div class="contentHolder"> 
+             <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+    -->    
+
+        <table class="table table-info">
+        {% if fields is defined %}
+            {% for field in fields %}         
+            <tr>
+                <td>
+                    {{field.name}}:
+                </td>
+                <td id='{{field.IdFldShort}}'>
+                    {% if field.data is defined %}
+                       {% autoescape %}
+                        {{ field.data|raw }}
+                        {% endautoescape %}
+                    {% endif %}
+                    
+                </td>
+            </tr>
+
+            {% endfor %}
+        {% endif %}
+        </table>
+        
+        {% include 'buttons_psp_show.twig' ignore missing with {
+            'urlEdit': urlEdit
+        } %}
+        
+    <!--
+    </div>  \ contentHolder 
+    -->
+
+{% endblock %}

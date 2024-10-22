@@ -1,0 +1,124 @@
+{% extends 'layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuofoiv/css/profile.css') }}"/>  
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/tabs.css') }}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/dataTables.bootstrap.css') }}"/>
+{% endblock %}  
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    <script src="{{ asset('bundles/ncuofoiv/js/foivShow.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/jquery.dataTables.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/dataTables.bootstrap.js') }}"></script>
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/foiv.js') }}"></script>
+    
+    <script>
+        var DATATABLES_RU_JSON          = '{{ asset('bundles/ncuoportal/js/datatables/ru_Ru.json') }}';
+    </script>
+      
+{% endblock %}  
+
+{% block breadcrumb %}
+    <li><a href="{{ path('foiv') }}">ФОИВ</a></li>
+    {% if foiv is defined %}
+    <li>{{ foiv.shortname }}</li>
+    {%endif %}
+{% endblock %}    
+
+{% block content %}
+<div id="profileNav" class="row">
+    <div class="col-md-1">
+        {% if foiv is defined %}
+        <img id="foivLogo" style="width: 50px; height: 50px;" src="{{ foiv_upload_url }}/logos/{{ foiv.id }}.png" onerror="this.src='{{ foiv_upload_url }}/logos/no-logo.png'" />
+        {% else%}
+        <img id="foivLogo" style="width: 50px; height: 50px;" src="{{ foiv_upload_url }}/logos/no-logo.png" onerror="this.src='{{ foiv_upload_url }}/logos/no-logo.png'" />
+        {%endif%}
+    </div>
+    <div class="col-md-8">
+        <h4 id="fullName">
+            {% if foiv is defined %}
+            {{ foiv.name }}
+            {% endif %}
+        </h4>
+    </div>
+    <!--div class="col-md-3">
+        <div class="btn-group-sm pull-right" style="margin-top: 8px;">
+{% if is_granted('ROLE_NCUO') or is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('foiv') }}" class="btn btn-info">&NestedLessLess;К списку ФОИВ</a>
+{% endif %}
+        </div>
+    </div-->
+</div>
+
+    
+<div class="row">
+    <div class="col-md-12">
+{% if foiv is defined %}
+        <div id="profilePills" style="margin-top: 15px;">
+            <ul class="nav nav-tabs">
+                <li class="dropdown active">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            Общая информация <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                        <li><a href="{{ path('foiv_show', { 'id': foiv.id }) }}">Описание</a></li>
+                        <li><a href="{{ path('foiv_tasks', { 'id': foiv.id }) }}">Основные задачи</a></li>
+                        <li><a href="{{ path('foiv_contacts_list', { 'foivid': foiv.id }) }}">Информация по взаимодействию</a></li>
+						{#<li><a href="{{ path('foiv_person') }}">Список персон</a></li>#}
+                    </ul>
+                </li>
+                <li class="dropdown">
+                        <a dropdown-toggle" href="#" data-toggle="dropdown">
+                            Структура <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                        <li><a href="{{ path('supervisory', { 'id': foiv.id }) }}">Руководство</a></li>
+                        <li><a href="{{ path('departments', { 'foivid': foiv.id }) }}">Структурные подразделения</a></li>
+                        <li><a href="{{ path('subinsts', { 'id': foiv.id }) }}">Подведомственные ФОИВ</a></li>
+                        <li><a href="{{ path('foivpvo', { 'foivid': foiv.id }) }}">Организации и предприятия</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                        <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                            Территориальные органы <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="{{ path('fdo', { 'foivid': foiv.id }) }}">В Федеральных округах</a></li>
+                        <li><a href="{{ path('foiv_rdo', { 'foivid': foiv.id }) }}">В Регионах</a></li>
+                    </ul>
+                </li>
+                <li >
+                    <a href="{{ path('foiv_sitcenter', { 'foivid': foiv.id }) }}">Ситуационный центр</a>
+                </li>
+                <li class="dropdown">
+                        <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                            Информационное взаимодействие <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a href="{{ path('resources', { 'id': foiv.id }) }}">Информационные системы</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('conventions', { 'id': foiv.id }) }}">Соглашение по инф-му взаимодействию</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        {# Endof profile pills  #}
+{% endif %}
+        <div class="tab-content" style=" margin-bottom: 15px;">
+            {% block foivContent %}
+            
+            {% endblock %}
+           
+        </div>
+    </div>
+</div>
+    
+    
+{% endblock %}

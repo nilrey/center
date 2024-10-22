@@ -1,0 +1,125 @@
+$(document).ready(function() {               
+    
+    /**
+     * Диалог выбора даты актуальности
+     */
+    
+    $('#dt_start').datepicker($.datepicker.regional["ru"]);
+    $('#dt_start').datepicker('setDate', -7);
+    
+    $('#dt_end').datepicker($.datepicker.regional["ru"]);
+    $('#dt_end').datepicker('setDate', new Date());
+    
+    $('#btn_search').click(function() {
+        var objSearch = {};
+        objSearch['id_protocol']    = $('#id_protocol').val();
+        objSearch['dt_start']       = $('#dt_start').val() + '00:00:00';
+        objSearch['dt_end']         = $('#dt_end').val() + '00:00:00';
+                
+        $('#lock_pane').attr('class', 'lock_on');
+        $.ajax({
+            url: URL_GET_FILE_DATE_LIST,
+            method: 'POST',
+            data: objSearch,
+            async: false,
+            cache: false,
+            success: function (e) {
+                $('#lock_pane').attr('class', 'lock_off');
+
+                if (e['err_id'] == 0) {
+                    var sel = $('#date_lst');
+                    
+                    sel.empty();
+                    for(var i = 0; i < e['content'].length; i++)
+                        sel.append('<option value="' + e['content'][i]['id_file'] + '">' + e['content'][i]['date'] + '</option>');
+                }
+                else
+                    $.dialogen('okdlg', {text: e['content']});                            
+            },
+            error: function (e) {
+                $('#lock_pane').attr('class', 'lock_off');
+
+                $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+            }                                                                   
+        });                  
+    });
+    
+    /**
+     * Очистка всех данных
+     */
+    
+    $('#btn_clear_all').click(function() {
+        $.dialogen(
+            'yesnodlg',
+            {text: 'Вы действительно хотите удалить все данные форм протокола?'},
+            function() {                
+                var objReq = {};
+                objReq['id_protocol'] = $('#id_protocol').val();
+
+                $('#lock_pane').attr('class', 'lock_on');
+                $.ajax({
+                    url: URL_CLEAR_ALL,
+                    method: 'POST',
+                    data: objReq,
+                    async: false,
+                    cache: false,
+                    success: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+
+                        if (e['err_id'] == 0)
+                            $('#date_lst').empty();
+                        
+                        $.dialogen('okdlg', {text: e['content']});
+                    },
+                    error: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+
+                        $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                    }                                                                   
+                });                                
+            }
+        );        
+    });
+    
+    /**
+     * Очистка выбранного среза актуальности данных
+     */
+    
+    $('#btn_clear_sel').click(function() {
+        var id_file = $('#date_lst').val();
+        if (id_file === null)
+            return;
+        
+        $.dialogen(
+            'yesnodlg',
+            {text: 'Вы действительно хотите удалить данные форм протокола по выбранному срезу?'},
+            function() {
+                var objReq = {};
+                objReq['id_protocol']   = $('#id_protocol').val();
+                objReq['id_file']       = id_file;
+
+                $('#lock_pane').attr('class', 'lock_on');
+                $.ajax({
+                    url: URL_CLEAR_SEL,
+                    method: 'POST',
+                    data: objReq,
+                    async: false,
+                    cache: false,
+                    success: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+
+                        if (e['err_id'] == 0)
+                            $('#btn_search').click();
+                        
+                        $.dialogen('okdlg', {text: e['content']});
+                    },
+                    error: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+
+                        $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                    }                                                                   
+                });                
+            }
+        );
+    });
+});

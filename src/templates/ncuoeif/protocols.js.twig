@@ -1,0 +1,408 @@
+$(document).ready(function() {
+    
+    /*
+     * Таблица источников
+     */
+    
+    var tblProtocols = $('#tbl_protocols').DataTable({
+        language: {
+            url: DATATABLES_RU_JSON            
+        },
+        ordering: false,
+        serverSide: true,
+        processing: true,
+        ajax: {
+            url: URL_GET_PROTOCOL_LIST,
+            method: 'POST',
+            data: function(d) {
+                d['id_source'] = $('#id_source').val();
+            }
+        },
+        columnDefs: [{className: 'text-center', targets: [3, 4, 5, 6]}] 
+    });
+    {% if not is_granted('ROLE_ADMIN') %}
+        tblProtocols.column(0).visible(false); // ID
+    {% endif %}
+    
+{% if is_granted('ROLE_ADMIN') %}    
+    
+    /**
+     * Добавление протокола
+     */
+    
+    $('#btn_add_protocol').click(function() {
+        // Открываем диалог
+        var dlg_edit = $('#protocol_edit_dlg');
+        dlg_edit.attr('title', 'Создание');
+        
+        dlg_edit.find('#protocol_name').val('');
+        dlg_edit.find('#protocol_descr').val('');
+        dlg_edit.find('#protocol_file_mime_type').val('application/xml').removeAttr('disabled');
+        dlg_edit.find('#protocol_sign_date').val('');
+        dlg_edit.find('#protocol_doc_download').hide();
+        dlg_edit.find('#protocol_xml_xsd_download').hide();
+		dlg_edit.find('#enable_migration').prop('checked', false);
+        
+        var inp = dlg_edit.find('#protocol_doc');
+        inp.replaceWith(inp.val('').clone(true));
+        dlg_edit.find('#protocol_doc').show();
+        
+        inp = dlg_edit.find('#protocol_xml_xsd');
+        inp.replaceWith(inp.val('').clone(true));
+        dlg_edit.find('#protocol_xml_xsd').show();        
+        
+        $('#protocol_edit_dlg').dialog({
+            closeOnEscape: true,
+            resiziable: false,
+            width: 500,
+            height: 600,
+            position: {at: 'center center-200'},
+            modal: true, 
+            buttons: {
+                Сохранить: function() {
+                    var f_doc = dlg_edit.find('#protocol_doc')[0].files;                                  
+                    var f_xsd = dlg_edit.find('#protocol_xml_xsd')[0].files;
+                
+                    // Сохраняем на сервер
+                    objSave = new FormData();
+                    objSave.append('id_protocol', -1);
+                    objSave.append('id_source', $('#id_source').val());
+                    objSave.append('protocol_name', dlg_edit.find('#protocol_name').val());
+                    objSave.append('protocol_descr', dlg_edit.find('#protocol_descr').val());
+                    objSave.append('protocol_file_mime_type', dlg_edit.find('#protocol_file_mime_type').val());
+                    objSave.append('protocol_sign_date', dlg_edit.find('#protocol_sign_date').val());
+                    objSave.append('protocol_doc_save', 1);
+					objSave.append('enable_migration', dlg_edit.find('#enable_migration').is(':checked') ? '1' : '0');
+                    if (f_doc.length > 0)
+                        objSave.append('protocol_doc', f_doc[0]);
+                    objSave.append('protocol_xml_xsd_save', 1);        
+                    if (f_xsd.length > 0)
+                        objSave.append('protocol_xml_xsd', f_xsd[0]);
+
+                    // Сохранение
+                    $.ajax({
+                        url: URL_PROTOCOL_SAVE,
+                        method: 'POST',
+                        data: objSave,
+                        async: false,
+                        cache: false,
+                        processData: false,
+                        contentType: false,                            
+                        success: function (e) {
+                            $('#lock_pane').attr('class', 'lock_off');                           
+
+                            if (e['err_id'] == 0) {
+                                tblProtocols.draw(false);
+                                dlg_edit.dialog('destroy');
+                            }
+                            else
+                                $.dialogen('okdlg', {text: e['content']});                            
+                        },
+                        error: function (e) {
+                            $('#lock_pane').attr('class', 'lock_off');
+
+                            $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                        }                                                                                           
+                    });                        
+                },
+                Отмена: function() {
+                    $(this).dialog('destroy');
+                }
+            }
+        });
+    });
+    
+    /**
+     * Редактирование протокола
+     */
+    
+    $('#tbl_protocols').on('click', '.protocol_edit', function() {
+        // Идентификатор протокола
+        var row_index  = tblProtocols.row($(this).closest('tr')).index();
+        var id_protocol = tblProtocols.cell(row_index, 0).data();
+               
+        // Запрашиваем информацию по источнику
+        $('#lock_pane').attr('class', 'lock_on');
+        $.ajax({
+            url: URL_GET_PROTOCOL,
+            method: 'GET',
+            async: false,
+            cache: false,
+            data: {
+                id_protocol: id_protocol
+            },
+            success: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+                
+                if (e['err_id'] != 0) {
+                    $.dialogen('okdlg', {text: e['content']});
+                    return;
+                }
+                
+                // Открываем диалог
+                var dlg_edit = $('#protocol_edit_dlg');
+                dlg_edit.attr('title', 'Редактирование');
+
+                dlg_edit.find('#protocol_name').val(e['content']['protocol_name']);
+                dlg_edit.find('#protocol_descr').val(e['content']['protocol_descr']);
+                
+                var ft = dlg_edit.find('#protocol_file_mime_type');
+                ft.val(e['content']['protocol_file_mime_type']);                
+                if (e['content']['protocol_files_cnt'] > 0)
+                    ft.attr('disabled', 'disabled');
+                else
+                    ft.removeAttr('disabled');
+
+                dlg_edit.find('#protocol_sign_date').val(e['content']['protocol_sign_date']);
+				dlg_edit.find('#enable_migration').prop('checked', e['content']['enable_migration']);
+                
+                //
+                var inp = dlg_edit.find('#protocol_doc');
+                inp.replaceWith(inp.val('').clone(true));                
+                
+                var protocol_doc_download_link = dlg_edit.find('#protocol_doc_download');
+                if (e['content']['protocol_doc'] == 1) {
+                    protocol_doc_download_link.show();
+                    protocol_doc_download_link.find('a').attr('href', URL_PROTOCOL_DOC_DOWNLOAD + id_protocol);
+                    dlg_edit.find('#protocol_doc').hide();
+                }
+                else {
+                    protocol_doc_download_link.hide();
+                    dlg_edit.find('#protocol_doc').show();
+                }
+                
+                //
+                inp = dlg_edit.find('#protocol_xml_xsd');
+                inp.replaceWith(inp.val('').clone(true));                
+                
+                var protocol_xml_xsd_download_link = dlg_edit.find('#protocol_xml_xsd_download');
+                if (e['content']['protocol_xml_xsd'] == 1) {
+                    protocol_xml_xsd_download_link.show();
+                    protocol_xml_xsd_download_link.find('a').attr('href', URL_PROTOCOL_XML_XSD_DOWNLOAD + id_protocol);
+                    dlg_edit.find('#protocol_xml_xsd').hide();
+                }
+                else {
+                    protocol_xml_xsd_download_link.hide();
+                    dlg_edit.find('#protocol_xml_xsd').show();
+                }                
+                
+                $('#protocol_edit_dlg').dialog({
+                    closeOnEscape: true,
+                    resiziable: false,
+                    width: 500,
+                    height: 600,
+                    position: {at: 'center center-200'},
+                    modal: true, 
+                    buttons: {
+                        Сохранить: function() {
+                            var f_doc = dlg_edit.find('#protocol_doc')[0].files;
+                            var f_xsd = dlg_edit.find('#protocol_xml_xsd')[0].files;
+
+                            // Сохраняем на сервер
+                            objSave = new FormData();
+                            objSave.append('id_protocol', id_protocol);
+                            objSave.append('id_source', $('#id_source').val());                    
+                            objSave.append('protocol_name', dlg_edit.find('#protocol_name').val());
+                            objSave.append('protocol_descr', dlg_edit.find('#protocol_descr').val());
+                            objSave.append('protocol_file_mime_type', dlg_edit.find('#protocol_file_mime_type').val());
+                            objSave.append('protocol_sign_date', dlg_edit.find('#protocol_sign_date').val());
+                            objSave.append('protocol_doc_save', dlg_edit.find('#protocol_doc').is(':visible') ? 1 : 0);
+                            objSave.append('protocol_xml_xsd_save', dlg_edit.find('#protocol_xml_xsd').is(':visible') ? 1 : 0);
+							objSave.append('enable_migration', dlg_edit.find('#enable_migration').is(':checked') ? '1' : '0');
+                            if (f_doc.length > 0)
+                                objSave.append('protocol_doc', f_doc[0]);
+                            if (f_xsd.length > 0)
+                                objSave.append('protocol_xml_xsd', f_xsd[0]);
+                                                        
+                            // Сохранение
+                            $.ajax({
+                                url: URL_PROTOCOL_SAVE,
+                                method: 'POST',
+                                data: objSave,
+                                async: false,
+                                cache: false,
+                                processData: false,
+                                contentType: false, 
+                                success: function (e) {
+                                    $('#lock_pane').attr('class', 'lock_off');                                   
+
+                                    if (e['err_id'] == 0) {
+                                        tblProtocols.draw(false);
+                                        dlg_edit.dialog('destroy');
+                                    }
+                                    else
+                                        $.dialogen('okdlg', {text: e['content']});                                    
+                                },
+                                error: function (e) {
+                                    $('#lock_pane').attr('class', 'lock_off');
+
+                                    $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                                }                                                                                           
+                            });                        
+                        },
+                        Отмена: function() {
+                            $(this).dialog('destroy');
+                        }
+                    }
+                });                
+            },
+            error: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+
+                $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});                 
+            }
+        });                
+    });
+    
+    /*
+     * Удаление протокола
+     */
+    
+    $('#tbl_protocols').on('click', '.protocol_del', function() {
+        // Идентификатор источника
+        var row_index  = tblProtocols.row($(this).closest('tr')).index();
+        var id_protocol = tblProtocols.cell(row_index, 0).data();
+        
+        $.dialogen(
+            'yesnodlg',
+            {text: 'Вы действительно хотите удалить протокол?'},
+            function() {
+                // Отправляем запрос на удаление
+                var objDel = {};
+                objDel['id_protocol'] = id_protocol;
+                
+                $('#lock_pane').attr('class', 'lock_on');
+                $.ajax({
+                    url: URL_PROTOCOL_DELETE,
+                    method: 'POST',
+                    data: objDel,
+                    async: false,
+                    cache: false,
+                    success: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+                        
+                        if (e['err_id'] == 0)
+                            tblProtocols.draw(false);
+                        else
+                            $.dialogen('okdlg', {text: e['content']});
+                    },
+                    error: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+
+                        $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                    }                                                                   
+                });                
+            }
+        );
+    });   
+    
+    /**
+     * Диалог редактирования протокола
+     */
+    
+    $('#protocol_edit_dlg #protocol_sign_date').datepicker($.datepicker.regional["ru"]);
+    /*
+    $('#protocol_edit_dlg #protocol_sign_date').blur(function() {
+        $(this).datepicker('hide');
+    });
+    */
+    
+    $('#protocol_edit_dlg #protocol_doc_download i').click(function() {
+        $('#protocol_edit_dlg #protocol_doc').show();
+        $(this).parent().hide();
+    });
+    
+    $('#protocol_edit_dlg #protocol_xml_xsd_download i').click(function() {
+        $('#protocol_edit_dlg #protocol_xml_xsd').show();
+        $(this).parent().hide();
+    });    
+    
+{% else %}
+
+    /**
+     * Просмотр протокола
+     */
+    
+    $('#tbl_protocols').on('click', '.protocol_info', function() {
+        // Идентификатор протокола
+        var row_index  = tblProtocols.row($(this).closest('tr')).index();
+        var id_protocol = tblProtocols.cell(row_index, 0).data();
+               
+        // Запрашиваем информацию по источнику
+        $('#lock_pane').attr('class', 'lock_on');
+        $.ajax({
+            url: URL_GET_PROTOCOL,
+            method: 'GET',
+            async: false,
+            cache: false,
+            data: {
+               id_protocol: id_protocol 
+            },
+            success: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+                
+                if (e['err_id'] != 0) {
+                    $.dialogen('okdlg', {text: e['content']});
+                    return;
+                }
+                
+                // Открываем диалог
+                var dlg_info = $('#protocol_info_dlg');
+
+                dlg_info.find('#protocol_name').val(e['content']['protocol_name']);
+                dlg_info.find('#protocol_descr').val(e['content']['protocol_descr']);
+                dlg_info.find('#protocol_file_mime_type').val(e['content']['protocol_file_mime_type']);
+                dlg_info.find('#protocol_sign_date').val(e['content']['protocol_sign_date']);                            
+                
+                var protocol_doc_download_link = dlg_info.find('#protocol_doc_download');
+                if (e['content']['protocol_doc'] == 1)
+                    protocol_doc_download_link.html('<a href="' + URL_PROTOCOL_DOC_DOWNLOAD + id_protocol + '">Скачать</a>');
+                else
+                    protocol_doc_download_link.text('Не задан');
+                
+                dlg_info.dialog({
+                    closeOnEscape: true,
+                    resiziable: false,
+                    width: 500,
+                    height: 550,
+                    position: {at: 'center center-200'},
+                    modal: true, 
+                    buttons: {                        
+                        Закрыть: function() {
+                            $(this).dialog('destroy');
+                        }
+                    }
+                });                
+            },
+            error: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+
+                $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});                 
+            }
+        });                
+    });     
+    
+{% endif %}    
+    
+    /**
+     * Переход к файлам
+     */
+    
+    $('#tbl_protocols').on('click', '.to_files', function() {
+        // Идентификатор
+        var row_index  = tblProtocols.row($(this).closest('tr')).index();
+        var id_protocol = tblProtocols.cell(row_index, 0).data();        
+        window.location.assign(URL_FILE_LIST + '?id_protocol=' + id_protocol);
+    });   
+    
+    /**
+     * Переход к формам
+     */
+    
+    $('#tbl_protocols').on('click', '.to_forms', function() {
+        // Идентификатор
+        var row_index  = tblProtocols.row($(this).closest('tr')).index();
+        var id_protocol = tblProtocols.cell(row_index, 0).data();        
+        window.location.assign(URL_FORM_LIST + '?id_protocol=' + id_protocol);
+    });              
+});

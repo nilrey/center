@@ -1,0 +1,45 @@
+{% extends 'ncuoportal/list_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+{% endblock %}
+
+{% block subtitle %}
+    {{pageTitle}} > Редактирование записи 
+{% endblock %}
+
+{% block phSearch %}
+    {% if oiv.name is defined %}Поиск в ФОИВ - {{ oiv.name }}{% endif %}
+{% endblock %}
+
+{% block foivContent %}
+        <p style="margin-top: 25px">* Поля отмеченные звездочкой обязательны к заполнению</p>
+
+        {% block formContent %}
+		{% endblock %}
+		
+		{% include 'buttons_psp_edit.twig' ignore missing with {
+			'urlBack': urlBack,
+			'urlView': urlView
+		} %}
+		
+
+        {% if message is defined and message.message_text != '' %}
+        <script>
+        $(document).ready( function (){
+            getModalDialogInfo('{{ message.message_text }}');
+        } )
+        </script>
+        {% endif %}
+
+
+    <div>
+{% endblock %}

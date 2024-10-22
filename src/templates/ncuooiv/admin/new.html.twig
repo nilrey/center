@@ -1,0 +1,162 @@
+{% extends 'ncuooiv/layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/foiv.form.css') }}" />
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+    function showPass(){
+        if ( $('#btnShowPass').text() == 'Показать введеный пароль'){
+            $('#btnShowPass').text('Скрыть');
+            $('#field_pass').prop({type:"text"});
+        }else{
+            $('#btnShowPass').text('Показать введеный пароль');
+            $('#field_pass').prop({type:"password"});
+        }
+    }
+    </script>
+{% endblock %}
+
+{% block breadcrumb %}
+    <li>Администрирование пользователей</li>
+    <li>Пользователи</li>
+    <li>Редактирование записи</li>
+{% endblock %}
+
+{% block subtitle %}
+    <h5>Пользователи > Создание новой записи</h5>
+{% endblock %}
+
+
+{% block foivContent %}
+<h4 style="position: relative; top: -90px">Администрирование пользователей</h4>
+    <div class="contentHolder" style="position: relative; top: -30px">
+        {#% if entity.ModifiedDate is defined and entity.id > 0 %}<p>Дата последнего изменения: {{ entity.ModifiedDate|date("d.m.Y (H:i:s)")}}</p>{% endif %#}
+        <p>* Поля отмеченные звездочкой обязательны к заполнению</p>
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <form class="form-inline" id="create_data" method="post" action="{{urlAction}}">
+            <table class="table table-striped table-bordered dataTable editForm">
+                    <tbody>
+
+                        <tr>
+                            <td>
+                                Логин *:
+                            </td>
+                            <td>
+                                <input type="text" name="FIELDS[username]" value="{{FIELDS['username']}}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Пароль:
+                            </td>
+                            <td style="text-align:left">
+                                <input type="password" id="field_pass" name="FIELDS[password]" value="{{FIELDS['password']}}" style="width: 100%; height: 25px">
+                            <div onclick="showPass()" id="btnShowPass" style="cursor: pointer; margin-top: 10px; font-size: 11px">Показать введеный пароль</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Роль *:
+                            </td>
+                            <td style="text-align:left">
+                            <select name="FIELDS[role]" style="width: 100%">
+                                <option value="0">------------</option>
+                            {% if roles is defined %}
+                                {% for role in roles %}
+                                    {% set selected = '' %}
+                                    {% if role.id == FIELDS['role'] %}
+                                    {% set selected = 'selected' %}
+                                    {% endif %}
+                                    <option value="{{role.id}}" {{selected}}>{{role.description}}</option>
+                                {% endfor %}
+                            {% endif %}
+                            </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Связь с ОИВ (только если пользователь сотрудник ФОИВ):
+                            </td>
+                            <td style="text-align:left">
+                            <select name="FIELDS[oiv_id]" style="width: 100%">
+                                <option value="0">------------</option>
+                            {% if oivs is defined %}
+                                {% for oiv in oivs %}
+                                    {% set selected = '' %}
+                                    {% if oiv.id == FIELDS['oiv_id'] %}
+                                    {% set selected = 'selected' %}
+                                    {% endif %}
+                                    <option value="{{oiv.id}}" {{selected}}>{{oiv.name}}</option>
+                                {% endfor %}
+                            {% endif %}
+                            </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Фамилия:
+                            </td>
+                            <td style="text-align:left">
+                                <input type="text" name="FIELDS[lastname]" value="{{FIELDS['lastname']}}" style="width: 100%">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Имя:
+                            </td>
+                            <td style="text-align:left">
+                                <input type="text" name="FIELDS[firstname]" value="{{FIELDS['firstname']}}" style="width: 100%">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Отчество:
+                            </td>
+                            <td style="text-align:left">
+                                <input type="text" name="FIELDS[middlename]" value="{{FIELDS['middlename']}}" style="width: 100%">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Эл. почта:
+                            </td>
+                            <td style="text-align:left">
+                                <input type="text" name="FIELDS[email]" value="{{FIELDS['email']}}" style="width: 100%">
+                            </td>
+                        </tr>
+                            
+                    </tbody>
+            </table>
+        </form>
+
+<div class="list-buttons" style="margin: 20px 0px 30px 0px">
+        <button type="submit" class="btn btn-save" form="create_data" title="Сохранить"></button>
+         <button class="btn btn-return" onclick="window.location.replace('{{ path('oiv_admin_users') }}')" title="Вернуться к списку пользователей"></button>
+</div>
+		
+
+        {% if message is defined and message.message_error == false %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ message.message_text }}');
+        </script>
+        {% endif %}
+
+        {% if message is defined and message.message_error == true %}
+        <script>
+            showInfoDialog('error_msg_dialog', '{{ message.message_text }}');
+        </script>
+        {% endif %}
+
+{#% for flashMessage in app.session.flashbag.get('notice') %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ flashMessage }}');
+        </script>
+{% endfor %#}
+
+    <div>
+{% endblock %}

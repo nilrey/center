@@ -1,0 +1,102 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DeleteItemsHelpers.js') }}"></script>
+{% endblock %}
+
+{% block foivContent %}
+    <style>.fa-angle-right, .col-md-9>h4>i.fa-database{margin-right: 10px}</style>
+    <div class="row" style="margin-top: 10px; margin-bottom: 4px;">
+        <div class="col-md-9">
+            <h4>
+				<i class="fa fa-database fa-fw"></i><i class="fa fa-angle-right"></i><a href="{{ path('foiv_sitcenter', {'foivid' : foiv.id}) }}">Ситуационный центр</a>
+                {# if entity.name is defined %}<i class="fa fa-angle-right"></i>{{ entity.name }}{% endif #}
+                <i class="fa fa-angle-right"></i>Просмотр записи
+            </h4>
+        </div>
+    </div>
+    <style>
+        .contentHolder input[type=text] { width: 100% }
+        .displayOff{ display: none }
+        .displayOn{ display: block }
+        .mtb10 {margin: 10px 0px}
+    </style>
+    <div class="contentHolder">
+        {% if entity.ModifiedDate is defined and entity.id > 0 %}<p style="padding-left: 5px"><small>Дата последнего изменения: {{ entity.ModifiedDate|date("d.m.Y (H:i:s)")}}</small></p>{% endif %}
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+            <table class="table table-bordered table-striped" cols=2>
+                    <tbody>
+                        <tr>
+                            <td><b>Полное наименование:</b></td>
+                            <td class="td_control">{{ entity.name }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Телефон:</b></td>
+                            <td class="td_control">{{ entity.phone }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Веб-сайт:</b></td>
+                            <td class="td_control">{{ entity.webSite }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Адрес:</b></td>
+                            <td class="td_control">{{ entity.address }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Руководитель:</b></td>
+                            <td class="td_control">
+                                {%  if  personsList is defined  %}
+                                    {% for item in personsList %}
+                                        {% if  item.fio|trim != "" %}
+                                            {% if entity.director.id is defined and item.id == entity.director.id %}
+                                            <img style="width: 150px;" src="/img/foiv/persons/no-user.jpg">
+                                            <ul>
+                                                <li>
+                                                    <span class="_label">ФИО: </span>
+                                                    {{item.fio}}
+                                                </li>
+                                                {%  if  item.position is defined  %}
+                                                <li>
+                                                    <span class="_label">Должность: </span>
+                                                    {{item.position}}
+                                                </li>
+                                                {%endif%}
+                                                <li>
+                                                    <span class="_label">Контактные данные: </span>
+                                                    {{item.phone}}
+                                                </li>
+                                            </ul>
+                                                
+                                            {%endif%}
+                                        {%endif%}
+                                    {% endfor %}
+                                {%  endif  %}   
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>Электронная почта:</b></td>
+                            <td class="td_control">{{ entity.email }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Функции:</b></td>
+                            <td class="td_control">{{ entity.functions }}</td>
+                        </tr>
+                    </tbody>
+            </table>
+        <a class="btn btn-warning" href="{{urlEdit}}">Редактировать</a>
+        <a class="btn btn-default" href="{{urlBack}}">Вернуться к списку</a>
+{% if message is defined and message.message_text != "" %}
+    <script>
+        showInfoDialog('dialog_msg_info', '{{ message.message_text }}');
+    </script>
+{% endif %}
+
+{% for flashMessage in app.session.flashbag.get('notice') %}
+    <script>
+        showInfoDialog('dialog_msg_info', '{{ flashMessage }}');
+    </script>
+{% endfor %}
+
+{% endblock %}

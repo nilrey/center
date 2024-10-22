@@ -1,0 +1,44 @@
+{% extends 'ncuooiv/item_edit_tpl.html.twig' %}
+
+{% block formContent %}
+        <form class="form-inline" id="create_data" method="post" action="{{urlAction}}">
+            <table class="table table-striped table-bordered dataTable editForm">
+                    <tbody>
+                        {% if userRoleName is defined and userRoleName == 'ROLE_ADMIN' %}
+                        <tr>
+                            <td>
+                            Идентификатор ОИВ *:
+                            </td>
+                            <td>
+                                <input type='text' name="FIELDS[{{oiv.id}}__common_info__oiv_id]" placeholder='{{oiv.id}}' style='max-width: 843px'>
+                            </td>
+                        </tr>
+                        {% endif %}
+
+       {% if fields is defined %}
+           {% for field in fields %}         
+                        <tr>
+                            <td>
+                                {{field.name}}:
+                            </td>
+                            <td id='td_{{field.IdFldShort}}'>
+                        {% if field.data is defined %}
+                            {% autoescape %}
+                                {% if field.IdFldShort == "heraldic_img" or field.IdFldShort == "flag_img" %}
+                                <input id="fileUpload__{{field.id}}" type="file" onchange="encodeImageFileAsURL('{{field.id}}');"/><br>
+                                <div id="img__{{field.id}}" class="imagePreview">{{ field.data|raw }}</div><br>
+                                {% endif %}
+                                <textarea id="{{field.id}}" name="FIELDS[{{field.id}}]" cols=100 rows=1>{{ field.data|raw }}</textarea>
+                            {% endautoescape %}
+                        {% endif %}
+                                
+                            </td>
+                        </tr>
+   
+           {% endfor %}
+       {% endif %}                        
+                    </tbody>
+            </table>
+        </form>
+		
+{% endblock %}

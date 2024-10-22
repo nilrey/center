@@ -1,0 +1,141 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DeleteItemsHelpers.js') }}"></script>
+{% endblock %}
+
+{% block foivContent %}
+    <style>.fa-angle-right{padding-right: 5px}</style>
+    <div class="row" style="margin-top: 10px; margin-bottom: 4px;">
+        <div class="col-md-9">
+            <h4>
+                <i class="fa fa-database fa-fw"></i>&nbsp;
+            &nbsp;<i class="fa fa-angle-right"></i>&nbsp;Информационные ресурсы
+                <i class="fa fa-angle-right"></i>&nbsp;Просмотр записи
+            </h4>
+        </div>
+    </div>
+    <style>
+        .contentHolder input[type=text] { width: 100% }
+        .displayOff{ display: none }
+        .displayOn{ display: block }
+        .mtb10 {margin: 10px 0px}
+    </style>
+    <div class="contentHolder">
+        {% if message.type is defined and message.type > 0 %}
+            <div class="alert alert-{% if message.type == 2 %}info{% else %}danger{% endif %}" role="alert">{{ message.text }}</div>
+        {% endif %}
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+            <table class="table table-bordered table-striped" cols=2>
+                    <tbody>
+
+                        <tr>
+                            <td nowrap><b>Полное наименование *:</b></td>
+                            <td class="td_control">{{ entity.name }}</td>
+                        </tr>
+                        <!--tr>
+                            <td  nowrap><b>Условный код (латинскими буквами) *:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" required="required" name="engName" value="{#{ entity.engName }#}"></td>
+                        </tr-->
+                        <tr>
+                            <td  nowrap><b>Федеральный орган:</b></td>
+                            <td class="td_control">
+                            {% if entity.foiv is defined and entity.foiv.Name is defined %}
+                            {{ entity.foiv.Name }}
+                            {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Регистрация в ЕИФ:</b></td>
+                            <td class="td_control">
+                                {% if entity.ProtocolId.IdProtocol is defined and entity.ProtocolId.IdProtocol != "" %}
+                                {%  if  protocols is defined  %}
+                                    {% for item in protocols %}
+                                        {% if entity.ProtocolId.IdProtocol is defined and item.IdProtocol == entity.ProtocolId.IdProtocol %}
+						{% if entity.ProtocolId.IdProtocol is defined and entity.ProtocolId.IdProtocol != null and urlProtocol|trim != "" %}
+						{{item.ProtocolName}} <a class="f_option btn btn-default btn-sm" style="margin-left: 15px" href="{{urlProtocol}}?id_protocol={{entity.ProtocolId.IdProtocol}}" target="_blank"><i class="fa fa-cog" style="font-size: 14px"></i></a>
+						{% endif %}                                            
+                                        {%endif%}
+                                    {% endfor %}
+                                {%  endif  %}
+                                {% else %}
+                                    не зарегистрирован
+                                {%  endif  %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Описание:</b></td>
+                            <td class="td_control">{{ entity.description|nl2br  }}</td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Владелец ресурса:</b></td>
+                            <td class="td_control">{{ entity.owner }}</td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Разработчник:</b></td>
+                            <td class="td_control">{{ entity.developer }}</td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Ответственное лицо:</b></td>
+                            <td class="td_control">{{ entity.contactperson }}</td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Контактный номер ответственного лица:</b></td>
+                            <td class="td_control">{{ entity.contactphone }}</td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Источник:</b></td>
+                            <td class="td_control">{{ entity.url }}</td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Реестр ФГИС (URL):</b></td>
+                            <td class="td_control">{{ entity.registryLink }}</td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Тип ресурса:</b></td>
+                            <td class="td_control">
+                                {{entity.type}}                        
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Участвует в интеграции:</b></td>
+                            <td class="td_control">
+                                {{entity.isIntegration.Name}}                        
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Состояние по протоколу ИТС:</b></td>
+                            <td class="td_control">
+                                {{entity.ProtocolIts.ProtocolIts}}                        
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Vipnet:</b></td>
+                            <td class="td_control">
+                                {{entity.Vipnet.Name}}                        
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>СПО интеграции:</b></td>
+                            <td class="td_control">
+                                {{entity.IntegrationSpo.IntegrationSpo}}                        
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Логин:</b></td>
+                            <td class="td_control">{{ entity.login }}</td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Пароль:</b></td>
+                            <td class="td_control">{{ entity.password }}</td>
+                        </tr>                        
+                    </tbody>
+            </table>
+        {% include 'ncuofoiv_buttons_view.twig' ignore missing with {
+            'urlBack': urlBack,
+            'urlEdit': urlEdit
+        } %}
+
+{% endblock %}

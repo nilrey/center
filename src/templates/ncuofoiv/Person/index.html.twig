@@ -1,0 +1,65 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+     <script src="{{asset('bundles/ncuofoiv/js/DeleteItemsHelpers.js')}}"></script>
+    <script src="{{asset('bundles/ncuofoiv/js/person.js') }}"></script>
+{%endblock%}
+
+{% block content %}
+    <div class="row" style="margin-top: 10px; margin-bottom: 4px;">
+        <div class="col-md-9">
+            <h4><i class="fa fa-database fa-fw"></i>&nbsp;<i class="fa fa-angle-right"></i>&nbsp;Главный список контактной информации</h4>
+        </div>
+        <div class="col-md-3">
+            <a class="btn btn-sm btn-default pull-right" href="{{path('person_new')}}" style="padding: 3px 12px;">
+                <i class="fa fa-plus-circle"></i>&nbsp;
+                Добавить
+            </a>
+        </div>
+    </div>
+    
+    <div class="contentHolder">
+    <div id="del_person_dialog" class="display-none"  title="Внимание" hidden>Вы действительно хотите удалить контакт?</div>
+    <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+    <table id="dTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+        <thead>
+        <tr>
+                <th>Фамилия</th>
+                <th>Имя</th>
+                <th>Отчество</th>
+                 <th>Должность</th>
+                <th>Телефон</th>
+                <th>Веб-сайт</th>
+                <th>Эл. почта</th>
+               <th>Действия</th>
+              
+           </tr>
+        </thead>
+        <tbody >
+         {% for person in persons %}
+             <tr id="person_{{person.id}}">
+                <td>{{person.surname}}</td>
+                <td>{{person.name}}</td>
+                <td>{{person.patronymic}}</td>
+                 <td>{{person.position}}</td>
+                 <td>{{person.phone}}</td>
+                <td>{{person.websiteurl}}</td>
+                <td>{{person.email}}</td>
+                   <td>
+                    {#<ul>#}
+                       <table>
+                        <tr>
+                        <a class="f_option btn btn-default btn-sm"  href="{{path('person_show', {'id':person.id})}}"><i class="fa fa-eye"></i></a>
+                        <a class="f_option btn btn-default btn-sm"  href="{{path('person_edit', {'id':person.id})}}"><i class="fa fa-pencil"></i></a>
+                        <a id="del_contact_btn" class="f_option btn btn-default btn-sm"  onclick="OnDeletePersonClick({{person.id}}, '{{ path('person_delete',{'id' : person.id})}}')" ><i   class="glyphicon glyphicon-trash" ></i></a>
+                        </tr>
+                        </table>
+                    {#</ul>#}
+                    </td>
+            </tr>
+         {% endfor%}
+        </tbody>
+    </table>
+    </div>
+{% endblock %}

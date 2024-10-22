@@ -1,0 +1,1 @@
+{'date': 'Wed, 12 Jul 2023 00:09:20 +0300', 'status': 'Ok', 'hasattach': 'yes', 'messageId': '08c0b19a8c3e666496fcf0d9a436012c', 'from': 'lu1@local.citis'}

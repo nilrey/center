@@ -1,0 +1,208 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DeleteItemsHelpers.js') }}"></script>
+{% endblock %}
+
+{% block foivContent %}
+    <style>.fa-angle-right, .col-md-9>h4>i.fa-database{margin-right: 10px}</style>
+    <div class="row" style="margin-top: 10px; margin-bottom: 4px;">
+        <div class="col-md-9">
+            <h4>
+				<i class="fa fa-database fa-fw"></i><i class="fa fa-angle-right"></i><a href="#">Территориальные органы</a>
+				<i class="fa fa-angle-right"></i><a href="{{ path('roiv', {'foivid' : foiv.id}) }}">В Регионах</a>
+                <i class="fa fa-angle-right"></i>{% if entity.id is defined and entity.id > 0 %}Редактирование {% else %}Создание {% endif %} записи
+            </h4>
+        </div>
+    </div>
+    <style>
+        .contentHolder input[type=text] { width: 100% }
+        .displayOff{ display: none }
+        .displayOn{ display: block }
+        .mtb10 {margin: 10px 0px}
+    </style>
+    <div class="contentHolder">
+        {% if entity.ModifiedDate is defined and entity.id > 0 %}<p style="padding-left: 5px"><small>Дата последнего изменения: {{ entity.ModifiedDate|date("d.m.Y (H:i:s)")}}</small></p>{% endif %}
+        <p><small>* Поля отмеченные звездочкой обязательны к заполнению</small></p>
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <form class="form-inline" id="create_data" method="post" action="{{urlAction}}">
+            <table class="table" cols=2>
+                    <tbody>
+                        <tr>
+                            <td><b>Полное наименование *:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" required="required" name="name" value="{{ entity.name }}"></td>
+                        </tr>
+                        <tr>
+                            <td><b>Сокращенное наименование *:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" required="required" name="shortName" value="{{ entity.shortName }}"></td>
+                        </tr>
+                        <tr>
+                            <td><b>Телефон:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" name="phone" value="{{ entity.phone }}"></td>
+                        </tr>
+                        <tr>
+                            <td><b>Веб-сайт:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" name="website" value="{{ entity.website }}"></td>
+                        </tr>
+                        <tr>
+                            <td><b>Адрес *:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" required="required" name="address" value="{{ entity.address }}"></td>
+                        </tr>
+                        <tr>
+                            <td><b>Руководитель:</b></td>
+                            <td class="td_control">
+                                <select class="form-control" name="supervisor">
+                                    <option value="0" selected> Не указано</option>
+                                {%  if  personsList is defined  %}
+                                    {% for item in personsList %}
+                                        {% if  item.fio|trim != "" %}
+                                            {% if entity.supervisorFk.id is defined and item.id == entity.supervisorFk.id %}
+                                                <option value="{{item.id}}" selected > {{item.fio}}</option>
+                                            {% else %}
+                                                <option value="{{item.id}}" > {{item.fio}}</option>
+                                            {%endif%}
+                                        {%endif%}
+                                    {% endfor %}
+                                {%  endif  %}            
+                                </select><br>
+                            <div onclick="openFormNewOption()" class="btn btn-default mtb10">{{title_addPerson}}</div>
+                            <div class="results" id="results"></div>
+                            <div id="formNewOption" class="displayOff">
+                                <table class="table" style="border: 1px solid #DDD;">
+                                    <tr>
+                                        <td nowrap>Ф.И.О. руководителя * :</td>
+                                        <td width="100%">
+                                            <input type="text" id="newOption_name" value="">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Должность * :</td>
+                                        <td>
+                                            <input type="text" id="newOption_position" value="" >
+                                        </td>
+                                    </tr>
+<!--                                    <tr>
+                                        <td>Фото :</td>
+                                        <td>
+                                            <input type="text" id="newOption_photo">
+                                        </td>
+                                    </tr>-->
+                                    <tr>
+                                        <td>Телефон * :</td>
+                                        <td>
+                                            <input type="text" id="newOption_phone" value="">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Адрес :</td>
+                                        <td>
+                                            <input type="text" id="newOption_address" value="">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>E-mail :</td>
+                                        <td>
+                                            <input type="text" id="newOption_email" value="">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Руводитель :</td>
+                                        <td>
+                                            <select class="form-control" id="newOption_supervisor">
+                                                <option value="0" selected> Не указано</option>
+                                            {%  if  personsList is defined  %}
+                                                {% for item in personsList %}
+                                                    {% if  item.fio|trim != "" %}
+                                                <option value="{{item.id}}" > {{item.fio}}</option>
+                                                    {%endif%}
+                                                {% endfor %}
+                                            {%  endif  %}            
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan=2><input type="button" class="btn btn-primary mtb10" onclick="createSelectOption()" value="{{title_create}}"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <script>
+                                function openFormNewOption(){
+                                    $("#formNewOption").toggleClass("displayOn");
+                                }
+                                function createSelectOption(){
+                                    var data = {};
+                                    data['name'] = $("#newOption_name").val();
+                                    data['position'] = $("#newOption_position").val();
+                                    data['phone'] = $("#newOption_phone").val();
+                                    data['address'] = $("#newOption_address").val();
+                                    data['email'] = $("#newOption_email").val();
+                                    data['supervisor'] = $("#newOption_supervisor").val();
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: '{{ urlNewPerson }}',
+                                        data: data,
+                                        dataType: "json",
+                                        success: function(data){
+                                            //$('.results').html(data.content);
+                                            if (data.err_id == 0) {
+                                                showInfoDialog('dialog_msg_info',  data.res_msg);
+                                                $('[name=director]')
+                                                    .append($("<option></option>")
+                                                    .attr("value", data.content.id)
+                                                    .text(data.content.name));
+                                                    
+                                                $("#newOption_name").val("");
+                                                $("#newOption_position").val("");
+                                                $("#newOption_phone").val("");
+                                                $("#newOption_address").val("");
+                                                $("#newOption_email").val("");
+                                                $("#newOption_supervisor").val(0);
+                                            }else{
+                                                showInfoDialog('dialog_msg_info',  data.res_msg);
+                                                if (data.err_id == 2) {
+                                                    $("#newOption_"+data.content.id).css("border", "2px solid red");
+                                                }
+                                            }
+                                        },
+                                        error: function (jqXHR, textStatus, errorThrown) {
+                                            $('.results').html(jqXHR.responseText );
+                                        }  
+                                    });
+                                }
+                            </script>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>Контактный телефон:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" name="phone" value="{{ entity.phone }}"></td>
+                        </tr>
+                        <tr>
+                            <td><b>Электронная почта:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" name="email" value="{{ entity.email }}"></td>
+                        </tr>
+                    </tbody>
+            </table>
+        </form>
+        <button type="submit" class="btn btn-primary" form="create_data" >{{title_save}}</button>
+        {% if urlView is defined %}
+        <span class="pl10">&nbsp;</span>
+        <a class="btn btn-default" href="{{urlView}}">{{title_view}}</a>
+        {% endif %}
+        <span class="pl10">&nbsp;</span>
+        <a class="btn btn-default" href="{{urlBack}}">{{title_toList}}</a>
+        {% if message is defined and message.message_text != "" %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ message.message_text }}');
+        </script>
+        {% endif %}
+
+{% for flashMessage in app.session.flashbag.get('notice') %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ flashMessage }}');
+        </script>
+{% endfor %}
+
+    <div>
+{% endblock %}

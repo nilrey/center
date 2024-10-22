@@ -1,0 +1,29 @@
+{% extends 'ncuooiv/layout.html.twig' %}
+
+{% block content %}
+   <h3>Удаление записи пользователя</h3>
+   <div class="contentHolder" style="margin-top: 40px">
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+<br>
+<br>
+        <div class="form-inline" > 
+   {% if user_name is defined and user_name != "" %}
+      <div class="alert alert-success" role="alert">
+  Пользователь: {{user_name}} успешно удален
+</div>
+   {% endif %}
+       {% if message is defined and message.message_text is defined %}
+          <div class="alert alert-warning" role="alert">{{ message.message_text }}</div>
+        <script>
+            //showInfoDialog('dialog_msg_info', '{{ message.message_text }}');
+        </script>
+     {% endif %} 
+        </div>        
+          
+   <div style="margin: 40px 0px 30px 0px">
+      <button onclick="window.location.replace('{{ path('oiv_admin_users') }}')" title="Вернуться к списку пользователей" class="btn btn-return" /></a>
+   </div>
+        
+   </div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'ncuoregion/layout.html.twig' %}  
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/oiv.css') }}" />
+    <style type="text/css">
+    #heraldic_img img, #flag_img img { width: 80px}
+    #name_full { font-weight: 600 }
+    .table td {
+        border-bottom: 1px solid #cdcdcd !important;
+        height: 50px !important;
+    }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li>Экономическое развитие</li>
+    <li>Макроэкономические показатели</li>
+{% endblock %}
+
+{% block subtitle %}
+	<h5>Макроэкономические показатели</h5>
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrTabs = ["tab_economic_info", "tab_s_macroecon"];
+{% endblock %}
+
+{% block foivContent %}
+   
+    <div class="contentHolder">
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+     
+   {# ----------------------------------------------------------- </br> }
+   
+   {% dump(oiv) %}</br>
+    
+   {# ----------------------------------------------------------- </br> #}
+
+        
+        {#% if foiv.ModifiedDate  is defined %}<p>Дата последнего изменения: {{ foiv.ModifiedDate|date("d.m.Y (H:i:s)")}}</p>{% endif %#}
+        
+        
+         
+    {% if fields is defined %}
+        {% for field in fields %}      
+            {% if field.data is defined %}   
+                {% autoescape %}
+                    {{ field.data|raw }}
+                {% endautoescape %}
+            {% endif %}
+       {% endfor %}
+    {% endif %}
+        
+        
+        {% include 'ncuooiv_buttons_show.twig' ignore missing with {
+            'urlEdit': urlEdit
+        } %}
+
+    </div> <!-- \ contentHolder -->
+
+{% endblock %}

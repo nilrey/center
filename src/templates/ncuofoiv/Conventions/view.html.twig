@@ -1,0 +1,66 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DeleteItemsHelpers.js') }}"></script>
+{% endblock %}
+
+{% block foivContent %}
+    <style>.fa-angle-right, .col-md-9>h4>i.fa-database{margin-right: 10px}</style>
+    <div class="row" style="margin-top: 10px; margin-bottom: 4px;">
+        <div class="col-md-9">
+            <h4>
+				<i class="fa fa-database fa-fw"></i><i class="fa fa-angle-right"></i><a href="#">Информационное взаимодействие</a>
+				<i class="fa fa-angle-right"></i><a href="{{urlBack}}">Соглашение по взаимодействию</a>
+				<i class="fa fa-angle-right"></i>Просмотр соглашения</h4>
+        </div>
+    </div>
+    <style>
+        .contentHolder input[type=text] { width: 100% }
+        .displayOff{ display: none }
+        .displayOn{ display: block }
+        .mtb10 {margin: 10px 0px}
+    </style>
+    <div class="contentHolder">
+        {#{% if entity.ModifiedDate is defined and entity.id > 0 %}<p style="padding-left: 5px"><small>Дата последнего изменения: {{ entity.ModifiedDate|date("d.m.Y (H:i:s)")}}</small></p>{% endif %}#}
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+            <table class="table table-bordered table-striped" cols=2>
+                    <tbody>
+                        <tr>
+                            <td><b>Наименование документа:</b></td>
+                            <td class="td_control">{{ entity.Title }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Дата подписания:</b></td>
+                            <td class="td_control">{{ entity.datesigningAsDateTime | date('d.m.Y') }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Имя файла:</b></td>
+                            <td class="td_control">{{ entity.file.originalname }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Размер файла:</b></td>
+                            <td class="td_control">{{ entity.file.size }}</td>
+                        </tr>
+						 <tr>
+                            <td><b>Mime-тип файла:</b></td>
+                            <td class="td_control">{{ entity.file.MimeType }}</td>
+                        </tr>
+                    </tbody>
+            </table>
+        <a class="btn btn-warning" href="{{urlEdit}}">Редактировать</a>
+        <a class="btn btn-default" href="{{urlBack}}">Вернуться к списку</a>
+{% if message is defined and message.message_text != "" %}
+    <script>
+        showInfoDialog('dialog_msg_info', '{{ message.message_text }}');
+    </script>
+{% endif %}
+
+{% for flashMessage in app.session.flashbag.get('notice') %}
+    <script>
+        showInfoDialog('dialog_msg_info', '{{ flashMessage }}');
+    </script>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'ncuoregion/item_edit_tpl.html.twig' %}
+
+{% block btnExportImport %}
+        <div style="float: right;  margin-bottom: 35px">
+            <a href="export" class="btn btn-primary" style="background: none; color: #228BE6; width: 170px; margin-top: 15px; white-space: nowrap; margin-right: 30px">Выгрузка данных</a>
+            <div onclick="getDialogImport()" class="btn btn-primary" style="background: none; color: #228BE6; width: 170px; margin-top: 15px; white-space: nowrap; margin-right: 10px">Загрузка данных</div>
+        </div>
+{% endblock %}
+
+{% block formContent %}
+        <form class="form-inline" id="create_data" method="post" action="{{urlAction}}">
+            <table class="table table-striped table-bordered dataTable editForm">
+                    <tbody>
+
+       {% if fields is defined %}
+           {% for field in fields %}         
+                        <tr>
+                            <td>
+                                {{field.name}}:
+                            </td>
+                            <td id='td_{{field.IdFldShort}}'>
+                        {% if field.data is defined %}
+                            {% autoescape %}
+                                {% if field.IdFldShort == "heraldic_img" or field.IdFldShort == "flag_img" %}
+                                <input id="fileUpload__{{field.id}}" type="file" onchange="encodeImageFileAsURL('{{field.id}}');"/><br>
+                                <div id="img__{{field.id}}" class="imagePreview">{{ field.data|raw }}</div><br>
+                                {% endif %}
+
+                                <textarea id="editor" name="FIELDS[{{field.IdFldShort}}]" rows=15 style="width: 100%">{% if field.data is defined %}{{ field.data|raw }}{% endif %}</textarea>
+
+                                {#<textarea id="{{field.id}}" name="FIELDS[{{field.id}}]" cols=100 rows=1>{{ field.data|raw }}</textarea>#}
+                            {% endautoescape %}
+                        {% endif %}
+                                
+                            </td>
+                        </tr>
+   
+           {% endfor %}
+       {% endif %}                        
+                    </tbody>
+            </table>
+        </form>
+		
+        <script>initSample();</script>  
+{% endblock %}

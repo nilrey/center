@@ -1,0 +1,102 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 01.09.2014, 19:30:49
+    Author     : ivan
+*/
+
+#side-menu>li {
+    background: #3a3633;
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodтАжBoZWlnaHQ9IjEiIGZpbGw9InVybCgjZ3JhZC11Y2dnLWdlbmVyYXRlZCkiIC8+Cjwvc3ZnPg==);
+    background: -moz-linear-gradient(left,#3a3633 93%,#2a2725 100%);
+    background: -webkit-gradient(linear,left top,right top,color-stop(93%,#3a3633),color-stop(100%,#2a2725));
+    background: -webkit-linear-gradient(left,#3a3633 93%,#2a2725 100%);
+    background: -o-linear-gradient(left,#3a3633 93%,#2a2725 100%);
+    background: -ms-linear-gradient(left,#3a3633 93%,#2a2725 100%);
+    background: linear-gradient(to right,#3a3633 93%,#2a2725 100%);
+    border-bottom: 1px solid #1A1817;
+    margin-bottom: 1px;
+}	
+.nav-second-level ul li {
+    background: #3a3633;
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodтАжBoZWlnaHQ9IjEiIGZpbGw9InVybCgjZ3JhZC11Y2dnLWdlbmVyYXRlZCkiIC8+Cjwvc3ZnPg==);
+    background: -moz-linear-gradient(left,#3a3633 93%,#2a2725 100%);
+    background: -webkit-gradient(linear,left top,right top,color-stop(93%,#3a3633),color-stop(100%,#2a2725));
+    background: -webkit-linear-gradient(left,#3a3633 93%,#2a2725 100%);
+    background: -o-linear-gradient(left,#3a3633 93%,#2a2725 100%);
+    background: -ms-linear-gradient(left,#3a3633 93%,#2a2725 100%);
+    background: linear-gradient(to right,#3a3633 93%,#2a2725 100%);
+    border-bottom: 1px solid #1A1817;
+    margin-bottom: 0px;
+}
+.nav-third-level li {
+    background: #525151 !important;
+}
+.navbar-static-side ul {
+    background-color: #525151;
+}
+.navbar-static-side ul li a {
+    color: #cccbcb;
+}
+.navbar-static-side ul li.active>a {
+    color: #fff;
+}
+.nav-n-level li.active>a:before,
+.noChildren.active>a:before {
+    /*content: "\f0d9";*/
+    font-family: FontAwesome;
+    display: block;
+    height: 27px;
+    line-height: normal;
+    width: 27px;
+    position: absolute;
+    right: -21px;
+    font-size: 20px;
+    color: #eee;
+}
+.nav-third-level li a {
+    padding-left: 37px; 
+}
+.nav-third-level {
+    padding-left: 31px;
+}
+/*.nav-n-level li.active a {
+    font-weight: bold;
+    color: #fff;
+    text-decoration: underline;
+}*/
+.nav-n-level li {
+    list-style-type:none;
+    margin:0;
+    /*padding:10px 5px 0 5px;*/
+    position:relative
+}
+/*
+.nav-n-level li::before, .nav-n-level li::after {
+    content:'';
+    left:9px;
+    position:absolute;
+    right:auto
+}
+.nav-n-level li::before {
+    border-left:1px solid #999;
+    bottom:50px;
+    height:100%;
+    top:0;
+    width:1px
+}
+.nav-n-level li::after {
+    border-top:1px solid #999;
+    height:20px;
+    top:19px;
+    width:21px
+}
+.nav-n-level>ul>li::before, .nav-n-level>ul>li::after {
+    border:0
+}
+.nav-n-level li:last-child::before {
+    height:20px
+}

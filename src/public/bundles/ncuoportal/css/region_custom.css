@@ -1,0 +1,10 @@
+#geo_position_1_1__common_1 tr:first-child {
+    border: 0px !important;
+}
+#geo_position_1_1__common_1 tr:first-child:hover {
+    background: #ffffff;
+}
+#geo_position_1_1__common_1 tr:first-child td{
+    padding-left: 0px;
+    padding-bottom: 20px;
+}

@@ -1,0 +1,179 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/foiv.form.css') }}" />
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+	<script src="{{ asset('bundles/ncuofoiv/js/CreatePersonFormHelpers.js') }}"></script>
+	<script src="{{ asset('bundles/ncuofoiv/js/SendDataHelpers.js') }}"></script>
+	<script src="{{ asset('bundles/ncuofoiv/js/supervisory.js') }}"></script>
+	
+	<script>
+		// после загрузки страницы
+		$(function () 
+		{
+			// инициализировать все элементы на страницы, имеющих атрибут data-toggle="tooltip", как компоненты tooltip
+			$('[data-toggle="tooltip"]').tooltip()
+		})
+		</script>
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li>Структура</li>
+    <li>Руководство</li>
+    <li>{% if entity.id is defined and entity.id > 0 %}Редактирование {% else %}Создание {% endif %} записи</li>
+{% endblock %}
+
+{% block subtitle %}
+    <h5>{% if entity.id is defined and entity.id > 0 %}Редактирование {% else %}Создание {% endif %} записи</h5>
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrTabs = ["tab_foiv_struct", "tab_foiv_supervisory"];
+{% endblock %}
+
+{% block foivContent %}
+    <div class="contentHolder">
+        {% if entity.ModifiedDate is defined and entity.id > 0 %}<p>Дата последнего изменения: {{ entity.ModifiedDate|date("d.m.Y (H:i:s)")}}</p>{% endif %}
+        <p>* Поля отмеченные звездочкой обязательны к заполнению</p>
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <form class="form-inline" id="create_data" method="post" action="{{ActionURL}}" enctype="multipart/form-data">
+            <table class="table table-striped table-bordered dataTable editForm">
+                    <tbody>
+                        <tr>
+                            <td>Фамилия *:</td>
+							{%if entity.person.surname is defined %}
+								<td><input type="text" required="required" name="surname" value="{{ entity.person.surname }}"></td>
+							{% else %}
+								<td><input type="text" required="required" name="surname" value=""></td>
+							{% endif%}
+                        </tr>
+						<tr>
+							<td>Имя *:</td>
+							{%if entity.person.name is defined %}
+								<td><input type="text" required="required" name="name" value="{{ entity.person.name }}"></td>
+							{% else %}
+								<td><input type="text" required="required" name="name" value=""></td>
+							{% endif%}
+						</tr>
+						<tr>
+							<td>Отчество *:</td>
+							{%if entity.person.patronymic is defined %}
+								<td><input type="text" required="required" name="patronimyc" value="{{ entity.person.patronymic }}"></td>
+							{% else %}
+								<td><input type="text" required="required" name="patronimyc" value=""></td>
+							{% endif%}
+						</tr>
+                        <tr>
+                            <td>Фото:</td>
+                            <td>
+                            {% if entity.photoId is defined and entity.photoId.path is defined %}
+                                <p><img class="photo-dir" src="{{ entity.photoId.path|trim }}{{ entity.photoId.name|trim }}" style="max-width: 180px" onerror="this.src='/img/foiv/persons/no-user.jpg'"></p>
+                            {% endif %}
+                                <input type="file" name="photoUrl">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Должность *:</td>
+                            <td><input type="text" required="required" name="position" value="{{ entity.position }}"></td>
+                        </tr>
+						</tr>
+						<tr>
+                            <td>Вес: <span data-toggle="tooltip" title="Используется для сортировки в списках от меньшего к большему. Диапазон значений весов от 0 до 99" class="glyphicon glyphicon-question-sign foiv-table-tip"></span>
+							</td>
+							{% if entity.id is empty %}
+								<td class="td_control "><input type="number" name="weight" min="0" max="99" value="99" ></td>
+							{% else %}
+								<td class="td_control "><input type="number" name="weight" min="0" max="99" value="{{entity.weight}}" ></td>
+							{% endif %}
+                        </tr>
+                        <tr>
+                            <td>Отображать на главной:
+                            <span data-toggle="tooltip" title="Используется для разрешения отображения персоны на главной странице в разделе 'Общая информация-Описание'" class="glyphicon glyphicon-question-sign foiv-table-tip"></span>
+							</td>
+                            <td class="td_control ">
+							{% if (entity.id is empty) or (entity.showed is defined and entity.showed) %}
+								<input class="checkbox" type="checkbox" name="show_flag" value="on" checked onclick="changeValueCheckbox(this)" >
+							{% else %}
+								<input class="checkbox" type="checkbox" name="show_flag" value="off" onclick="changeValueCheckbox(this)">
+							{% endif %}
+							</td>
+                        </tr>
+                        <tr>
+                            <td>Вышестоящий руководитель:</td>
+                            <td>
+                                
+                            <select required="required" name="supervisor">
+                                {% if entity.supervisor.id is not defined %}
+                                    <option value="0" selected></option>
+                                {% endif %}
+                            {# Проверяем: определена ли переменная (массив с данными)  или нет ? #}
+                            {%  if  supervisor is defined  %}
+                                {% for item in supervisor %}
+                                    {#
+                                        Если значение из списка совпадает с тем что выброано в объекте,
+                                        то отмечаем данный элемент списка выбранным
+                                    #}
+                                    {% if  item.fio|trim != "" %}
+                                        {% if entity.supervisor.id is defined and item.id == entity.supervisor.id %}
+                                            <option value="{{item.id}}" selected > {{item.fio}}</option>
+                                        {% else %}
+                                            <option value="{{item.id}}" > {{item.fio}}</option>
+                                        {%endif%}
+                                    {%endif%}
+                                {% endfor %}
+                            {%  endif  %}            
+                            </select>
+							
+							{# Временно скрываем мини-форму по просьбе Даниила
+							<div onclick="openFormNewOption('formNewOption')" class="btn btn-default mtb10">{{title_addPerson}}</div>
+							<div class="results" id="results"></div>
+							#}
+							{# включаем шаблон мини-формы создания персоналии #}
+							{# {% include 'ncuofoiv/create_person_form.html.twig' %} #}
+							
+                                <!--<input type="text" name="supervisor" value="{{ entity.supervisor }}">-->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Адрес:</td>
+                            <td><input type="text" name="address" value="{{ entity.address }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Телефон:</td>
+                            <td><input type="text" name="phone" value="{{ entity.phone }}"></td>
+                        </tr>
+                        <tr>
+                            <td>E-mail:</td>
+                            <td><input type="text" name="email" value="{{ entity.email }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Адрес сайта:</td>
+                            <td><input type="text" name="websiteUrl" value="{{ entity.websiteUrl }}"></td>
+                        </tr>
+                    </tbody>
+            </table>
+        </form>
+		
+    {% if entity.id is not empty %} {% include 'ncuofoiv_buttons_edit.twig' ignore missing with { 'urlBack': urlBack, 'urlView': urlView } %}
+    {% else %} {% include 'ncuofoiv_buttons_new.twig' ignore missing with { 'urlBack': urlBack } %}
+    {% endif %}
+
+    {% if message.message_text != "" %}
+        <script>
+        showInfoDialog('dialog_msg_info', '{{ message.message_text }}');
+        </script>
+    {% endif %}
+    
+    {% for flashMessage in app.session.flashbag.get('notice') %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ flashMessage }}');
+        </script>
+    {% endfor %}
+        <div>
+{% endblock %}

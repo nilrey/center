@@ -1,0 +1,100 @@
+{% extends 'new_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}  
+
+{% block javascripts %}
+    {{ parent() }}
+     
+{% endblock %}  
+
+{% block breadcrumb %}
+    <i class="fa fa-angle-left" title="Электронная почта" data-bs-dismiss="modal" style="padding-right: 5px"></i> <a href="#" style="color: #959EA9; text-decoration: none">Электронная почта</a>
+{% endblock %}    
+
+{% block nameheader %}
+<div class="container-fluid" style="line-height: 40px">
+  <div class="row">
+    <div class="col-8" style="font-weight: 600; font-size: 16px; margin-left: 34px">
+        <span class="foiv-logo"><img src='/public/bundles/light/img/icon-email.png'></span> Электронная почта<span class="favor-star"><i class="fa fa-star"></i>На главном экране</span>
+    </div>
+  </div>
+</div>
+{% endblock %}    
+
+{% block content %}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col" style="border-bottom: 1px solid #E1E3E8; margin: 0px 38px 0px 50px; padding: 0px">
+      <table class="psp-menu-top" cellpadding="0" cellspacing="0">
+        <tr>
+          <td id="mail_toptab_main"><a href="{{ path('webmail', {}) }}">Главная</a></td>
+          <td id="mail_toptab_new"><a href="{{ path('webmail_new', {}) }}">Новое сообщение</a></td>
+          <td id="mail_toptab_import"><a href="{{ path('email_import_form', {}) }}">Импорт почты</a></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<div style="width: 95%; margin: auto">
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-2">
+
+      <ul id="block_common_info" class="psp-menu-left">
+          <li id="mail_leftab_inbox"><a href="{{ path('webmail', {}) }}">Входящие [{% if Stat.inbox_total is defined %}{{Stat.inbox_total}}{%else%}0{%endif%}]</a></li>
+          <li id="mail_leftab_sent"><a href="{{ path('webmail_sent', {}) }}">Отправленные [{% if Stat.inbox_sent is defined %}{{Stat.inbox_sent}}{%else%}0{%endif%}]</a></li>
+          <li id="mail_leftab_important"><a href="{{ path('webmail_imp', {}) }}">Важные [{% if Stat.inbox_important is defined %}{{Stat.inbox_important}}{%else%}0{%endif%}]</a></li>
+          <li id="mail_leftab_attach"><a href="{{ path('webmail_attach', {}) }}">С вложениями [{% if Stat.inbox_files_cnt is defined %}{{Stat.inbox_files_cnt}} / {% if Stat.inbox_files_size is defined %}
+              {% if Stat.inbox_files_size >  1000000  %}
+                  {{ Stat.inbox_files_size // 1000000 }} Мб.
+              {% elseif Stat.inbox_files_size >  1000 %}
+                  {{ Stat.inbox_files_size // 1000 }} Кб.
+              {% else %}
+                  {{Stat.inbox_files_size}} б.
+              {% endif %}
+          {%else%}0 Кб.{%endif%}{%else%}0{%endif%}]</a></li>
+          <li id="mail_leftab_trash"><a href="{{ path('webmail_trash', {}) }}">Корзина [{% if Stat.inbox_trash is defined %}{{Stat.inbox_trash}}{%else%}0{%endif%}]</a></li>
+      </ul>
+
+      <ul id="block_import_info" class="psp-menu-left">
+        {% if Stat.cnt_import is defined %}
+          {% if Stat.cnt_import >  0  %}
+            <li id="mail_leftab_import"><a href="{{ path('webmail', {}) }}">Входящие [{% if Stat.inbox_total is defined %}{{Stat.inbox_total}}{%else%}0{%endif%}]</a></li>
+          {% else %}
+            <li id="mail_leftab_import_empty">Импортирование не осуществлялось</li>
+          {% endif %}
+        {% endif %}
+
+      </ul>
+
+    </div>
+    <div class="col-10" style="padding: 32px 0px 0px 32px;">
+      <div class="col" style="box-shadow: 0px 2px 6px 2px rgba(119, 119, 119, 0.15); border-radius: 4px; padding:0px 14px 0px 14px">
+
+
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-10" style="margin-left: 0px; padding-left: 0px;">
+              <div style="margin-left: 0px; padding-top: 24px; font-weight: normal; font-size: 16px; line-height: 20px;display: flex;flex-grow: 0;">{% block subtitle %}
+                {% endblock %}</div>
+            </div>
+          </div>
+        </div>
+        <div class="col" style="padding-left: 14px">
+        {% block foivContent %}
+        {% endblock %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>{% block foivTabMenuActive %}{% endblock %}</script>
+
+{% endblock %}

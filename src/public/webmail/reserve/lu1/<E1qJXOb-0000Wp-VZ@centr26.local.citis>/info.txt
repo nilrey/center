@@ -1,0 +1,1 @@
+{'date': 'Wed, 12 Jul 2023 13:48:34 +0300', 'status': 'Ok', 'hasattach': 'no', 'messageId': '<E1qJXOb-0000Wp-VZ@centr26.local.citis>', 'from': 'Mail Delivery System <Mailer-Daemon@ncuo-portal.local>'}

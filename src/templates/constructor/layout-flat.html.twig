@@ -1,0 +1,42 @@
+{% extends 'layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuofoiv/css/profile.css') }}"/>  
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/tabs.css') }}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/dataTables.bootstrap.css') }}"/>
+{% endblock %}  
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    <script src="{{ asset('bundles/ncuofoiv/js/foivShow.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/jquery.dataTables.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/dataTables.bootstrap.js') }}"></script>
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/foiv.js') }}"></script>
+    
+    <script>
+        var DATATABLES_RU_JSON          = '{{ asset('bundles/ncuoportal/js/datatables/ru_Ru.json') }}';
+    </script>
+   
+{% endblock %}  
+
+{% block breadcrumb %}
+{% endblock %}    
+
+{% block content %}
+    
+<div class="row">
+    <div class="col-md-12">
+        <div class="tab-content" style=" margin-bottom: 15px;">
+            {% block foivContent %}
+            
+            {% endblock %}
+           
+        </div>
+    </div>
+</div>
+    
+    
+{% endblock %}

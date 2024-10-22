@@ -1,0 +1,111 @@
+{% extends 'ncuofoiv/layout.html.twig' %}  
+
+{% block foivContent %}
+    <div class="row" style="margin-top: 10px; margin-bottom: 4px;">
+        <div class="col-md-9">
+            <h4>
+                <i class="fa fa-database fa-fw"></i>
+                <i class="fa fa-angle-right"></i>Структурные подразделения
+                <i class="fa fa-angle-right"></i>Редактирование записи
+            </h4>
+        </div>
+    </div>
+    
+    <div class="contentHolder">
+        <table class="table table-bordered table-striped">
+            <tr>
+                <td>
+                    Полное наименование:
+                </td>
+                <td>
+                    {{ entity.name }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Сокращённое наименование:
+                </td>
+                <td>
+                    {{ entity.shortName }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Орган власти:
+                </td>
+                <td>
+                    {{ entity.foiv.name }}
+                </td>
+            </tr>
+            {% if entity.director %}
+            <tr>
+                <td>
+                    Руководитель:
+                </td>
+                <td>
+                    <!-- To be completed -->
+                       <img style="width: 150px;" src="/img/foiv/persons/no-user.jpg"/>
+                       <ul>
+                        <li>
+                            <span class="_label">ФИО: </span>
+                            {{ entity.director.fio }}
+                        </li>
+                        <li>
+                            <span class="_label">Контактные данные: </span>
+                             {{ entity.director.phone }}
+                        </li>
+                        <li>
+                            <span class="_label">Должность: </span>
+                            {{ entity.director.position }}
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td>
+                    Основные функции:
+                </td>
+                <td>
+                    {{ entity.functions }}    
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Веб-сайт:
+                </td>
+                <td>
+                    {{ entity.websiteUrl }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Адрес:
+                </td>
+                <td>
+                    {{ entity.address }} 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Контактные номера:
+                </td>
+                <td>
+                    {{ entity.phone }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Электронная почта:
+                </td>
+                <td>
+                    {{ entity.email }}
+                </td>
+            </tr>
+        </table>
+        <a class="btn btn-warning" href="{{ path('foivpvo_edit', {'foivid' : entity.foiv.id, 'id' : entity.id }) }}" >Редактировать</a>
+        <a class="btn btn-default" href="{{ path('foivpvo', {'foivid' : entity.foiv.id }) }}">Вернуться к списку</a>
+        
+    </div>
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'new_layout.html.twig' %}  
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+{% endblock %}
+
+{% block subtitle %}
+    {% if pageTitle is defined %}{{pageTitle}}{% endif %}
+{% endblock %}
+
+{% block nameheader %}
+<div class="container-fluid" style="line-height: 40px">
+  <div class="row">
+    <div class="col-8" style="font-weight: 600; font-size: 16px; margin-left: 38px">
+        Ошибка доступа<span class="favor-star">
+    </div>
+  </div>
+</div>
+
+{% endblock %}    
+
+
+{% block content %}	
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col" style="margin: 0px 38px 0px 50px; padding: 0px">
+    <h4 style="color: #bf0404"><div style="font-size: 15px">Ваша сессия окончена. В текущей сессии пользователь не имеет доступа в данный раздел.</div></h4>
+    </div>
+  </div>
+</div>
+{% endblock %}

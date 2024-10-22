@@ -1,0 +1,75 @@
+{% extends "layout.html.twig" %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    
+    {% if not err_msg is defined %}
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoeif/css/common.css') }}"/>    
+    {% endif %}
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    {% if not err_msg is defined %}
+        <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/vkbeautify.js') }}"></script>    
+        <script>
+            var URL_FILES_PROCESS           = '{{ path('eif_xmlcheck__process') }}';
+            
+            var MSG_SERVICE_ERROR           = '{{ msg_service_error }}';        
+        </script>    
+        
+        <script type="text/javascript" src="{{ path('eif_js', {'file': 'xmlcheck'}) }}"></script>
+    {% endif %}
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block breadcrumb %}
+    <li><a href="{{ path('eif_sources') }}" title="Вернуться к списку источников">Список источников</a></li>    
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block content %}    
+    {% if err_msg is defined %}
+        <div id="error_msg" class="alert alert-danger">{{ err_msg }}</div>
+        <a href="{{ path('eif_sources') }}" title="Вернуться к списку источников"><button type="button" class="btn btn-default" title="Назад">Назад <i class="fa fa-reply"></i></button></a>
+    {% else %}
+        <h4>Сервис проверки XML/XSD/XSLT</h4>
+        <br>
+        
+        <div style="width: 30%; float: left;">
+            <form>
+                <div class="form-group">
+                    <label for="xml_file">Файл XML</label>
+                    <input type="file" id="xml_file">
+                    <i data-id="xml_file" class="fa fa-minus-square icon-link clear_file" title="Очистить"></i>
+                </div>
+                <div class="form-group">
+                    <label for="xsd_file">Файл XSD</label>
+                    <input type="file" id="xsd_file">
+                    <i data-id="xsd_file" class="fa fa-minus-square icon-link clear_file" title="Очистить"></i>
+                </div>
+                <div class="form-group">
+                    <label for="xslt_file">Файл XSLT</label>
+                    <input type="file" id="xslt_file">
+                    <i data-id="xslt_file" class="fa fa-minus-square icon-link clear_file" title="Очистить"></i>
+                </div>
+                <button id="btn_process" type="button" class="btn btn-success">Обработка</button>
+            </form>
+        </div>
+        <div style="width: 70%; float: right;">
+            <textarea id="xml_result" class="form-control" cols="80" rows="30"></textarea>
+            <button id="btn_format" type="button" class="btn btn-default margin-top-5" title="Форматировать"><i class="fa fa-bars"></i></button>
+        </div>
+    {% endif %}
+{% endblock %}

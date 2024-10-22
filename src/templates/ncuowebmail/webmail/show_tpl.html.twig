@@ -1,0 +1,70 @@
+{% extends 'ncuowebmail/new_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/fentity.form.css') }}" />
+    <style>#btnList { margin-left: -10px!important }</style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+        <script src="{{ asset('bundles/ncuoportal/js/ckeditor/ckeditor.js') }}"></script>
+        <script src="{{ asset('bundles/ncuoportal/js/js2/sample.js') }}"></script>
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+{% endblock %}
+
+{% block subtitle %}
+	<h5>{{entity.subj}}</h5>
+{% endblock %}
+
+{% block foivContent %}
+    <div class="contentHolder">
+        {#% if entity.ModifiedDate is defined and entity.id > 0 %}<p>Дата последнего изменения: {{ entity.ModifiedDate|date("d.m.Y (H:i:s)")}}</p>{% endif %#}
+
+        <p style="color: #959ea9;">Получено: {{entity.fdate}}</p>
+        <p style="color: #959ea9;">От: {{entity.from}}</p>
+        <p>
+            {% autoescape %}
+            {{ entity.content|raw }}
+            {% endautoescape %}
+        </p>
+        {% if entity.fileRoot is defined %}
+            {% if entity.fileRoot|length > 0 %}
+        <br><br>
+                {% for fl in entity.fileRoot %}
+                {% set cnt = loop.index -1 %}
+                {% if entity.fileNameList[cnt] is defined %}
+                    {% set title = entity.fileNameList[cnt] %}
+                {% else %} 
+                    {% set title = fl %}
+                {% endif %}
+                <p><img src='/public/bundles/light/img/icon-doc.png' style="width: 32px; margin-right: 15px"><a href='?download={{cnt}}'>{{title}}</a></p>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+
+        <script>initSample();</script>	
+		
+		
+		{% include 'buttons_psp_show.twig' ignore missing with {
+			'urlList': urlList
+		} %}
+		
+
+        {% if message is defined and message.message_error == false %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ message.message_text }}');
+        </script>
+        {% endif %}
+
+
+    </div> <!-- \ contentHolder -->
+
+<script>
+$('#toptab_mail_main').addClass('active');
+$('#leftab_inbox').addClass('active');
+</script>  
+{% endblock %}

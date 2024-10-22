@@ -1,0 +1,96 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html>
+
+<head>
+
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <meta content="IE=8" http-equiv="X-UA-Compatible">
+
+    <title>NCUO Portal</title>
+
+    <!-- CSS -->
+    {% block stylesheets %}
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/portal.css') }}"/>    
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/bootstrap.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/jquery-ui.min.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/jquery-ui.theme.min.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/font-awesome.min.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/sb-admin.css') }}"/>
+    {% endblock %}
+    
+
+    <!-- Scripts -->
+    {% block javascripts %}
+        <script src="{{ asset('bundles/ncuoportal/js/jquery-1.11.1.min.js') }}"></script>
+        <script src="{{ asset('bundles/ncuoportal/js/bootstrap.js') }}"></script>
+        <script src="{{ asset('bundles/ncuoportal/js/jquery-ui.min.js') }}"></script>
+    {% endblock %}
+
+    
+    <script>
+        // Активация тултипов
+        $('body').tooltip({
+            selector: '[rel=tooltip]'
+        });
+    </script>
+
+</head>
+
+<body class="auth">
+        
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12" style="border-bottom: 1px solid #ccc;">
+                    <div id="header">
+                        <img id="logo" src="{{ asset('bundles/ncuoportal/img/logo.png') }}"/>
+                        <h4>Национальный центр управления обороной Российской Федерации</h4>
+                        <h5>Единое рабочее место</h5>
+                    </div>
+                </div>
+            </div>
+        {#
+        <div>
+            {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                {{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }} |
+                <a href="{{ path('fos_user_security_logout') }}">
+                    {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
+                </a>
+            {% else %}
+                <a href="{{ path('fos_user_security_login') }}">{{ 'layout.login'|trans({}, 'FOSUserBundle') }}</a>
+            {% endif %}
+        </div>
+
+        {% for type, messages in app.session.flashBag.all %}
+            {% for message in messages %}
+                <div class="{{ type }}">
+                    {{ message|trans({}, 'FOSUserBundle') }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+        #}
+            <div class="row">
+                <div class="col-md-12" style="height: 1px; border-bottom: 2px solid whitesmoke;">
+                </div>
+            </div>
+            
+            <div class="row">
+                {% block authorisation_form %}
+                {% endblock %}
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12" style="margin-top: 200px; height: 1px; border-bottom: 1px solid #ccc;">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12" style="border-top: 2px solid whitesmoke;">
+                    <em>
+                        Комплекс программ информационного обеспечения должностных лиц Национального центра управления обороной Российской Федерации<br/>
+                        в части взаимодействия с Федеральными органами исполнительной власти
+                    </em>
+                    <br/>
+                </div>
+            </div>
+        </div>    
+</body>
+</html>

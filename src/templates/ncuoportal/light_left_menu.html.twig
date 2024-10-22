@@ -1,0 +1,154 @@
+{% if app.user.role is defined %}
+{{ composeLightMenu( app.user.role, app.user.username )|raw }} 
+{% endif %}
+
+{#% if menu is defined %}
+<ul class="nav menu-left" id="side-menu">
+{% for item in menu %}
+    {% if item.subMenu %}
+        <li>
+            <a href="#">
+                <span class="fa arrow"></span>
+                <div class="smi-title">{{ item.name }}</div>
+            </a>
+            
+            <ul class="nav nav-second-level nav-n-level">
+                {% for childItem in item.subMenu %}
+                    <li>
+                        {% if childItem.routeName %}
+                            <a href="{{ path(childItem.routeName) }}">
+                                <div class="smi-title">{{ childItem.name }}</div>
+                            </a>
+                        {% else %}
+                            <a href="{{ childItem.url }}" target="_blank">
+                                <div class="smi-title">{{ childItem.name }}</div>
+                            </a>  
+                        {% endif %}    
+                    </li>
+                {% endfor %}    
+            </ul>
+        </li>            
+    
+    {% else %}
+        <li class="noChildren">
+            {% if item.routeName %}
+                <a href="{{ path(item.routeName) }}">
+                   <div class="smi-title">{{ item.name }}</div>
+                </a>
+            {% else %}
+                <a href="{{ item.url }}" target="_blank">
+                    <div class="smi-title">{{ item.name }}</div>
+                </a>
+            {% endif %}
+        </li>
+    {% endif %}
+{% endfor %}
+</ul>
+{% endif %#}
+
+{#{ app.request.get('_route') }#}
+{#
+<ul class="nav menu-left" id="side-menu">
+
+        <li>
+            <a href="#">
+                <span class="fa arrow"></span>
+                <div class="smi-title">Паспорта ФОИВ РФ / Субьектов РФ</div>
+            </a>
+            
+            <ul class="nav nav-second-level nav-n-level">
+                    <li>
+                        <a href="/public/index.php/oiv/">
+                            <div class="smi-title">ФОИВ РФ</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/public/index.php/region/">
+                            <div class="smi-title">Субьекты РФ</div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" onclick="showInfoDialog('dialog_msg_info', 'Страница в процессе перевода под AstraLinux 1.6.')">
+                            <div class="smi-title">Поиск по паспортам ФОИВ РФ и Субьектов РФ</div>
+                        </a>
+                    </li>
+                    
+            </ul>
+        </li>       
+
+    {% if is_granted('ROLE_ADMIN') %}     
+                <li>
+            <a href="#">
+                <span class="fa arrow"></span>
+                <div class="smi-title">Контроль и управление функционированием</div>
+            </a>
+            
+            <ul class="nav nav-second-level nav-n-level collapse">
+                    <li>
+                            <a href="/public/index.php/oiv/admin/menu">
+                                <div class="smi-title">Администрирование меню</div>
+                            </a>  
+                            
+                    </li>
+                    <li>
+                            <a href="/public/index.php/oiv/admin/users/">
+                                <div class="smi-title">Администрирование пользователей</div>
+                            </a>  
+                            
+                    </li>
+                    <li>
+                            <a href="/public/func/rep_data_act_control">
+                                <div class="smi-title">Актуализация данных</div>
+                            </a>
+                            
+                    </li>
+                                    <li>
+                            <a href="/public/map/adm/map">
+                                <div class="smi-title">Выгрузка в ГИС</div>
+                            </a>
+                            
+                    </li>
+                                    <li>
+                            <a href="/public/eif/sources">
+                                <div class="smi-title">Данные</div>
+                            </a>
+                            
+                    </li>
+                                    <li>
+                            <a href="/public/foiv/0/foiv_systems">
+                                <div class="smi-title">Информационные системы</div>
+                            </a>
+                            
+                    </li>
+                                    <li>
+                            <a href="/public/service/services">
+                                <div class="smi-title">Регламентные задачи</div>
+                            </a>
+                            
+                    </li>
+                    
+            </ul>
+        </li>            
+    {% endif %}
+    {% if is_granted('ROLE_ADMIN') %}
+    
+                <li class="noChildren">
+                            <a href="http://192.168.125.199/?login=open" target="_blank">
+                    <div class="smi-title">ГИС МО</div>
+                </a>
+    {% endif %}
+                    </li>
+                <li class="noChildren">
+                            <a href="http://192.168.125.19:8082/" target="_blank">
+                    <div class="smi-title">Электронная почта</div>
+                </a>
+                    </li>
+                <li class="noChildren">
+                            <a href="http://192.168.125.19:8085/" target="_blank">
+                    <div class="smi-title">FTP</div>
+                </a>
+                    </li>
+
+
+</ul>
+#}

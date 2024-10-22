@@ -1,0 +1,30 @@
+{% extends 'layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/custom.tabs.foiv.css') }}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/oiv.css') }}" />
+{% endblock %}  
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DialogHelpers.js')}}"></script>
+    <script  src="{{ asset('bundles/ncuofoiv/js/foivShow.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/jquery.dataTables.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/dataTables.bootstrap.js') }}"></script>
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/foiv.js') }}"></script>
+    <!-- <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DeleteItemsHelpers.js') }}"></script>-->
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/onDeleteTableRecord.js') }}"></script>
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/foiv_tab_menu.js') }}"></script>
+    <script src="{{ asset('bundles/ncuoportal/js/oiv/functions.js') }}"></script>
+      
+{% endblock %}  
+
+{% block breadcrumb %}
+    <li>&nbsp;</li>
+{% endblock %}    
+
+{% block content %}
+    <h4><div style="font-size: 15px">Пользователь `{{app.user.username}}` не имеет доступа ни к одному внутреннему разделу меню. Обратитесь к администратору.</div></h4>
+{% endblock %}

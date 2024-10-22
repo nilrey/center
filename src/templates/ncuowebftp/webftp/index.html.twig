@@ -1,0 +1,207 @@
+{% extends 'ncuowebftp/list_layout.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}   
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+    .listTypeButton, .listTypeButtonSelected{font-size: 16px; margin: 10px 0px 20px 17px; border: 1px solid #cdcdcd; width: 125px; padding: 6px 15px; border-radius: 4px;float: left}
+    .listTypeButtonSelected{background: #E5E3FF}
+    .width135 {width: 135px}
+    .width235 {width: 235px}
+    .no-underline, .dirListItem{text-decoration:none}
+    .dirListItem{color: #757c86}
+    .fa-edit{font-size: 20px}
+    </style>
+{% endblock %}      
+
+{% block foivContent %}
+
+{% if list_type == 'user_shared_files' %}
+    <div class="col-8 listTypeButton ml0 width135">
+        <a href="?list_type=user_all_dirs" class="no-underline">По разделам</a>
+    </div>
+    <div class="col-8 listTypeButton">
+        <a href="?list_type=user_all_files" class="no-underline">Мои файлы</a>
+    </div>
+    <div class="col-8 listTypeButtonSelected width235">Предоставленные файлы</div>
+
+{% elseif list_type == 'user_all_files' %}
+
+    <div class="col-8 listTypeButton ml0 width135">
+        <a href="?list_type=user_all_dirs" class="no-underline">По разделам</a>
+    </div>
+    <div class="col-8 listTypeButtonSelected">Мои файлы</div>
+    <div class="col-8 listTypeButton width235">
+        <a href="?list_type=user_shared_files" class="no-underline">Предоставленные файлы</a>
+    </div>
+
+{% else %}
+
+    <div class="col-8 listTypeButtonSelected ml0 width135">По разделам</div>
+    <div class="col-8 listTypeButton">
+        <a href="?list_type=user_all_files" class="no-underline">Мои файлы</a>
+    </div>
+    <div class="col-8 listTypeButton width235">
+        <a href="?list_type=user_shared_files" class="no-underline">Предоставленные файлы</a>
+    </div>
+{% endif %}
+
+<br>
+
+{% if listFiles is defined %}
+<div class="col-8" style="font-size: 14px; margin-top: 50px">
+    <p>
+    Всего файлов: {{listFiles|length}} 
+    </p>
+    {% if list_type != 'user_shared_files' %}
+    <p>Ваш используемый объем диска: 
+    {% if all_files_size >  1000000  %}
+        {{ (all_files_size / 1000000) |round(2, 'ceil') }} Мб.
+    {% elseif all_files_size >  1000 %}
+        {{ (all_files_size / 1000) |round(0, 'ceil')}} Кб.
+    {% else %}
+        {{all_files_size}} б.
+    {% endif %}
+    из 100 Мб.
+    </p>
+    {% endif %}
+</div>
+
+{% if listFiles|length > 0 %}
+
+{% if list_type == 'user_shared_files' %}
+         
+    <table id="example" class="table row-border" style="width:100%; border-bottom: 0px !important">
+        <thead>
+            <tr>
+                <th>Название файла</th>
+                <th>Размер</th>
+                <th>Изменен</th>
+                <th>Предоставлен от</th>
+                <th style="text-align: center">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for entity in listFiles %}
+            <tr role="row" class="odd">
+                <td><a href="{{ path('webftp_show', { 'file_hash': entity.name_hash }) }}">{{ entity.title }}</a></td>
+                <td>
+            {% if entity.size >  1000000  %}
+                {{ (entity.size / 1000000) |round(2, 'ceil') }} Мб.
+            {% elseif entity.size >  1000 %}
+                {{ (entity.size / 1000) |round(0, 'ceil')}} Кб.
+            {% else %}
+                {{entity.size}} б.
+            {% endif %}
+                </td>
+                <td>{{ entity.modified|date('d.m.Y H:i:s') }}</td>
+                <td>{{ entity.lastname }} {{ entity.firstname }} {{ entity.middlename }}{% if entity.oiv_name is defined %}{% if entity.oiv_name != '' %}<br>{{entity.oiv_name}}{% endif %}{% endif %}</td>
+                <td nowrap style="text-align: center">
+                    <a class="ml10" href="{{ path('webftp_download', { 'file_hash': entity.name_hash }) }}" style="color: #959EA9">Скачать файл</a>
+                    <a class="ml10"href="{{ path('webftp_duplicate', { 'file_hash': entity.name_hash }) }}" style="color: #959EA9">Копировать к себе</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% else %}
+    
+    {% if list_type == 'user_all_dirs' %}
+
+            <table class="table table-striped table-bordered dataTable editForm" id="parentDirs" style="width:100%; border-bottom: 0px !important">
+                <thead>
+                    <tr style="display: none">
+                        <th>Radio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr role="row">
+                    <td><a href="{{ path('webftp_dirshow', { 'dir_id': 0 }) }}" class="dirListItem">Корневая папка 
+                    {% set counter =0 %}
+                    {% if dirFilesCount[0] is defined %}
+                        {% set counter = dirFilesCount[0] %}
+                    {% endif %}[{{counter}}]</a></td>
+                    </tr>
+                {% if userDirs is defined %}
+                {% for entity in userDirs %}
+                    {% set counter =0 %}
+                    {% if dirFilesCount[entity.id] is defined %}
+                        {% set counter = dirFilesCount[entity.id] %}
+                    {% endif %}
+                    <tr role="row">
+                    <td><a href="{{ path('webftp_dirshow', { 'dir_id': entity.id }) }}" class="dirListItem"><span style='padding-left: {{ 30*entity.level }}px'>{{ entity.title }} [{{counter}}]</span></a><a href="{{ path('webftp_diredit', { 'dir_id': entity.id }) }}" class="dirListItem" style="margin-left: 50px"><i class="fa fa-edit" title="Редактировать"></i></a> <a href="javascript: void(0)" onclick="confirmDelete('{{ entity.title }}', '{{ path('webftp_dirdelete', {'dir_id': entity.id}) }}')" class="dirListItem" style="margin-left: 30px"><i class="fa fa-trash" title="Удалить"></i></a></td>
+                    </tr>
+                {% endfor %}
+                {% endif %}
+
+                </tbody>
+            </table>
+    {% endif %}
+
+    {% if list_type == 'user_all_files' %}
+
+    <table id="example" class="table row-border" style="width:100%; border-bottom: 0px !important">
+        <thead>
+            <tr>
+                <th>Название файла</th>
+                <th>Предоставлено для</th>
+                <th>Размер</th>
+                <th>Изменен</th>
+                <th style="text-align: center">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+
+         
+        {% for entity in listFiles %}
+            <tr role="row" class="odd">
+                <td><a href="{{ path('webftp_show', { 'file_hash': entity.name_hash }) }}">{{ entity.title }}</a></td>
+                <td>
+                    {% if fileUsersCount[entity.id] is defined %}
+                        {{fileUsersCount[entity.id] }}
+                    {% else %}
+                        0
+                    {% endif %} польз.
+                </td>
+                <td>
+            {% if entity.size >  1000000  %}
+                {{ (entity.size / 1000000) |round(2, 'ceil') }} Мб.
+            {% elseif entity.size >  1000 %}
+                {{ (entity.size / 1000) |round(0, 'ceil')}} Кб.
+            {% else %}
+                {{entity.size}} б.
+            {% endif %}
+                </td>
+                <td><span style="display:none">{{entity.modified}}</span>{{ entity.modified|date('d.m.Y H:i:s') }}</td>
+                <td nowrap style="text-align: center">
+                    <a class="ml10" href="{{ path('webftp_download', { 'file_hash': entity.name_hash }) }}" style="color: #959EA9">Скачать файл</a>
+                    <a class="ml10"href="{{ path('webftp_edit', { 'file_hash': entity.name_hash }) }}" style="color: #959EA9">Изменить</a>
+                    <a class="ml30" href="javascript: void(0)" onclick="confirmDelete('{{ entity.title }}', '{{ path('webftp_delete', {'file_hash': entity.name_hash}) }}')" style="color: #959EA9">Удалить</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% endif %} {#  list_type =user_all_files #}
+
+{% endif %}
+
+    {% endif %}
+{% else %}
+
+
+<div class="col-8" style="font-size: 14px; margin-top: 50px">Файлы не найдены</div>
+
+{% endif %}
+        
+<script>
+function confirmDelete(itemTitle, deleteUrl){
+    $('#dialog-modal-confirm-send').html('Удалить');
+    getModalDialogConfirm('Вы действительно хотите удалить директорию "'+itemTitle+'"?');
+    $('#dialog-modal-confirm-send').click( function() {window.location.replace(deleteUrl)} );
+}
+</script>
+
+{% endblock %}

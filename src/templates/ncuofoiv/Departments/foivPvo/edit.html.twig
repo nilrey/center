@@ -1,0 +1,30 @@
+{% extends 'ncuofoiv/layout.html.twig' %}  
+
+{% block foivContent %}
+    <div class="container-fluid">
+        <div class="row" style="margin-top: 10px; margin-bottom: 4px; margin-left: -30px;">
+            <div class="col-md-10">
+                <h4>
+                    <i class="fa fa-pencil fa-fw"></i>&nbsp;
+                    <i class="fa fa-angle-right"></i>&nbsp;
+                    Редактирование организации или предприятия
+                </h4>
+            </div>
+            <div class="col-md-2">
+            </div>
+        </div>
+    </div>
+    <div class="contentHolder">
+
+        {{ form(edit_form) }}
+
+        <ul class="record_actions">
+        <li>
+            <a href="{{ path('foivpvo', {'foivid' : entity.foiv.id }) }}">
+                Отмена
+            </a>
+        </li>
+        <li>{{ form(delete_form) }}</li>
+        </ul>
+    </div>
+{% endblock %}

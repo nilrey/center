@@ -1,0 +1,76 @@
+{% extends 'constructor/new_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/foiv.form.css') }}" />
+    <style>.imagePreview img{max-width: 200px} table.dataTable input[type="file"]{ margin-left: 20px}</style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/ncuooiv/js/imgBase64.js') }}"></script>
+{% endblock %}
+
+{% block nameheader %}
+<div class="container-fluid" style="line-height: 40px">
+  <div class="row">
+    <div class="col-8" style="font-weight: 600; font-size: 16px; margin-left: 38px">
+        Новый шаблон таблицы. Шаг 3 - объединяющие колонки
+    </div>
+  </div>
+</div>
+{% endblock %} 
+
+{% block content %}
+
+<div style="width: 95%; margin: auto; margin-top: 30px">
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <form class="form-inline" id="create_data" method="post" action="{{urlAction}}">
+
+            <table class="table table-striped table-bordered dataTable editForm">
+                    <tbody>
+  
+                        <tr>
+                            <td style="width: 33%">
+                               <p><strong>Столбец 2 уровня</strong></p>
+                               <p>Столбец #1</p>
+                            </td>
+                            <td style="width: 33%">
+                               <p><strong>Название в заголовке:</strong></p>
+                                <textarea name="FIELDS[id_oiv]" cols=40 rows=1>Отчетный год 2024</textarea>
+                            </td>
+                           <td style="width: 33%">
+                                <p><strong>Столбцы нижнего уровня:</strong></p>
+                                <p><input type="checkbox" name="FIELDS[sup_column_level_2_0]" value="1" style="margin-right: 12px">Наименование показателей</p>
+                                <p><input type="checkbox" name="FIELDS[sup_column_level_2_0]" value="3" style="margin-right: 12px" checked>1 квартал </p>
+                                <p><input type="checkbox" name="FIELDS[sup_column_level_2_0]" value="3" style="margin-right: 12px" checked>2 квартал </p>
+                                <p><input type="checkbox" name="FIELDS[sup_column_level_2_0]" value="4" style="margin-right: 12px" checked>3 квартал </p>
+                                <p><input type="checkbox" name="FIELDS[sup_column_level_2_0]" value="5" style="margin-right: 12px" checked>4 квартал </p>
+                                <p><input type="checkbox" name="FIELDS[sup_column_level_2_0]" value="6" style="margin-right: 12px">Итого </p>
+                            </td>
+                        </tr>
+                    </tbody>
+            </table>
+            <div class="container-fluid" style="padding-bottom: 50px">
+                <div class="row">
+                  <div class="col" style="text-align: left; padding-left: 0px;">
+                    <button type="submit"  class="btn btn-primary" style="background: none; color: #228BE6; width: 140px; margin-top: 15px; margin-right: 15px;">Продолжить</button>
+                    <button type="button" onclick="window.location.replace('/public/constructor/table_new_step_2')" class="btn btn-primary" style="background: none; color: #228BE6; width: 170px; margin-top: 15px; margin-right: 50px;">Вернуться на шаг</button>
+                    <button type="button" onclick="window.location.replace('/public/constructor')" class="btn btn-primary" style="background: none; color: #228BE6; width: 190px; margin-top: 15px;">Вернуться к списку</button>
+                  </div>
+                </div>
+            </div> 
+        </form>
+</div>        
+
+        {% if message is defined and message.message_text is defined %}
+        <script>
+        $(document).ready( function (){
+            getModalDialogInfo('{{ message.message_text }}');
+        } )
+        </script>
+        {% endif %}
+        
+{% endblock %}
+

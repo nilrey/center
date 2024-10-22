@@ -1,0 +1,57 @@
+{% extends 'ncuooiv/item_show_tpl.html.twig' %}  
+
+{% block stylesheets %}
+    {{ parent() }}
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/light/css/psp_content.css') }}"/>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+        <script src="{{ asset('bundles/light/js/psp_content.js') }}"></script>
+{% endblock %}
+
+{% block foivContent %}
+        <table class="table table-info">
+
+        {% if fields is defined %}
+            {% for field in fields %}
+            <tr>
+                <td>
+                    {{field.name}}:
+                </td>
+                {% if field.IdFldShort == "heraldic_img" or field.IdFldShort == "flag_img" %}
+                <td>
+                    <div>
+                        <div>
+                    {% if field.data is defined %}
+                       {% autoescape %}
+                        {{ field.data|raw }}
+                        {% endautoescape %}
+                    {% endif %}
+                        </div>
+                    </div>
+                </td>
+                {% else %}
+                <td id='td_{{field.IdFldShort}}'>
+                    <div id='wrapper_{{field.IdFldShort}}' class='content_wrapper'>
+                        <div id='content_{{field.IdFldShort}}' class='content_content'>
+                    {% if field.data is defined %}
+                       {% autoescape %}
+                        {{ field.data|raw }}
+                        {% endautoescape %}
+                    {% endif %}
+                        </div>
+                    </div>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        {% endif %}
+
+        </table>
+
+    {{ parent() }}
+            
+<script>getContentHeight()</script>
+
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'ncuowebmail/new_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/fentity.form.css') }}" />
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+        <script src="{{ asset('bundles/ncuoportal/js/ckeditor/ckeditor.js') }}"></script>
+        <script src="{{ asset('bundles/ncuoportal/js/js2/sample.js') }}"></script>
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+{% endblock %}
+
+{% block subtitle %}
+	<h5>Cообщение</h5>
+{% endblock %}
+
+{% block foivContent %}
+    <div class="contentHolder">
+        {#% if entity.ModifiedDate is defined and entity.id > 0 %}<p>Дата последнего изменения: {{ entity.ModifiedDate|date("d.m.Y (H:i:s)")}}</p>{% endif %#}
+        <p>* Поля отмеченные звездочкой обязательны к заполнению</p>
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <form class="form-inline" id="create_data" method="post" action="{{urlAction}}">
+        {{entity.date}}
+            <table class="table table-striped table-bordered dataTable ">
+                    <tbody>
+
+                        <tr>
+                            <td id="td_name_full">
+                                <table>
+                                    <tr>
+                                        <td style="border:0px !important; padding: 0px 15px; text-align: left; min-width: 200px">
+                                От кого *:
+                                            
+                                        </td>
+                                        <td style="border:0px !important">
+                                 <textarea name="FIELDS[{{entity.messageId}}__common_info__name_full]" cols="100" rows="1">{{entity.from}}</textarea>
+                                            
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:0px !important; padding: 0px 15px; text-align: left; min-width: 200px">
+                                Заголовок сообщения *:
+                                            
+                                        </td>
+                                        <td style="border:0px !important">
+                                 <textarea name="FIELDS[{{entity.messageId}}__common_info__name_full]" cols="100" rows="1">{{entity.subj}}</textarea>
+                                            
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:0px !important; padding: 0px 15px; text-align: left; min-width: 200px">
+                                Текст сообщения:
+                                            
+                                        </td>
+                                        <td style="border:0px !important">
+                                 <textarea name="FIELDS[{{entity.messageId}}__common_info__name_full]" cols="100" rows="1">{{entity.content}}</textarea>
+                                            
+                                        </td>
+                                    </tr>
+                                 </table>
+                            </td>
+                        </tr>
+                    </tbody>
+            </table>
+            </form>
+        <script>initSample();</script>	
+		
+		
+		{% include 'ncuooiv_buttons_edit.twig' ignore missing with {
+			'urlBack': urlBack
+		} %}
+		
+
+        {% if message is defined and message.message_error == false %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ message.message_text }}');
+        </script>
+        {% endif %}
+
+
+    </div> <!-- \ contentHolder -->
+{% endblock %}

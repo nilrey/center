@@ -1,0 +1,90 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li>Информационное взаимодействие</li>
+    <li>Соглашение по информационному взаимодействию</li>
+{% endblock %}
+
+{% block subtitle %}
+	<h5>Соглашение по информационному взаимодействию</h5>
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrTabs = ["tab_foiv_interaction", "tab_foiv_conventions"];
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DeleteItemsHelpers.js') }}"></script>
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/onDeleteTableRecord.js') }}"></script>
+	<script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DialogHelpers.js') }}"></script>
+{% endblock %} 
+
+{% block foivContent %}
+ 
+	
+    <style>.fa-angle-right, .col-md-9>h4>i.fa-database{margin-right: 10px}</style>
+    <div class="row" style="margin-top: 10px; margin-bottom: 4px;">
+        {#<div class="col-md-9">
+            <h4>
+                <i class="fa fa-database fa-fw"></i><i class="fa fa-angle-right"></i><a href="#">Информационное взаимодействие</a>
+				<i class="fa fa-angle-right"></i>Соглашение по взаимодействию
+            </h4>
+        </div>#}
+        <div class="col-md-3">
+            <a class="btn btn-sm btn-default pull-right" href="{{ CreateURL }}" style="padding: 3px 12px;">
+                <i class="fa fa-plus-circle"></i>&nbsp;
+                Добавить
+            </a>
+        </div>
+	</div>
+	<div class="contentHolder">
+		<div id="dialog_rec_delete" class="display-none"  title="Внимание" hidden>Вы действительно хотите удалить запись?</div>
+		<div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+		<div style="min-height: 200px">
+			<table id="dTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+				<thead>
+                <tr >
+                    <th>№</th>
+                    <th>Дата подписания</th>
+                    <th>Наименование документа</th>
+					<th>Действия</th>
+                </tr>
+            </thead>
+			<tbody>
+			{% if conventions is defined %}
+				{% set counter = 0 %}
+				{% for entity in conventions %}
+					{% if entity is defined %}
+					{% set counter = counter + 1 %}
+					 <tr id="item_{{ entity.id }}">
+						 <td>{{ counter }}</td>
+						 <td>{{ entity.datesigningAsDateTime | date('d.m.Y') }}</td>
+						 <td>{{ entity.title }}</td>
+						 <td>
+						 {% include 'ncuofoiv_icons_list.twig' ignore missing with {
+                            'urlEdit': path('edit_convention', { 'foivid': foiv.id , 'convid': entity.id }),
+                            'urlView': path('view_convention', { 'foivid': foiv.id , 'convid': entity.id }),
+                            'entity_id' : entity.id,
+                            'urlDelete' : path('delete_convention', { 'id': entity.id })
+                        } %}
+						 <a class="f_option btn btn-default btn-sm"  href="#"><i class="glyphicon glyphicon-download-alt"></i></a>
+						 </td>
+					 </tr>
+					 {% endif %}
+				{% endfor %}
+			{% endif %}
+			</tbody>
+			</table>
+		</div>
+	{% for flashMessage in app.session.flashbag.get('notice') %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ flashMessage }}');
+        </script>
+	{% endfor %}
+
+    </div>
+
+
+{% endblock %}

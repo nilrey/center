@@ -1,0 +1,33 @@
+{% extends 'ncuowebftp/new_layout.html.twig' %}  
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+{% endblock %}
+
+{% block subtitle %}
+	{{pageTitle}}
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrMenus = ["block_{{tabmenu['parent_id']}}"];
+    var arrTabs = ["toptab_{{tabmenu['parent_id']}}", "tab_{{tabmenu['current_id']}}"];
+{% endblock %}
+
+{% block phSearch %}
+    {% if oiv.name is defined %}Поиск по Субъекту РФ - {{ oiv.name }}{% endif %}
+{% endblock %}
+
+{% block foivContent %}
+
+        {% include 'buttons_psp_show.twig' ignore missing with {
+            'urlEdit': urlEdit
+        } %}
+{% endblock %}

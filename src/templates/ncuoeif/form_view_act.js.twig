@@ -1,0 +1,72 @@
+$(document).ready(function() {      
+      
+    /*
+     * Таблица данных формы
+     */
+        
+    var tblFormViewAct = $('#tbl_form_view_act').DataTable({
+        language: {
+            url: DATATABLES_RU_JSON            
+        },
+        scrollX: true,
+        scrollY: 450,
+        scrollCollapse: false,
+        searching: true,
+        serverSide: true,
+        processing: true,
+        order: [],
+        dom: 'ltipr',       /* Убрал глобальный поиск f */
+        ajax: {
+            url: URL_GET_DATA,
+            method: 'POST',
+            data: function(d) {
+                d['id_form'] = $('#id_form').val();
+                d['dt_from'] = $('#dt_from').val();
+                d['dt_to'] = $('#dt_to').val();
+                d['req_flag'] = $('#req_flag').val();
+            }
+        }
+    });    
+       
+    /**
+     * Фильтрация по столбцам таблицы
+     */
+    
+    $('#btn_filter').click(function() {
+        var colCnt = tblFormViewAct.columns().data().length;
+        for(var i = 0; i < colCnt; i++) {
+            var col = $('.form_col_search[data-pos=' + i + ']');
+            tblFormViewAct.column(i).search($(col).val());
+        }
+        tblFormViewAct.draw();
+    });
+    
+    /**
+     * Поле выбора даты
+     */
+
+    $('#dt_from').datepicker($.datepicker.regional['ru']);
+    $('#dt_from').datepicker('setDate', '-1m');
+    
+    $('#dt_to').datepicker($.datepicker.regional['ru']);
+    $('#dt_to').datepicker('setDate', 'today');
+    
+    /**
+     * Кнопка выбора данных
+     */
+    
+    $('#btn_get_data').click(function() {
+        $('#req_flag').val('1');
+        
+        // Очищаем фильтр у всех столбцов
+        var colCnt = tblFormViewAct.columns().data().length;
+        for(var i = 0; i < colCnt; i++) {
+            var col = $('.form_col_search[data-pos=' + i + ']');
+            $(col).val('');
+            tblFormViewAct.column(i).search('');
+        }        
+        
+        // Обновляем таблицу
+        tblFormViewAct.draw();                 
+    });
+});

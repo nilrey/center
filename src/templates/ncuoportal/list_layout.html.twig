@@ -1,0 +1,92 @@
+{% extends 'new_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}  
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}  
+
+
+{% block content %}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-8" style="font-weight: 600;font-size: 16px; margin-left: 34px">
+        {% block pageTitle %}{% endblock %}    
+    </div>
+
+    <div class="col" style="text-align: right; padding-right: 38px">
+    <i class="fa fa-question" style="font-size:25px;color:#228be6; margin-right: 30px; cursor:pointer; border: 1px solid blue; position: relative;
+top: 5px; border-radius: 22px; padding: 5px 11px;" title="Справка" onclick=" textInfo()"></i>
+        <button onclick="window.location.replace('{% block addNewLink %}{% endblock %}')" title="{% block addNewTitle %}{% endblock %}" type="button" class="btn btn-primary btnCreateNew" style="background: none; color: #0d6efd; width: 140px">+ Добавить</button>
+    </div>
+    
+  </div>
+</div>
+<div style="width: 95%; margin: auto">
+        {% block foivContent %}
+        {% endblock %}
+
+</div>
+<script type="text/javascript">
+
+    function textInfo(){
+        var textInfo = '<div style="width: 800px; text-align: justify;"><h3>Cправка по<br>администирированию<br>списка пользователей</h3><p>Здесь идет пояснительный текст к текущей форме</p><p>Здесь идет пояснительный текст к текущей форме</p><p>Здесь идет пояснительный текст к текущей форме</p><p>Здесь идет пояснительный текст к текущей форме</p><p>Здесь идет пояснительный текст к текущей форме</p><p>Здесь идет пояснительный текст к текущей форме</p><p>Здесь идет пояснительный текст к текущей форме</p><p>Здесь идет пояснительный текст к текущей форме</p><p>Здесь идет пояснительный текст к текущей форме</p></div>';
+
+        getModalDialogInfo(textInfo, error = '0');
+    }
+  $(document).ready(function() {
+    /*
+    $('#example').DataTable( {
+        initComplete: function () {
+            this.api().columns().every( function (index) {
+                if(index == 3){
+                    var column = this;
+                    var select = $('<select><option value=""></option></select>')
+                        .appendTo( $(column.header()).empty() )
+                        .on( 'change', function () {
+                            var val = $.fn.dataTable.util.escapeRegex(
+                                $(this).val()
+                            );
+     
+                            column
+                                .search( val ? '^'+val+'$' : '', true, false )
+                                .draw();
+                        } );
+     
+                    column.data().unique().sort().each( function ( d, j ) {
+                        select.append( '<option value="'+d+'">'+d+'</option>' )
+                    } );
+                }
+            } );
+        }
+    } );
+    */
+
+    $('#example').DataTable( {
+        //"dom": '<"top"i>rt<"bottom"flp><"clear">'
+        "dom": '<"#dt-search"f><t><"#dt-bottom"pl>',
+            "language": {
+                searchPlaceholder: "Фильтр {% block tableFilterTitle %}{% endblock %}",
+                sInfoEmpty: "Записи с 0 до 0 из 0 записей",
+                sInfo: "Записи с _START_ до _END_ из _TOTAL_ записей",
+                sLengthMenu: "Отображать на странице _MENU_",
+                sZeroRecords:  "Записи отсутствуют.",
+                //"url": '/public/bundles/light/js/ru_Ru_search.json',
+                //"url": "http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Russian.json",
+                paginate: {
+                    "previous": '<i class="fa fa-angle-left"></i>',
+                    "next": '<i class="fa fa-angle-right"></i>',
+                },
+                search: '<i id="search-placeholder" class="fa fa-search"></i>',
+            },
+
+    } );
+    
+
+} );
+</script>
+
+{% endblock %}

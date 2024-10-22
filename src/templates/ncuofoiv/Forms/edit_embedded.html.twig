@@ -1,0 +1,182 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block javascripts %}
+   {# {% if UsingResponseDlg is defined and UsingResponseDlg == true%} #}
+      {{ parent() }}
+      {#Подключаем JavaScript-библиотеку  для удобной отправки данных HTML-форм серверу и получения ответа от сервера
+         Используются функции: ajaxSubmit или ajaxForm
+      #}
+      <script type="text/javascript" src="{{asset('bundles/ncuoportal/js/jquery.form.min.js')}}"></script>
+      {# Подключаем скрипт с вспомогательными функциями по работе с  всплывающими диалоговыми окнами (MessageBox) #}
+      <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DialogHelpers.js')}}"></script>
+      {# Подключаем скрипт с обрабочтком событий #}
+       {% if( ScriptFileName is defined) %}
+       <script src="{{asset(ScriptFileName) }}"></script> 
+      {% endif %}
+   
+{% endblock %}
+
+{% block foivContent %}
+    <style>.fa-angle-right{padding-right: 5px}</style>
+    <div class="row" style="margin-top: 10px; margin-bottom: 4px;">
+        <div class="col-md-9">
+            <h4>
+                <i class="fa fa-database fa-fw"></i>
+                {# <i class="fa fa-angle-right"></i>Раздел #}
+                <i class="fa fa-angle-right"></i>{{ActionTitle}}
+            </h4>
+        </div>
+    </div>
+    <style>
+        .contentHolder input[type=text] { width: 100% }
+    </style>
+<div class="contentHolder">
+   
+   
+   
+   ----------------------------------------------------------- </br></br>
+   {{dump()}}
+   
+   
+   {#
+   
+   {% for Key, DataItem in FieldDataNames %}
+   
+   0 "FULL_NAME" => array:3 
+   1 "SHORT_NAME" => array:3 
+   2 "SUPERFOIV_NAME" => array:3 
+   3 "SITENAME_NAME" => array:3 
+   4 "SITEURL_NAME" => array:3 
+   5 "TYPE_NAME" => array:3 
+ -  6 "DIRECTOR_NAME" => array:3 
+   7 "STATELINK_NAME" => array:3 
+   8 "DESCRIPTION_NAME" => array:3 
+   9 "ADDRESS_NAME" => array:3 
+   10 "VERSION_NAME" => array:3 
+   11 "ICONSTYLE_NAME" => array:3 
+   12 "SORTORDER_NAME" => array:3 
+   13 "BASICTASKS_NAME" => array:3 
+   14 "SUBSYSTEMS_NAME" => array:3 
+   15 "CONVENTIONS_NAME" => array:3
+   16 "MAPURL_NAME" => array:3 
+   17 "LOCALSITE_NAME" => array:3 
+   18 "ENGAGED_NAME" => array:3 
+   19 "REGLAMENT_NAME" => array:3
+   
+   __isInitialized__
+   #}
+   
+   
+   ----------------------------------------------------------- </br>
+   
+   
+        {% if foiv.ModifiedDate is defined %}<p><small>Дата последнего изменения: {{ foiv.ModifiedDate|date("d.m.Y (H:i:s)")}}</small></p>{% endif %}
+{# Нижеследующий div является элементом для создания диалогового окна. Ключевое слово "hidden" не убирать - иначе далог будет вести непредсказуемо #}
+<div id="msg_dialog" class="display-none"  title="Внимание" hidden></div>
+<form class="form-inline" id="create_data" method="post" action="{{ActionURL}}">
+       <table class="table" cols=2>
+            <tbody>
+               
+               {#
+               {{FieldDataNames.DIRECTOR_NAME[2].id}}
+               #}
+               
+               
+                  
+               
+                {% for Key, DataItem in FieldDataNames %}
+                <tr>
+         
+            
+                    <td width="15%"><b>{{DataItem[1]}}:</b></td>
+                    {# Проверяем тип контрола и в зависимости от типа создаем соответсвующий HTML-контрол #}
+                    {% if DataItem[0] == 'editbox' %}
+                         {# Проверяем является ли поле обязательным или нет при вводе данных#}
+                        {#{%if DataItem[3] == true%}
+                            <td align="left" class="td_control"><input class="form-control" type="text" required="required" style="width: 50%" name="{{Key}}" value="{{DataItem[2]}}"></td>
+                        {% else %}
+                            <td align="left" class="td_control"><input class="form-control" type="text"  style="width: 50%" name="{{Key}}" value="{{DataItem[2]}}"></td>
+                         {% endif%}#}
+                         <td align="left" class="td_control"><input class="form-control" type="text"  style="width: 50%" name="{{Key}}" value="{{DataItem[2]}}"></td>
+                     {% elseif   DataItem[0] == 'textarea' %}
+                         {# Проверяем является ли поле обязательным или нет при вводе данных#}
+                        {#  {%if DataItem[3] == true%}
+                            <td align="left" class="td_control"><textarea class="form-control"  required="required" rows="3"  style="width: 50%"  name="{{Key}}">{{DataItem[2]}}</textarea></td>
+                        {% else %}
+                            <td align="left" class="td_control"><textarea class="form-control"   rows="3"  style="width: 50%"  name="{{Key}}">{{DataItem[2]}}</textarea></td>
+                        {% endif%}#}
+                        <td align="left" class="td_control"><textarea class="form-control"   rows="3"  style="width: 50%"  name="{{Key}}">{{DataItem[2]}}</textarea></td>
+                     {% elseif   DataItem[0] == 'updown' %}
+                         {# Проверяем является ли поле обязательным или нет при вводе данных#}
+                          {#{%if DataItem[3] == true%}
+                            <td align="left" class="td_control"><input class="form-control" type="number" required="required" style="width: 50%" name="{{Key}}"  value="{{DataItem[2]}}"/></td>
+                        {% else %}
+                            <td align="left" class="td_control"><input class="form-control" type="number" style="width: 50%" name="{{Key}}"  value="{{DataItem[2]}}"/></td>
+                        {% endif %}#}
+                        <td align="left" class="td_control"><input class="form-control" type="number" style="width: 50%" name="{{Key}}"  value="{{DataItem[2]}}"/></td>
+                    {% elseif   DataItem[0] == 'combobox' %}
+                        <td align="left" class="td_control">
+                            {# Проверяем является ли поле обязательным или нет при вводе данных#}
+                          {#{%if DataItem[3] == true%}
+                            <select class="form-control" required="required" name="{{Key}}" style="width: 50%">
+                        {%else%}
+                            <select class="form-control"  name="{{Key}}" style="width: 50%">
+                        {%endif%}#}
+                        
+                        <select class="form-control"  name="{{Key}}" style="width: 50%">
+                            {# Проверяем: определена ли переменная (массив с данными)  или нет ? #}
+                            
+                         
+                            
+                            
+                            {%  if  SourceData is defined  and SourceData[Key] is defined %}
+                               
+                                {% for OptionKey, OptionData in SourceData[Key] %}
+                                   
+                                    {#
+                                        Если значение из списка совпадает с тем что выброано в объекте,
+                                        то отмечаем данный элемент списка выбранным
+                                    #}
+                                   
+                                   
+                                 
+                                      
+                                    {#
+                                    <option value="{{OptionKey}}">{{foiv.director}}</option>
+                                    #}
+                                       
+                                       
+                                     {% if  DataItem[2] == OptionData %}
+                                           <option value="{{OptionKey}}" selected> {{OptionData}} </option>
+                                     {% else %} 
+                                           <option value="{{OptionKey}}">{{OptionData}}</option>
+                                     {% endif %}
+                             
+                                    
+                                {% endfor %}
+                                
+                            {%  endif  %}
+                            
+                        
+                            
+                              
+                            
+                            </select>
+                         
+                        </td>
+                     {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+    </table>
+    
+    </form>
+</div>
+<div>
+           {#<button type="submit" class="btn btn-primary" form="create_data"  onclick="{{SaveFunctionName}}> Сохранить </button>
+            <a class="btn btn-default" href="{{RetunedURL}}">Вернуться к списку</a>#}
+            <button type="button" class="btn btn-primary" form="create_data" onclick="{{SaveFunctionName}}"> Сохранить </button>
+            <a class="btn btn-default" href="{{RetunedURL}}">Вернуться к списку</a>
+           
+</div>
+{% endblock %}

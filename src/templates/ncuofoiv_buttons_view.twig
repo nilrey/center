@@ -1,0 +1,6 @@
+<div class="list-buttons">
+{% if is_granted('ROLE_FOIV') or is_granted('ROLE_ADMIN') %}
+        <button class="btn btn-edit" onclick="window.location.replace('{{urlEdit}}')"  title="Редактировать" />
+{% endif %}		
+        <button class="btn btn-list" onclick="window.location.replace('{{urlBack}}')"  title="Вернуться к списку" />
+</div>

@@ -1,0 +1,50 @@
+{% for item in menu %}
+    {% if item.subMenu %}
+        <li>
+            <a href="#">
+                {% if (item.icon) %}
+                    <i class="fa {{ item.icon }} fa-fw"></i>   
+                {% endif %}
+                {{ item.name }}
+                <span class="fa arrow"></span>
+            </a>
+            
+            <ul class="nav nav-second-level nav-n-level">
+                {% for childItem in item.subMenu %}
+                    <li>
+                        {% if childItem.routeName %}
+                            <a href="{{ path(childItem.routeName) }}">
+                                {% if (childItem.icon) %}
+                                    <i class="fa {{ childItem.icon }}"></i>
+                                {% endif %}   
+                                {{ childItem.name }}
+                            </a>
+                        {% else %}
+                            <a href="{{ childItem.url }}" target="_blank">
+                                {% if (childItem.icon) %}
+                                    <i class="fa {{ childItem.icon }}"></i>
+                                {% endif %}   
+                                {{ childItem.name }}
+                            </a>  
+                        {% endif %}    
+                    </li>
+                {% endfor %}    
+            </ul>
+        </li>            
+    
+    {% else %}
+        <li class="noChildren">
+            {% if item.routeName %}
+                <a href="{{ path(item.routeName) }}">
+                    <i class="fa {{ item.icon }}"></i>
+                    {{ item.name }}
+                </a>
+            {% else %}
+                <a href="{{ item.url }}" target="_blank">
+                    <i class="fa {{ item.icon }}"></i>
+                    {{ item.name }}
+                </a>
+            {% endif %}
+        </li>
+    {% endif %}
+{% endfor %}

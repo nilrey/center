@@ -1,0 +1,101 @@
+{% extends 'layout.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/dataTables.bootstrap.css') }}"/>
+    {{ parent() }}
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/jquery.dataTables.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/dataTables.bootstrap.js') }}"></script>
+    <script>
+        var DATATABLES_RU_JSON          = '{{ asset('bundles/ncuoportal/js/datatables/ru_Ru.json') }}';
+    </script>
+      
+{% endblock %}  
+
+
+{% block breadcrumb %}
+    <li>Контроль и управление функционированием</li>
+    <li>Информационные системы</li>
+{% endblock %}
+
+{% block content %}
+    <h4>Информационные системы</h4>
+	<div class="list-buttons-top">
+		<!--<a href="{{ urlCreate }}"><button type="button" class="btn btn-add" id="btn_add_source" title="Добавить источник"></button></a>-->
+	</div> 	
+
+        <div id="dialog_msg_info" class="display-none" title="Внимание" hidden></div>
+        <div id="dialog_rec_delete" class="display-none"  title="Внимание" hidden>Вы действительно хотите удалить запись?</div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <table id="dTable" class="table table-striped table-bordered dataTable">
+            <thead>
+                <tr >
+                    <th>Наименование ресурса</th>
+                    <th>Федеральный орган</th>
+                    <th width="3%">Участвует в интеграции</th>
+                    <th width="3%">Состояние по протоколу ИТС</th>
+                    <th width="3%">Vipnet</th>
+                    <th width="3%">СПО интеграции</th>
+                    <th width="3%">Ресурс</th>
+                    <th width="3%" nowrap>Данные ТБД</th>
+                    <!--<th width="3%">Действия</th>-->
+                </tr>
+            </thead>
+            <tbody>
+            {% if entities is defined %}
+				{% set counter = 0 %}
+            {% for entity in entities %}
+				{#% if entity['Foiv']|trim != "" %#}
+				{% set counter = counter + 1 %}
+                <tr id="item_{{ entity['id'] }}">
+                    <td><a  href="{{ path('foiv_systems_view', { 'id': entity['id'] }) }}">{{ entity['name'] }}</a></td>
+                    <td>{{ entity['foiv_name']}}</td>
+				
+                    <td>{% if entity['is_integration_title'] is defined %}{{ entity['is_integration_title']}}{% endif %}</td>
+                    <td>{% if entity['protocol_its_title'] is defined %}{{ entity['protocol_its_title']}}{% endif %}</td>
+                    <td>{% if entity['vipnet_title'] is defined %}{{ entity['vipnet_title']}}{% endif %}</td>
+                    <td>{% if entity['integration_spo_title'] is defined %}{{ entity['integration_spo_title']}}{% endif %}</td>
+                    <td style="text-align: center">
+						{% if entity['url']|trim != "" %}
+						<a href="{{ entity['url'] }}" target="_blank"><i class="fa fa-link"></i></a>
+						{% endif %}
+					</td>
+                    <td style="text-align: center">
+                     
+						{% if entity['protocol_name'] is defined %}
+                        {{entity['protocol_name']}}
+						<!--<a href="urlProtocol?id_protocol=entity.ProtocolId.IdProtocol" target="_blank"><i class="fa fa-cog"></i></a>-->
+						{% endif %}
+                         
+					</td>
+                    {#<td style="text-align: center; white-space: nowrap">
+						<a href="{{ path('foiv_systems_view', { 'id': entity['id'] }) }}"><i class="fa fa-eye"></i></a>
+						<a href="{{ path('foiv_systems_edit', { 'id': entity['id'] }) }}"><i class="fa fa-pencil"></i></a>
+                        <a onclick="onDeleteTableRecord( {{entity['id']}}, '{{ path('foiv_systems_delete', { 'id': entity['id'] }) }}')"><i class="fa fa-trash-o"></i></a>
+					</td>#}
+                </tr>
+				{#% endif %#}
+            {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+<script>
+dTable = $('#dTable').DataTable({
+	language: {
+		url: DATATABLES_RU_JSON,
+		searchPlaceholder: "Поиск"
+	},
+	order: [[0, 'asc']],
+	//paging: false,
+	"pageLength": 25,
+	"search": {
+			"width": "100%"
+	}
+});
+</script>
+{% endblock %}

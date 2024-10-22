@@ -1,0 +1,145 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html>
+
+<head>
+
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <meta content="IE=8" http-equiv="X-UA-Compatible">
+
+    <title>NCUO Portal</title>
+
+    <!-- CSS -->
+    {% block stylesheets %}
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/portal.css') }}"/>    
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/bootstrap_login_page.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/jquery-ui.min.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/jquery-ui.theme.min.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/font-awesome.min.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/sb-admin.css') }}"/>
+    <style type="text/css">
+        body{padding-top: 0px}
+        .login-page-content{top: 0px; background: url(/public/bundles/ncuoportal/img/bgr_01.jpg) no-repeat; background-size: 100% 100%;}
+        .hd1{ 
+            font-family: NotoSans;
+            font-style: normal;
+            font-weight: 600;
+            font-size: 20px;
+            line-height: 24px;
+            color: #FFFFFF;
+            max-width: 400px;
+        }
+        .hd2{
+            font-family: NotoSansBold;
+            font-style: normal;
+            font-weight: 900;
+            font-size: 40px;
+            line-height: 64px;
+            /* or 160% */
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: #FFFFFF;
+            margin-bottom: 50px;
+        }
+        .tblLogin{
+            width: 100%;
+            border: 0px;
+        }
+        .tblLogin tr td:nth-child(1) { text-align: right; width: 40%; padding-right: 40px;}
+        .tblLogin tr td:nth-child(2) { text-align: left; padding-left: 40px;}
+        .tblLogin tr td{ height: 100%; }
+    </style>
+    {% endblock %}
+    
+
+    <!-- Scripts -->
+    {% block javascripts %}
+        <script src="{{ asset('bundles/ncuoportal/js/jquery-1.11.1.min.js') }}"></script>
+        <script src="{{ asset('bundles/ncuoportal/js/bootstrap.js') }}"></script>
+        <script src="{{ asset('bundles/ncuoportal/js/jquery-ui.min.js') }}"></script>
+        <script src="{{ asset('bundles/ncuoportal/js/login.js') }}"></script>
+        <script src="{{ asset('bundles/light/js/custom.js') }}"></script>
+    {% endblock %}
+
+</head>
+
+<body>
+{#
+    <div class="login-page-header">
+        <div class="container">
+            <div style="float: left;">
+                <img id="logo" src="{{ asset('bundles/ncuoportal/img/gerb_mo.png') }}"/>
+            </div>
+            <div style="font-size: 22px; float: left; margin-left: 20px;">Национальный центр управления обороной Российской Федерации</div>
+            <div style="float: left; width: 300px; height: 280px; margin-left: 40px;">
+                <div id="sh_login" style="float: left; height: 80px; width: inherit; border-left: 1px white solid; border-right: 1px white solid; padding-left: 20px; padding-right: 20px; cursor: pointer;">
+                    <div style="float: left; font-size: 16px;">Вход в систему</div>
+                    {% if error %}
+                        <div style="float: right"><i class="fa fa-caret-down"></i></div>
+                    {% else %}
+                        <div style="float: right"><i class="fa fa-caret-up"></i></div>
+                    {% endif %}
+                </div>                
+                <div id="login-form" style="float: left; height: 200px; width: inherit; padding-left: 20px; padding-right: 20px; padding-top: 20px; {% if error %}{% else %}display: none;{% endif %}">
+                    {% if error %}
+                        <div class="alert alert-danger" style="font-size: 12px; width: 260px; line-height: 20px;">
+                            <i class="fa fa-warning fa-fw"></i>&nbsp;&nbsp;
+                            <button data-dismiss="alert" class="close" type="button">×</button>
+                            {% if (app.environment ==  "prod") %}
+                                <b>Ошибка!</b>&nbsp;&nbsp;Неверные имя пользователя и (или) пароль
+                            {% else %}
+                                {{ error.messageKey|trans(error.messageData) }}
+                            {% endif %}    
+                        </div>
+                    {% endif %}     
+
+                    <form  method="POST" role="form" style="width: 260px;">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" >
+                        <div class="form-group">
+                            <input value="{{ last_username }}" autocomplete="off" name="username" placeholder="Имя пользователя" class="form-control" style="width: 260px; height: 30px; font-size: 12px;">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" value="" autocomplete="off" name="password" placeholder="Пароль" class="form-control" style="width: 260px; height: 30px; font-size: 12px;">
+                        </div>
+                        <!--
+                        <div class="checkbox" style="line-height: 20px;">
+                            <label style="font-size: 12px; color: #999;">
+                                <input type="checkbox" value="1" name="remember_me">Запомнить пароль
+                            </label>
+                        </div>
+                        -->
+                        <button type="submit"class="btn" style="height: 30px; width: 120px; line-height: 30px; float: right; background-color: #5bc0de; color: white; font-family: Tahoma; font-size: 16px; padding: 0px;"><i class="fa fa-sign-in"></i> Войти</button>
+                    </form>       
+                </div>
+            </div>
+        </div>
+    </div>
+#}
+    <div class="login-page-content">
+
+    <table cellpadding="0" cellspacing="0" class="tblLogin">
+        <tr>
+            <td><img src="/public/bundles/ncuoportal/img/gerb_01.png" style="margin-top: 25%;"></td>
+            <td>
+                    <form  method="POST" role="form" style="margin-top: 15%;">
+                <h3 class="hd1">Национальный центр управления<br>обороной Российской Федерации</h3>
+                <h1 class="hd2">Межведомственное<br>взаимодействие</h1>
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" >
+                        <input value="{{ last_username }}" autocomplete="off" name="username" placeholder="Логин" style="width: 200px; height: 30px; font-size: 12px; border-radius: 4px;">
+                        <input type="password" value="" autocomplete="off" name="password" placeholder="Пароль"  style="width: 200px; height: 30px; font-size: 12px; border-radius: 4px; margin-left: 15px">
+                        <button type="submit" class="btn" style="height: 30px; width: 120px; line-height: 30px; background-color: #5bc0de; color: white; font-family: NotoSans; font-size: 16px; padding: 0px; margin-left: 15px">Войти</button>
+                    </form>                     
+            </td>
+        </tr>
+    </table>        
+
+    </div>
+
+    {% if error %}
+
+<script type="text/javascript">
+    alert("Неверные имя пользователя и (или) пароль");
+</script>    
+    {% endif %}     
+
+</body>
+</html>

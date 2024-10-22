@@ -1,0 +1,19 @@
+{% block user_block %}
+    {% if app.user %}
+        <li>
+            <a href="{{ path("profile") }}">
+                <i class="fa fa-user fa-fw"></i>
+                Профиль
+            </a>
+        </li>
+        <li class="divider"></li>
+        <li>
+            <a href="{{ path("logout") }}">
+                <i class="fa fa-sign-out fa-fw"></i>
+                Выход
+            </a>
+        </li>
+    {% else %}
+        <a href="{{ path('login') }}" class="navbar-link">Войти</a>
+    {% endif %}
+{% endblock %}    

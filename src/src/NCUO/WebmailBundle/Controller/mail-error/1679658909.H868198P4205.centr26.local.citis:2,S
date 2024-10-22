@@ -1,0 +1,57 @@
+Return-path: <>
+Envelope-to: lu1@local.citis
+Delivery-date: Fri, 24 Mar 2023 14:55:09 +0300
+Received: from Debian-exim by centr26.local.citis with local (Exim 4.89)
+	id 1pewia-0003NO-Cm
+	for lu1@local.citis; Wed, 22 Mar 2023 14:33:24 +0300
+X-Failed-Recipients: lu2@local.citis
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@ncuo-portal.local>
+To: lu1@local.citis
+Content-Type: multipart/report; report-type=delivery-status; boundary=1679484804-eximdsn-587156885
+MIME-Version: 1.0
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E1pewia-0003NO-Cm@centr26.local.citis>
+Date: Wed, 22 Mar 2023 14:33:24 +0300
+
+--1679484804-eximdsn-587156885
+Content-type: text/plain; charset=us-ascii
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  lu2@local.citis
+    Mailing to remote domains not supported
+
+--1679484804-eximdsn-587156885
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; centr26.local.citis
+
+Action: failed
+Final-Recipient: rfc822;lu2@local.citis
+Status: 5.0.0
+
+--1679484804-eximdsn-587156885
+Content-type: message/rfc822
+
+Return-path: <lu1@local.citis>
+Received: from [10.20.25.107] (helo=centr26.local.citis)
+	by centr26.local.citis with esmtpa (Exim 4.89)
+	(envelope-from <lu1@local.citis>)
+	id 1pewia-0003NL-BF
+	for lu2@local.citis; Wed, 22 Mar 2023 14:33:24 +0300
+From: lu1 <lu1@local.citis>
+To: lu2@local.citis
+Subject: hello
+Date: 22/03/2023 14:33
+Message-Id: <E1pewia-0003NL-BF@centr26.local.citis>
+
+Hello
+This is a mail from your server
+
+Bye
+
+--1679484804-eximdsn-587156885--

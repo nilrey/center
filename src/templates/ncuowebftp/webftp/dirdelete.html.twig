@@ -1,0 +1,52 @@
+{% extends 'ncuowebftp/new_layout.html.twig' %}
+
+{% block content %}
+
+<div class="container-fluid" style="line-height: 40px">
+  <div class="row">
+    <div class="col-12" style="font-weight: 600; font-size: 16px; margin-left: 37px">
+        Удаление папки
+    </div>
+  </div>
+</div>
+<div style="width: 95%; margin: auto; margin-top: 30px">
+
+   <div class="form-inline" >
+
+      {% if message is defined and message.message_error == "1" %}
+            <div class="alert alert-warning" role="alert">{{ message.message_text }}</div>
+      {% else %}
+            <div class="alert alert-success" role="alert">{{ message.message_text }}</div>
+      {% endif %} 
+
+   {% if (subDirsDelete|length > 0) or (subFilesDelete|length > 0) %}
+
+      {% if (subDirsDelete is defined) and (subDirsDelete|length > 0) %}
+         <p style="font-weight: bold">Вложенные папки:</p>
+         {% for entity in subDirsDelete %}
+         <p>"{{entity.title}}" [<a href="{{ path('webftp_diredit', { 'dir_id': entity.id }) }}" style="font-size:11px" target="_blank">Изменить расположение</a>]</p>
+         {% endfor %}
+         <p></p>
+      {% endif %}
+
+      {% if (subFilesDelete is defined) and (subFilesDelete|length > 0) %}
+         <p style="font-weight: bold">Вложенные файлы:</p>
+         {% for entity in subFilesDelete %}
+         <p>"{{entity.title}}" [<a href="{{ path('webftp_edit', { 'file_hash': entity.name_hash }) }}" style="font-size:11px" target="_blank">Изменить расположение</a>]</p>
+         {% endfor %}
+      {% endif %} 
+      
+      <br><br>
+      
+      <form class="form-inline" id="delete_data" method="post" action="{{urls.action}}">
+      <input type="hidden" name="FIELDS[delete_complete]" value="yes">
+       <button type="submit" class="btn btn-primary" style="margin-right: 25px; padding: 7px 20px; background-color: #FFF; color: #228be6" form="delete_data" title="Удалить полностью">Удалить полностью</button>
+       <button onclick="window.location.reload()" title="Обновить список" class="btn btn-primary" style="margin-right: 25px;padding: 7px 20px;background-color: #FFF;color: #228be6;">Обновить</button>
+       <a href="{{urls.list}}" title="Вернуться к списку файлов" class="btn btn-primary" style="margin-right: 25px;padding: 7px 20px;background-color: #FFF;color: #228be6;">К списку файлов</a>
+      </form>
+   </div>
+   {% endif %} 
+        
+</div>
+   
+{% endblock %}

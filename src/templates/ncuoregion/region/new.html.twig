@@ -1,0 +1,93 @@
+{% extends 'ncuoregion/new_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/foiv.form.css') }}" />
+    <style>.imagePreview img{max-width: 200px} table.dataTable input[type="file"]{ margin-left: 20px}</style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/ncuooiv/js/imgBase64.js') }}"></script>
+{% endblock %}
+
+{% block nameheader %}
+<div class="container-fluid" style="line-height: 40px">
+  <div class="row">
+    <div class="col-8" style="font-weight: 600; font-size: 16px; margin-left: 38px">
+        Создание нового паспорта Субьекта РФ
+    </div>
+  </div>
+</div>
+{% endblock %} 
+
+{% block content %}
+
+<div style="width: 95%; margin: auto; margin-top: 30px">
+        <p>* Поля отмеченные звездочкой обязательны к заполнению</p>
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <form class="form-inline" id="create_data" method="post" action="{{urlAction}}">
+
+            <table class="table table-striped table-bordered dataTable editForm">
+                    <tbody>
+  
+                        <tr>
+                            <td>
+                                Идентификатор Субьекта РФ (РОИВ) *:
+                                <p style="font-size: 11px">Только латинские буквы в нижнем регистре</p>
+                            </td>
+                            <td>
+                                <textarea name="FIELDS[id_oiv]" cols=100 rows=1>{{FIELDS['id_oiv']}}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Полное наименование Субьекта РФ (РОИВ) *:
+                            </td>
+                            <td>
+                                <textarea name="FIELDS[name]" cols=100 rows=1>{{FIELDS['name']}}</textarea>
+                            </td>
+                        </tr>
+                        {#}
+                        <tr>
+                            <td>
+                                Описание ОИВ :
+                            </td>
+                            <td>
+                                <textarea name="FIELDS[descr]" cols=100 rows=1>{{FIELDS['descr']}}</textarea>
+                            </td>
+                        </tr>
+                        {#}
+                        <tr>
+                            <td>
+                                Флаг Субьекта РФ (РОИВ) (формат base64) :
+                            </td>
+                            <td>
+                                <input id="fileUpload__flag_img" type="file" onchange="encodeImageFileAsURL('flag_img');" value="Новое фото" /><br>
+                                <div id="img__flag_img" class="imagePreview">{{ FIELDS['flag_img']|raw }}</div><br>
+                                <textarea id="flag_img" name="FIELDS[flag_img]" cols=100 rows=1>{{FIELDS['flag_img']}}</textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+            </table>
+            <div class="container-fluid" style="padding-bottom: 50px">
+                <div class="row">
+                  <div class="col" style="text-align: left; padding-left: 0px;">
+                      <button type="submit" onclick="window.location.replace('{{ path('oiv', {}) }}')" class="btn btn-primary" style="background: none; color: #228BE6; width: 140px; margin-top: 15px;">Сохранить</button>
+                  </div>
+                </div>
+            </div> 
+        </form>
+</div>        
+
+        {% if message is defined and message.message_text is defined %}
+        <script>
+        $(document).ready( function (){
+            getModalDialogInfo('{{ message.message_text }}');
+        } )
+        </script>
+        {% endif %}
+        
+{% endblock %}
+

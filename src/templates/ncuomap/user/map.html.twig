@@ -1,0 +1,42 @@
+{% extends "layout.html.twig" %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuomap/css/common.css') }}"/>    
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block javascripts %}    
+    {{ parent() }}
+            
+    <script type="text/javascript" src="{{ asset('bundles/ncuomap/js/dialogen.plugin.js') }}"></script>    
+    <script>
+        var MSG_SERVICE_ERROR           = '{{ msg_service_error }}';        
+    </script>    
+    
+    <script type="text/javascript" src="{{ asset('bundles/ncuomap/js/user/services.js') }}"></script>    
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block breadcrumb %}
+    <li>Список сервисов</li>
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block content %}
+    {% if err_msg is defined %}
+        <div id="error_msg" class="alert alert-danger">{{ err_msg }}</div>
+    {% else %}    
+        В настоящее время управление сервисами доступно только для роли "Администратор"
+    {% endif %}
+{% endblock %}

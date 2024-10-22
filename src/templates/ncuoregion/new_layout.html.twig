@@ -1,0 +1,151 @@
+{% extends 'new_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}  
+
+{% block javascripts %}
+    {{ parent() }}
+     
+{% endblock %}  
+
+{% block breadcrumb %}
+    <i class="fa fa-angle-left" title="Закрыть" data-bs-dismiss="modal" style="padding-right: 5px"></i> <a href="{{ path('region') }}" style="color: #959EA9; text-decoration: none">Паспорта Субьектов РФ</a>
+{% endblock %}    
+
+{% block nameheader %}
+  {% if oiv is defined %}
+<div class="container-fluid" style="line-height: 40px">
+  <div class="row">
+    <div class="col-8" style="font-weight: 600; font-size: 16px; margin-left: 34px">
+        <span class="foiv-logo">{% autoescape %}{{ oiv.heraldic_img|raw }}{% endautoescape %}</span> {% if oiv.name is defined %}{{ oiv.name }}{% endif %}<span class="favor-star"><i class="fa fa-star"></i>На главном экране</span>
+    </div>
+    <div class="col" id="dt-search" style="text-align: right; padding-right: 38px">
+        <i id="search-placeholder" class="fa fa-search" style="top: 38px"></i>
+        <form method="post" action="{{ path('search_update', {} ) }}">
+        <input type="hidden" name="FIELDS[oiv_id]" value='{% if oiv.id is defined %}{{ oiv.id }}{% endif %}'>
+        <input type="hidden" name="FIELDS[oiv_name]" value='{% if oiv.name is defined %}{{ oiv.name }}{% endif %}'>
+        <input type="text" name="FIELDS[search]" style="border: 1px solid #E1E3E8; border-radius: 4px; margin-top: 10px" placeholder="{% block phSearch %}{% endblock %}">
+        </form>
+    </div>
+  </div>
+</div>
+  {% endif %}
+{% endblock %}    
+
+{% block content %}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col" style="border-bottom: 1px solid #E1E3E8; margin: 0px 38px 0px 50px; padding: 0px">
+      <table class="psp-menu-top" cellpadding="0" cellspacing="0">
+        <tr>
+          <td id="toptab_common_info"><a href="{{ path('s_geo_position', { 'id_reg': oiv.Id }) }}">Общие сведения</a></td>
+          <td id="toptab_economic_info"><a href="{{ path('s_macroecon', { 'id_reg': oiv.Id }) }}">Экономическое развитие</a></td>
+          <td id="toptab_social_info"><a href="{{ path('s_demography', { 'id_reg': oiv.Id }) }}">Социальная сфера</a></td>
+          <td id="toptab_socio_politic"><a href="{{ path('s_electorat', { 'id_reg': oiv.Id }) }}">Общественно-политическая ситуация</a></td>
+          <td id="toptab_ncu_forms"><a href="{{ path('ncu1', { 'id_reg': oiv.Id }) }}">Формы НЦУ</a></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<div style="width: 95%; margin: auto">
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-2">
+
+      <ul id="block_common_info" class="psp-menu-left displayNone">
+          <li id="tab_s_geo_position"><a href="{{ path('s_geo_position', { 'id_reg': oiv.Id }) }}">Административно-географическое положение</a></li>
+          <li id="tab_s_adm_structure"><a href="{{ path('s_adm_structure', { 'id_reg': oiv.Id }) }}">Административно-территориальное устройство субъекта РФ</a></li>
+          <li id="tab_s_gov_structure"><a href="{{ path('s_gov_structure', { 'id_reg': oiv.Id }) }}">Органы государственной власти и местного самоуправления</a></li>
+      </ul>
+
+      <ul id="block_economic_info" class="psp-menu-left displayNone">
+          <li id="tab_s_macroecon"><a href="{{ path('s_macroecon', { 'id_reg': oiv.Id }) }}">Макроэкономические показатели</a></li>
+          <li id="tab_s_industrial"><a href="{{ path('s_industrial', { 'id_reg': oiv.Id }) }}">Промышленное производство</a></li>
+          <li id="tab_s_foreign_capital_org"><a href="{{ path('s_foreign_capital_org', { 'id_reg': oiv.Id }) }}">Организации с участием иностранного капитала</a></li>
+          <li id="tab_s_small_business"><a href="{{ path('s_small_business', { 'id_reg': oiv.Id }) }}">Малые предприятия</a></li>
+          <li id="tab_s_agriculture"><a href="{{ path('s_agriculture', { 'id_reg': oiv.Id }) }}">Сельское хозяйство</a></li>
+          <li id="tab_s_communication"><a href="{{ path('s_communication', { 'id_reg': oiv.Id }) }}">Транспорт и связь</a></li>
+          <li id="tab_s_building"><a href="{{ path('s_building', { 'id_reg': oiv.Id }) }}">Строительство</a></li>
+          <li id="tab_s_investments"><a href="{{ path('s_investments', { 'id_reg': oiv.Id }) }}">Инвестиции в основной капитал</a></li>
+          <li id="tab_s_consumers"><a href="{{ path('s_consumers', { 'id_reg': oiv.Id }) }}">Потребительский рынок</a></li>
+          <li id="tab_s_prices"><a href="{{ path('s_prices', { 'id_reg': oiv.Id }) }}">Цены</a></li>
+          <li id="tab_s_export"><a href="{{ path('s_export', { 'id_reg': oiv.Id }) }}">Внешнеэкономическая деятельность</a></li>
+          <li id="tab_s_finance"><a href="{{ path('s_finance', { 'id_reg': oiv.Id }) }}">Финансы</a></li>
+          <li id="tab_s_banking"><a href="{{ path('s_banking', { 'id_reg': oiv.Id }) }}">Банковская система</a></li>
+      </ul>
+
+      <ul id="block_social_info" class="psp-menu-left displayNone">
+          <li id="tab_s_demography"><a href="{{ path('s_demography', { 'id_reg': oiv.Id }) }}">Демография</a></li>
+          <li id="tab_s_healthcare"><a href="{{ path('s_healthcare', { 'id_reg': oiv.Id }) }}">Здравоохранение</a></li>
+          <li id="tab_s_education"><a href="{{ path('s_education', { 'id_reg': oiv.Id }) }}">Образование</a></li>
+          <li id="tab_s_living_conditions"><a href="{{ path('s_living_conditions', { 'id_reg': oiv.Id }) }}">Уровень жизни населения</a></li>
+          <li id="tab_s_housing_conditions"><a href="{{ path('s_housing_conditions', { 'id_reg': oiv.Id }) }}">Жилищные условия населения</a></li>
+          <li id="tab_s_utilities"><a href="{{ path('s_utilities', { 'id_reg': oiv.Id }) }}">Коммунальное хозяйство</a></li>
+          <li id="tab_s_culture"><a href="{{ path('s_culture', { 'id_reg': oiv.Id }) }}">Культура</a></li>
+          <li id="tab_s_sport"><a href="{{ path('s_sport', { 'id_reg': oiv.Id }) }}">Физическая культура</a></li>
+          <li id="tab_s_labor"><a href="{{ path('s_labor', { 'id_reg': oiv.Id }) }}">Рынок труда</a></li>
+          <li id="tab_s_criminality"><a href="{{ path('s_criminality', { 'id_reg': oiv.Id }) }}">Криминогенная обстановка</a></li>
+      </ul>
+
+      <ul id="block_socio_politic" class="psp-menu-left displayNone">
+          <li id="tab_s_electorat"><a href="{{ path('s_electorat', { 'id_reg': oiv.Id }) }}">Электоральная характеристика</a></li>
+          <li id="tab_s_federal_elections"><a href="{{ path('s_federal_elections', { 'id_reg': oiv.Id }) }}">Результаты Федеральных выборов</a></li>
+          <li id="tab_s_local_elections"><a href="{{ path('s_local_elections', { 'id_reg': oiv.Id }) }}">Выборы органов власти субъекта</a></li>
+          <li id="tab_s_situation_rating"><a href="{{ path('s_situation_rating', { 'id_reg': oiv.Id }) }}">Оценка населением ситуации в регионе</a></li>
+          <li id="tab_s_parties"><a href="{{ path('s_parties', { 'id_reg': oiv.Id }) }}">Общественно-политические партии и организации</a></li>
+          <li id="tab_s_religion"><a href="{{ path('s_religion', { 'id_reg': oiv.Id }) }}">Религия</a></li>
+          <li id="tab_s_massmedia"><a href="{{ path('s_massmedia', { 'id_reg': oiv.Id }) }}">Средства массовой информации</a></li>
+      </ul>
+
+      <ul id="block_ncu_forms" class="psp-menu-left displayNone">
+        <li id="tab_ncu_1"><a href="{{ path('ncu1', { 'id_reg': oiv.Id }) }}">НЦУ/1. Сведения о количестве детей военнослужащих,состоящих в очереди  на получение мест в дошкольных  образовательных организациях</a></li>
+        <li id="tab_ncu_2"><a href="{{ path('ncu2', { 'id_reg': oiv.Id }) }}">НЦУ/2. Сведения о количестве членов семей военнослужащих, зарегистрированных в центрах занятости для поиска работы </a></li>
+        <li id="tab_ncu_3"><a href="{{ path('ncu3', { 'id_reg': oiv.Id }) }}">НЦУ/3. Сведения о численности участников регионального отделения Всероссийского детско-юношеского военно-патриотического общественного движения «ЮНАРМИЯ», количестве территориальных организаций и отрядов</a></li>
+        <li id="tab_ncu_4"><a href="{{ path('ncu4', { 'id_reg': oiv.Id }) }}">НЦУ/4. Сведения об основных мероприятиях военно-патриотической направленности, проведенных за прошедший и планируемых на предстоящий месяц</a></li>
+        <li id="tab_ncu_5"><a href="{{ path('ncu5', { 'id_reg': oiv.Id }) }}">НЦУ/5. Сведения о ходе создания парка «Патриот»</a></li>
+        <li id="tab_ncu_6"><a href="{{ path('ncu6', { 'id_reg': oiv.Id }) }}">НЦУ/6. Сведения об оснащенности информационно-коммуникационными системами ситуационного центра</a></li>
+        <li id="tab_ncu_7"><a href="{{ path('ncu7', { 'id_reg': oiv.Id }) }}">НЦУ/7. Сведения по основным региональным автомобильным дорогам</a></li>
+        <li id="tab_ncu_8"><a href="{{ path('ncu8', { 'id_reg': oiv.Id }) }}">НЦУ/8. Перечень государственных строительных и дорожных организаций</a></li>
+        <li id="tab_ncu_9"><a href="{{ path('ncu9', { 'id_reg': oiv.Id }) }}">НЦУ/9. Данные по железнодорожной инфраструктуре</a></li>
+        <li id="tab_ncu_10"><a href="{{ path('ncu10', { 'id_reg': oiv.Id }) }}">НЦУ/10. Данные по аэродромной сети</a></li>
+        <li id="tab_ncu_11"><a href="{{ path('ncu11', { 'id_reg': oiv.Id }) }}">НЦУ/11. Характеристика основных водных артерий</a></li>
+        <li id="tab_ncu_12"><a href="{{ path('ncu12', { 'id_reg': oiv.Id }) }}">НЦУ/12. Сведения о составе органов исполнительной власти субъекта Российской Федерации и органов местного самоуправления</a></li>
+        <li id="tab_ncu_13"><a href="{{ path('ncu13', { 'id_reg': oiv.Id }) }}">НЦУ/13. Сведения о состоянии объектов, обеспечивающих жизнедеятельность населения, функционирование транспорта, коммуникаций и связи, объектов энергетики, а также объектов, представляющих повышенную опасность для жизни и здоровья людей и окружающей природной среды</a></li>
+      </ul>
+
+    </div>
+    <div class="col-10" style="padding: 32px 0px 0px 32px;">
+      <div class="col" style="box-shadow: 0px 2px 6px 2px rgba(119, 119, 119, 0.15); border-radius: 4px; padding:0px 14px 0px 14px">
+
+
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-10" style="margin-left: 0px; padding-left: 0px;">
+              <div style="margin-left: 0px; padding-top: 24px; font-weight: normal; font-size: 16px; line-height: 20px;display: flex;flex-grow: 0;">{% block subtitle %}
+                {% endblock %}</div>
+            </div>
+<!--
+            <div class="col-2" style="text-align: right; padding-right: 0px; ">
+                <a href="#edit" class="btn btn-primary" style="background: none; color: #228BE6; width: 140px; margin-top: 15px;">Редактировать</a>
+            </div>
+-->
+          </div>
+        </div>
+        <div class="col" style="padding-left: 14px">
+        {% block foivContent %}
+        {% endblock %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>{% block foivTabMenuActive %}{% endblock %}</script>
+
+{% endblock %}

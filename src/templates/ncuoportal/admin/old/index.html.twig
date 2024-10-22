@@ -1,0 +1,38 @@
+{% extends "layout.html.twig" %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/admin/common.css') }}"/>
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block javascripts %}    
+    {{ parent() }}
+            
+    <script>
+        var MSG_SERVICE_ERROR           = '{{ msg_service_error }}';
+    </script>    
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block breadcrumb %}
+    <li>Администрирование</li>
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block content %}
+    <h4>Администрирование:</h4>
+    <a href="{{ path('admin_users') }}"><button type="button" class="btn btn-default" title="Настройка пользователей"><i class="fa fa-user" style="font-size: 50px;"></i></button></a>
+    <a href="{{ path('admin_roles') }}"><button type="button" class="btn btn-default" title="Настройка ролей"><i class="fa fa-users" style="font-size: 50px;"></i></button></a>
+    <a href="{{ path('admin_menus') }}"><buttn type="button" class="btn btn-default" title="Настройка меню"><i class="fa fa-bars" style="font-size: 50px;"></i></button></a>
+{% endblock %}

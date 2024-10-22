@@ -1,0 +1,146 @@
+{% extends "layout.html.twig" %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {% if not err_msg is defined %}    
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoeif/css/common.css') }}"/>    
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/dataTables.bootstrap.css') }}"/> 
+    {% endif %}
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    {% if not err_msg is defined %}
+        <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/dialogen.plugin.js') }}"></script>    
+        <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/jquery.dataTables.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/dataTables.bootstrap.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/jquery.numeric.min.js') }}"></script>
+        <script>
+            var DATATABLES_RU_JSON          = '{{ asset('bundles/ncuoportal/js/datatables/ru_Ru.json') }}';
+            
+            var URL_GET_FORM_LIST           = '{{ path('eif_forms__get_list') }}';
+            var URL_GET_FORM                = '{{ path('eif_forms__get') }}';
+            
+            {% if is_granted('ROLE_ADMIN') %}
+                var URL_FORM_SAVE               = '{{ path('eif_forms__save') }}';
+                var URL_FORM_DELETE             = '{{ path('eif_forms__delete') }}';
+                var URL_FORM_XSLT_DOWNLOAD      = '{{ path('eif_forms__xslt_download') }}?id_form=';            
+            {% endif %}
+            
+            var URL_FORM_FIELDS                 = '{{ path('eif_form_fields') }}?id_form=';
+            var URL_FORM_VIEW                   = '{{ path('eif_form_view')}}?id_form=';
+            var URL_FORM_VIEW_ACT               = '{{ path('eif_form_view_act')}}?id_form=';
+                        
+            var MSG_SERVICE_ERROR           = '{{ msg_service_error }}';        
+        </script>    
+        
+        <script type="text/javascript" src="{{ path('eif_js', {'file': 'forms'}) }}"></script>
+    {% endif %}
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block breadcrumb %}
+    <li><a href="{{ path('eif_sources') }}" title="Вернуться к списку источников">Данные ЕИФ</a></li>
+    
+    {% if not err_msg is defined %}
+        <li><a href="{{ path('eif_protocols') }}?id_source={{ source.IdSource }}" title="Вернуться к списку протоколов источника">Источник [{{ source.SourceName }}]</a></li>
+        <li class="active">Протокол [{{ protocol.ProtocolName }}]</li>
+    {% endif %}
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block content %}
+    {% if err_msg is defined %}
+        <h4>Ошибка:</h4>
+        <div id="error_msg" class="alert alert-danger">{{ err_msg }}</div>
+        <a href="{{ path('eif_sources') }}" title="Вернуться к списку источников"><button type="button" class="btn btn-default" title="Назад">Назад <i class="fa fa-reply"></i></button></a>
+    {% else %}            
+        <input type="hidden" id="id_protocol" value="{{ protocol.IdProtocol }}">
+        
+        <h4>Список форм хранения данных:<a href="{{ path('eif_files') }}?id_protocol={{ protocol.IdProtocol }}"><i class="fa fa-file-text-o icon-link float-right" style="line-height: 45px;" title="Загрузка и просмотр файлов протокола"></i></a></h4>
+        
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="list-buttons-top">
+                <button type="buton" class="btn btn-add" id="btn_add_form" title="Добавить форму"></button>
+            </div>
+        {% endif %}
+        
+        <div id="table_div" class="margin-top-15">            
+            <table id="tbl_forms" class="table table-striped table-hover table-bordered">
+                <thead class="table-thead">
+                <tr>
+                    <th width="25%">ID</th>
+                    <th width="45%">Наименование формы</th>
+                    <th width="15%">Дата создания</th>
+                    <th width="15%" class="text-center"><i class="fa fa-cog"></i></th>
+                </tr>
+                </thead>
+
+                <tfoot>
+                </tfoot>
+
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('eif_forms_clear') }}?id_protocol={{ protocol.IdProtocol }}"><button type="button" class="btn btn-default" title="Очистка форм (удаление данных по всем формам протокола)"><i class="fa fa-eraser"></i></button></a>        
+    
+            <!-- Диалог редактирования формы -->
+            <div id="form_edit_dlg" class="display-none" title="">
+                <form>
+                    <div class="form-group">
+                        <label for="form_name">Наименование формы:</label>
+                        <input type="text" class="form-control" id="form_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="form_descr">Описание формы:</label>
+                        <textarea class="form-control" id="form_descr" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="form_data_act_control_interval">Интервал контроля актуальности данных (мин.) <i class="fa fa-question-circle icon-link" title="Интервал между датами загрузки файлов, данные которых импортированы в форму. Если 0 - контроль по данной форме выключен."></i>:</label>
+                        <input type="text" class="form-control width-100" id="form_data_act_control_interval">
+                    </div>                                                 
+                </form>
+                <form>
+                    <div class="form-group margin-top-10">
+                        <label>Файл XSLT <i class="fa fa-question-circle icon-link" title="Предназначен для преобразования данных исходного файла протокола информационно-технического сопряжения в формат для загрузки в форму"></i>:</label>
+                        <div id="xml_xslt_protocol_file_import_download" class="display-inline"><a href="">Скачать</a> <i class="fa fa fa-minus-square icon-link" title="Удалить"></i></div>
+                        <input type="file" id="xml_xslt_protocol_file_import">
+                    </div>
+                </form>            
+            </div>
+        {% else %}
+            <!-- Диалог просмотра формы -->
+            <div id="form_info_dlg" class="display-none" title="Информация">
+                <form>
+                    <div class="form-group">
+                        <label for="form_name">Наименование формы:</label>
+                        <input type="text" class="form-control" id="form_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="form_descr">Описание формы:</label>
+                        <textarea class="form-control" id="form_descr" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="form_data_act_control_interval">Интервал контроля актуальности данных (мин.) <i class="fa fa-question-circle icon-link" title="Интервал между датами загрузки файлов, данные которых импортированы в форму. Если 0 - контроль по данной форме выключен."></i>:</label>
+                        <input type="text" class="form-control width-100" id="form_data_act_control_interval">
+                    </div>                
+                </form>
+            </div>             
+        {% endif %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'ncuoregion/layout.html.twig' %}  
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/oiv.css') }}" />
+    <style type="text/css">
+    #heraldic_img img, #flag_img img { width: 80px}
+    #name_full { font-weight: 600 }
+    .table td {
+        border-bottom: 1px solid #cdcdcd !important;
+        height: 50px !important;
+    }
+    #td_flag_img img { max-width: 100px; margin: 15px 15px 15px 0px }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li>Общая информация</li>
+    <li>Административно-географическое положение</li>
+{% endblock %}
+
+{% block subtitle %}
+	<h5>Административно-географическое положение</h5>
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrTabs = ["tab_common_info", "tab_s_geo_position"];
+{% endblock %}
+
+{% block foivContent %}
+   
+    <div class="contentHolder">
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+     
+   {# ----------------------------------------------------------- </br> }
+   
+   {% dump(oiv) %}</br>
+    
+   {# ----------------------------------------------------------- </br> #}
+
+        
+        {#% if foiv.ModifiedDate  is defined %}<p>Дата последнего изменения: {{ foiv.ModifiedDate|date("d.m.Y (H:i:s)")}}</p>{% endif %#}
+        
+            <table>
+                    <tbody>
+                        <tr>
+                            <td style="border:0px !important; padding: 15px 15px 0px 0px; text-align: left; min-width: 200px; vertical-align: top">
+                                <strong>Полное наименование:</strong>
+                            </td>
+                            <td id="td_name_full" style="border:0px !important; padding: 15px 15px 0px 0px; text-align: left; min-width: 200px; vertical-align: top">
+                                 <strong>{{oiv.name}}
+                                                                                    
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border:0px !important; padding: 15px 15px 15px 0px; text-align: left; min-width: 200px">
+                                <strong>Флаг:</strong>
+                            </td>
+                            <td id="td_flag_img">
+                                {% autoescape %} {{oiv.getHeraldicImg|raw}}     {% endautoescape %}                             
+                            </td>
+                        </tr>
+                    </tbody>
+            </table>
+        
+         
+    {% if fields is defined %}
+        {% for field in fields %}      
+            {% if field.data is defined %}   
+                {% autoescape %}
+                    {{ field.data|raw }}
+                {% endautoescape %}
+            {% endif %}
+       {% endfor %}
+    {% endif %}
+        
+        {% include 'ncuooiv_buttons_show.twig' ignore missing with {
+            'urlEdit': urlEdit
+        } %}
+
+    </div> <!-- \ contentHolder -->
+
+{% endblock %}

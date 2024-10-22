@@ -1,0 +1,98 @@
+{% extends 'ncuowebftp/new_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/foiv.form.css') }}" />
+    <style>.imagePreview img{max-width: 200px} table.dataTable input[type="file"]{ margin-left: 20px}</style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/ncuooiv/js/imgBase64.js') }}"></script>
+{% endblock %}
+
+{% block nameheader %}
+<div class="container-fluid" style="line-height: 40px">
+  <div class="row">
+    <div class="col-8" style="font-weight: 600; font-size: 16px; margin-left: 38px">
+        Добавление нового раздела
+    </div>
+  </div>
+</div>
+{% endblock %} 
+
+{% block content %}
+
+<div style="width: 95%; margin: auto; margin-top: 30px">
+        <p>* Поля отмеченные звездочкой обязательны к заполнению</p>
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <form class="form-inline" id="create_data" method="post" enctype="multipart/form-data" action="{{urls.urlAction}}">
+            <input type="hidden" name="FIELDS[users_allowed_str]" id="users_allowed_str">
+            <table class="table table-striped table-bordered dataTable editForm">
+                    <tbody>
+                        <tr>
+                            <td>
+                                Название раздела*:
+                            </td>
+                            <td>
+                                <textarea name="FIELDS[title]" cols=100 rows=1>{{FIELDS['title']}}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Описание раздела :
+                            </td>
+                            <td>
+                                <textarea name="FIELDS[description]" cols=100 rows=1>{{FIELDS['description']}}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top; padding-top: 30px;">
+                                Родительская папка*:
+                            </td>
+                            <td>
+
+                        {% if userDirs is defined  %}
+
+                                <table id="parentDirs" style="width:100%; border-bottom: 0px !important">
+                                    <thead>
+                                        <tr style="display: none">
+                                            <th>Radio</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr role="row">
+                                        <td><input type="radio" name="FIELDS[parent_id]" value="0" checked > Корневая папка</td>
+                                        </tr>
+                                    {% for entity in userDirs %}
+                                        <tr role="row">
+                                        <td><span style='padding-left: {{ 20*entity.level }}px'><input type="radio" name="FIELDS[parent_id]" value="{{ entity.id }}"> [{{ entity.id }}] {{ entity.title }} [{{ entity.parent_id }}] [{{ entity.sort }}]</span></td>
+                                        </tr>
+                                    
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                        {% endif %}
+
+                            </td>
+                        </tr>
+                    </tbody>
+            </table>
+        </form>
+
+        {% include 'buttons_psp_edit.twig' ignore missing with {
+            'urlList': urls.urlList
+        } %}
+</div>        
+
+{% if message is defined and message.message_text != "" %}
+<script>
+$(document).ready( function (){
+    getModalDialogInfo('{{ message.message_text }}');
+} )
+</script>
+{% endif %}
+
+{% endblock %}
+

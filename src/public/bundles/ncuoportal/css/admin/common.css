@@ -1,0 +1,300 @@
+/* Стили диалогов JQuery UI */
+
+.ui-dialog {
+    z-index: 9998 !important
+}
+
+.ui-dialog-titlebar-close {
+    visibility: hidden;
+}
+
+
+/* Общие стили */
+
+.checkbox-label {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+div#structure_tree i.jstree-themeicon:hover {
+    color: #428bca;
+}
+
+.display-block {
+    display: block;
+}
+
+.display-inline {
+    display: inline;
+}
+
+.display-inline-block {
+    display: inline-block;
+}
+
+.display-none {
+    display: none;
+}
+
+
+.fix-width-13px {
+    width: 13px !important;
+}
+
+.float-left {
+    float: left;
+}
+
+.float-right {
+    float: right;
+}
+
+.font-15 {
+    font-size: 15px;
+}
+
+.font-bold {
+    font-weight: bold;
+}
+
+.font-size-09-em {
+    font-size: 0.9em;
+}
+
+.form-group-lr-0 {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+
+.height-400 {
+    height: 400px;
+}
+
+.height-600 {
+    height: 600px;
+}
+
+.height-700 {
+    height: 700px;
+}
+
+
+.icon-link {
+    color: black;
+    margin-right: 3px;
+    cursor: pointer;
+}
+
+.icon-link:hover {
+    color: #2a6496;
+}
+
+.input-text {
+    display: inline-block;
+}
+
+.input-text-right {
+    display: inline-block;
+    height: 30px;
+    float: right;
+}
+
+
+.lock_off {
+    display: none;
+    visibility: hidden;
+}
+
+.lock_on {
+    display: block;
+    visibility: visible;
+    position: fixed;
+    z-index: 9999;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: #ccc;
+    text-align: center;
+    padding-top: 20%;
+    filter: alpha(opacity=75);
+    opacity: 0.75;
+}
+
+
+.margin-bottom-0 {
+    margin-bottom: 0px;
+}
+
+.margin-bottom-2 {
+    margin-bottom: 2px;
+}
+
+.margin-bottom-5 {
+    margin-bottom: 5px;
+}
+
+.margin-bottom-10 {
+    margin-bottom: 10px;
+}
+
+.margin-bottom-15 {
+    margin-bottom: 15px;
+}
+
+.margin-bottom-20 {
+    margin-bottom: 20px;
+}
+
+.margin-left-0 {
+    margin-left: 0px ! important;
+}
+
+.margin-left-30 {
+    margin-left: 30px ! important;
+}
+
+.margin-top-0 {
+    margin-top: 0px;
+}
+
+.margin-top--4 {
+    margin-top: -4px;
+}
+
+.margin-top-5 {
+    margin-top: 5px;
+}
+
+.margin-top-10 {
+    margin-top: 10px;
+}
+
+.margin-top-15 {
+    margin-top: 15px;
+ }
+
+.margin-top-30 {
+    margin-top: 30px;
+}
+
+._move_node {
+    font-weight: bold;
+    font-style: italic;
+    color: red !important;
+}
+
+
+.overflow-x-auto {
+    overflow-x: auto;
+}
+
+.overflow-y-auto {
+    overflow-y: auto;
+}
+
+
+.padding-left-5 {
+    padding-left: 5px !important;
+}
+
+.position-absolute {
+    position: absolute;
+}
+
+
+.result-message {
+    margin-bottom: 10px;
+    display: none;
+}
+
+
+.td-icon {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+
+.td-form-preview-characteristic {
+    background-color:  #f0ad4e;
+}
+
+.td-form-preview-classifier {
+    background-color:  #5cb85c;
+}
+
+.td-form-preview-object {
+    background-color: #337ab7;
+}
+
+.templ_enable_edit_span {
+    color: #000000;
+    cursor: pointer;
+    border-bottom: 1px dashed;
+}
+
+.templ_enable_edit_span:hover {
+    color: #2a6496;
+}
+
+.text-center {
+    text-align: center;
+}
+
+
+.visibility-hidden {
+    visibility: hidden ! important;        
+}
+
+
+.width-70 {
+     width: 70px ! important;
+}
+
+.width-100 {
+     width: 100px ! important;
+}
+
+.width-130 {
+     width: 130px ! important;
+}
+ 
+.width-160 {
+     width: 160px ! important;
+}
+
+.width-180 {
+     width: 180px ! important;
+}
+
+ .width-300 {
+     width: 300px ! important;
+ }
+
+.width-400 {
+    width: 400px;
+}
+
+.width-600 {
+    width: 600px;
+}
+
+.width-800 {
+    width: 800px;
+}
+
+.width-1000 {
+    width: 1000px;
+}
+
+.width-1010 {
+    width: 1010px;
+}
+
+.width-60-p {
+    width: 60%;
+}

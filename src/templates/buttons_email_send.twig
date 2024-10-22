@@ -1,0 +1,12 @@
+
+        <div class="container-fluid" style="padding: 50px 14px">
+            <div class="row">
+              <div class="col" style="text-align: left; padding-left: 0px;">
+                <button type="submit" id="btnSaveForm" class="btn btn-primary" style="margin-right: 25px; padding: 7px 20px; background-color: #FFF; color: #228be6" form="create_data" title="Отправить">Отправить</button>
+        {% if urlList is defined and urlList != "" %}
+        <button class="btn btn-primary" style="margin-right: 25px; padding: 7px 20px; background-color: #FFF; color: #228be6" onclick="window.location.replace('{{urlList}}')"  title="К списку">К списку</button>
+       {% endif %}
+
+              </div>
+            </div>
+        </div>  

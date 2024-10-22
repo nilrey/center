@@ -1,0 +1,13 @@
+<div class="icons-action-list">
+                        {% if urlView is defined and urlView != "" %}
+<a href="{{ urlView }}"><i class="glyphicon glyphicon-eye-open" title="Просмотреть"></i></a>
+                        {% endif %}
+{% if is_granted('ROLE_FOIV') or is_granted('ROLE_ADMIN') %}
+                        {% if urlEdit is defined and urlEdit != "" %}
+<a href="{{ urlEdit }}"><i class="glyphicon glyphicon-pencil" title="Редактировать"></i></a>
+                        {% endif %}
+                        {% if urlDelete is defined and urlDelete != "" and entity_id is defined %}
+<i class="glyphicon glyphicon-trash"  onclick="onDeleteTableRecord({{entity_id}}, '{{urlDelete}}')" title="Удалить"></i>
+                        {% endif %}
+{% endif %}
+</div>

@@ -1,0 +1,66 @@
+# index:
+#    path: /
+#    controller: App\Controller\SecurityController::login
+
+
+# ncuo_portal:
+#     resource: "@NCUOOivBundle/Controller/"
+#     type:     annotation
+#     prefix:   /oiv
+    
+ncuo_portal:
+    resource: "@NCUOPortalBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+ncuo_oiv:
+    resource: "@NCUOOivBundle/Controller/"
+    type:     annotation
+    prefix:   /oiv
+
+ncuo_region:
+    resource: "@NCUORegionBundle/Controller/"
+    type:     annotation
+    prefix:   /region
+
+
+ncuo_webftp:
+    resource: "@NCUOWebftpBundle/Controller/"
+    type:     annotation
+    prefix:   /webftp
+
+ncuo_webmail:
+    resource: "@NCUOWebmailBundle/Controller/"
+    type:     annotation
+    prefix:   /webmail
+
+
+ncuo_eif:
+    resource: "@NCUOEifBundle/Controller/"
+    type:     annotation
+    prefix:   /eif
+
+ncuo_foiv:
+    resource: "@NCUOFoivBundle/Controller/"
+    type:     annotation
+    prefix:   /foiv
+    
+ncuo_func:
+    resource: "@NCUOFuncBundle/Controller/"
+    type:     annotation
+    prefix:   /func
+    
+ncuo_map:
+    resource: "@NCUOMapBundle/Controller/"
+    type:     annotation
+    prefix:   /map
+    
+ncuo_service:
+    resource: "@NCUOServiceBundle/Controller/"
+    type:     annotation
+    prefix:   /service    
+    
+ncuo_constructor:
+    resource: "@NCUOConstructorBundle/Controller/"
+    type:     annotation
+    prefix:   /constructor   

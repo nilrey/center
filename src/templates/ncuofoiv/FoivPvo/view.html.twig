@@ -1,0 +1,87 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DeleteItemsHelpers.js') }}"></script>
+{% endblock %}
+
+{% block foivContent %}
+    <style>.fa-angle-right, .col-md-9>h4>i.fa-database{margin-right: 10px}</style>
+    <div class="row" style="margin-top: 10px; margin-bottom: 4px;">
+        <div class="col-md-9">
+            <h4>
+				<i class="fa fa-database fa-fw"></i><i class="fa fa-angle-right"></i><a href="#">Структура</a>
+                <i class="fa fa-angle-right"></i><a href="{{path('foivpvo', {'foivid' : foiv.id}) }}">Организации и предприятия</a>
+                <i class="fa fa-angle-right"></i>Просмотр записи
+            </h4>
+        </div>
+    </div>
+    <div class="contentHolder">
+        {% if entity.ModifiedDate is defined and entity.id > 0 %}<p style="padding-left: 5px"><small>Дата последнего изменения: {{ entity.ModifiedDate|date("d.m.Y (H:i:s)")}}</small></p>{% endif %}
+            <table class="table" cols=2>
+                    <tbody>
+                        <tr>
+                            <td><b>Полное наименование *:</b></td>
+                            <td class="td_control">{{ entity.name }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Сокращенное наименование *:</b></td>
+                            <td class="td_control">{{ entity.shortName }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Тип организации:</b></td>
+                            <td class="td_control">
+                                {{entity.type.type}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>Руководитель:</b></td>
+                            <td class="td_control">
+                            <div id="formNewOption">
+                                {% if entity.director.fio is defined %}
+                                <p>{{ entity.director.fio }}</p>
+                                {% endif %}
+                                {% if entity.director.position is defined %}
+                                <p>{{ entity.director.position }}</p>
+                                {% endif %}
+                                {% if entity.director.phone is defined %}
+                                <p>{{ entity.director.phone }}</p>
+                                {% endif %}
+                                {% if entity.director.email is defined %}
+                                <p>{{ entity.director.email }}</p>
+                                {% endif %}
+                                {% if entity.director.address is defined %}
+                                <p>{{ entity.director.address }}</p>
+                                {% endif %}
+                            </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>Контактные номера:</b></td>
+                            <td class="td_control">{{ entity.phone }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Электронная почта:</b></td>
+                            <td class="td_control">{{ entity.email }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Веб-сайт:</b></td>
+                            <td class="td_control">{{ entity.websiteUrl }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Адрес *:</b></td>
+                            <td class="td_control">{{ entity.address }}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Основные функции:</b></td>
+                            <td class="td_control">{{ entity.functions }}</td>
+                        </tr>
+                    </tbody>
+            </table>
+        </form>
+        {% include 'ncuofoiv_buttons_view.twig' ignore missing with {
+            'urlBack': urlBack,
+            'urlEdit': urlEdit
+        } %}
+    <div>
+{% endblock %}

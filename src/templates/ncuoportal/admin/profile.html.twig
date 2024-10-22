@@ -1,0 +1,99 @@
+{% extends 'layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/admin/common.css') }}"/>
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block javascripts %}    
+    {{ parent() }}
+            
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/dialogen.plugin.js') }}"></script>
+    <script>
+        var URL_SAVE_PASSWORD             = '{{ path('profile__change_pwd') }}';
+    </script>    
+    
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/admin/profile.js') }}"></script>    
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block breadcrumb %}
+    <li>Профиль пользователя</li>
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+{% block content %}
+    {% if err_msg is defined %}
+        <div id="error_msg" class="alert alert-danger">{{ err_msg }}</div>
+    {% else %}
+        <h4>Профиль пользователя:</h4>
+        <table class="table table-hover" style="width: 60%;">
+            <tr>
+                <th>Имя пользователя</th>
+                <td>{{ user.Username }}</td>
+            </tr>
+            <tr>
+                <th>Пароль</th>
+                <td><button type="buton" class="btn btn-default" id="btn_change_pwd" title="Сменить пароль">Сменить пароль</button></td>
+            </tr>
+            <tr>
+                <th>Фамилия</th>
+                <td>{{ user.Lastname }}</td>
+            </tr>
+            <tr>
+                <th>Имя</th>
+                <td>{{ user.Firstname }}</td>
+            </tr>
+            <tr>
+                <th>Отчество</th>
+                <td>{{ user.Middlename }}</td>
+            </tr>
+            <tr>
+                <th>E-mail</th>
+                <td>{{ user.Email }}</td>
+            </tr>
+            <tr>
+                <th>Должность</th>
+                <td>{{ user.Position }}</td>
+            </tr>
+            <tr>
+                <th>Контактный номер</th>
+                <td>{{ user.Contactphone }}</td>
+            </tr>
+            <tr>
+                <th>Роль пользователя</th>
+                <td>{{ role_descr }}</td>
+            </tr>
+            {% if fr is defined %}
+                <tr>
+                    <th>{{ fr }}</th>
+                    <td>{{ fr_name }}</td>
+                </tr>                
+            {% endif %}           
+        </table>
+        
+        <!-- Диалог смены пароля -->
+        <div id="passwd_dlg" class="display-none" title="Новый пароль">
+            <form>
+                <div class="form-group">
+                    <label for="passwd">Пароль:</label>
+                    <input type="password" class="form-control" id="passwd">
+                </div>
+                <div class="form-group">
+                    <label for="passwd2">Повтор пароля:</label>
+                    <input type="password" class="form-control" id="passwd2">
+                </div>                
+            </form>
+        </div>            
+    {% endif %}        
+{% endblock %}

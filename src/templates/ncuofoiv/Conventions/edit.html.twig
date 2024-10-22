@@ -1,0 +1,106 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    
+	<script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DialogHelpers.js') }}"></script>
+	
+
+	<script src="{{ asset('bundles/ncuoportal/js/datepicker-ru.js') }}"></script>      
+	
+	<script type="text/javascript">
+		  $(function() {
+			$( "#datepicker" ).datepicker($.datepicker.regional[ "ru" ]);
+			{% if entity is defined %}
+				$( "#datepicker" ).datepicker('setDate', '{{entity.datesigningAsDateTime | date('d.m.Y')}}');
+			{% else %} 
+				$( "#datepicker" ).datepicker('setDate', new Date());
+			{% endif %}
+		  });
+	</script>
+{% endblock %}
+
+{% block foivContent %}
+    <style>.fa-angle-right, .col-md-9>h4>i.fa-database{margin-right: 10px}</style>
+    <div class="row" style="margin-top: 10px; margin-bottom: 4px;">
+        <div class="col-md-9">
+            <h4>
+				<i class="fa fa-database fa-fw"></i><i class="fa fa-angle-right"></i><a href="#">Информационное взаимодействие</a>
+				<i class="fa fa-angle-right"></i><a href="{{urlBack}}">Соглашение по взаимодействию</a>
+				<i class="fa fa-angle-right"></i>{% if entity is defined %} Редактирование соглашения {% else %} Создание соглашения {% endif %}
+            </h4>
+        </div>
+    </div>
+    <style>
+        .contentHolder input[type=text] { width: 100% }
+    </style>
+    <div class="contentHolder">
+        {#{% if entity.ModifiedDate is defined %}<p style="padding-left: 5px"><small>Дата последнего изменения: {{ entity.ModifiedDate|date("d.m.Y (H:i:s)")}}</small></p>{% endif %}#}
+        <div id="dialog_msg_info" class="display-none" hidden>Запись успешно обновлена.</div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        {#<?php if (isset($message["error"]) && $message["error"] == true  ) {?>
+            <!--div style="width: 100%; border: 1px solid red"><p>{{ message.message_text }}</p><p>{{message.error_explain}}</p></div-->
+        <?php } ?>#}
+        <form class="form-inline" enctype="multipart/form-data" id="create_data" method="post" action="{{ActionURL}}">
+            <table class="table" cols=2>
+                    <tbody>
+                        <tr>
+                            <td><b>Дата подписания:</b></td>
+                            <td class="td_control">
+								{% if entity is defined %}
+								 <input type="text" class="datepicker" id="datepicker" name="date_sign" value="2016-03-03">
+								{% else %} 
+								<input type="date" id="datepicker" name="date_sign" >
+								{% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>Наименование документа:</b></td>
+                            <td class="td_control">
+							{% if entity is defined %}
+							<input class="form-control" type="text" required="required" name="title" value="{{entity.Title}}">
+							{% else %}
+							<input class="form-control" type="text" required="required" name="title" value="">
+							{% endif %}
+							</td>
+                        </tr>
+						{% if entity is defined %}
+						<tr>
+							<td><b>Текущий документ:</b></td>
+							<td>{{entity.file.originalname}}</td>
+						</tr>
+						{% endif %}
+                        <tr>
+                            <td><b>Загрузка документа:</b></td>
+                            <td class="td_control">
+							<input type="hidden" name="MAX__FILE_SIZE" value="50000" />
+							<input type="file" name="filename" value="Выбрать..." />
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+            </table>
+        </form>
+	
+		{% include 'ncuofoiv_buttons_new.twig' ignore missing with 
+			{
+				'urlBack': urlBack
+			} 
+		%}
+	
+		
+
+        {% if message.message_text != "" %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ message.message_text }}');
+        </script>
+        {% endif %}
+
+{% for flashMessage in app.session.flashbag.get('notice') %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ flashMessage }}');
+        </script>
+{% endfor %}
+
+    <div>
+{% endblock %}

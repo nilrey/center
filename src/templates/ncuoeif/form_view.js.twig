@@ -1,0 +1,128 @@
+$(document).ready(function() {      
+      
+    /*
+     * Таблица данных формы
+     */
+        
+    var tblFormView = $('#tbl_form_view').DataTable({
+        language: {
+            url: DATATABLES_RU_JSON            
+        },
+        scrollX: true,
+        //scrollY: 450,
+        scrollCollapse: false,
+        searching: true,
+        serverSide: true,
+        processing: true,
+        order: [],
+        dom: 'ltipr',       /* Убрал глобальный поиск f */
+        ajax: {
+            url: URL_GET_DATA,
+            method: 'POST',
+            data: function(d) {
+                d['id_form'] = $('#id_form').val();
+                d['id_file'] = $('#id_file').val();
+            }
+        }
+    });    
+    
+    /**
+     * Фильтрация по столбцам таблицы
+     */
+    
+    $('#btn_filter').click(function() {
+        var colCnt = tblFormView.columns().data().length;
+        for(var i = 0; i < colCnt; i++) {
+            var col = $('.form_col_search[data-pos=' + i + ']');
+            tblFormView.column(i).search($(col).val());
+        }
+        tblFormView.draw();
+    });
+      
+    /**
+     * Событие кнопки диалога поиска даты загрузки файла
+     */
+    
+    $('#btn_search_file_date').click(function() {
+        var dlg = $('#dlg_search_file_date');
+        
+        dlg.dialog({
+            closeOnEscape: true,
+            resiziable: false,
+            width: 500,
+            height: 400,
+            position: {at: 'center center-200'},
+            modal: true, 
+            buttons: {
+                Выбрать: function() {
+                    var sel = dlg.find('#date_lst');
+                    var id_file = sel.val();
+                    if (id_file === null)
+                        return;
+                    
+                    $('#id_file').val(id_file);
+                    $('#lbl_file_date').text(sel.find("option:selected").text());
+                    $(this).dialog('destroy');
+                    
+                    // Очищаем фильтр у всех столбцов
+                    var colCnt = tblFormView.columns().data().length;
+                    for(var i = 0; i < colCnt; i++) {
+                        var col = $('.form_col_search[data-pos=' + i + ']');
+                        $(col).val('');
+                        tblFormView.column(i).search('');
+                    }        
+                    
+                    // Обновляем таблицу
+                    tblFormView.draw();                    
+                },
+                Отмена: function() {
+                    $(this).dialog('destroy');
+                }
+            }
+        });                
+    });      
+    
+    /**
+     * Диалог выбора даты
+     */
+    
+    $('#dlg_search_file_date #dt_start').datepicker($.datepicker.regional["ru"]);
+    $('#dlg_search_file_date #dt_start').datepicker('setDate', -7);
+    
+    $('#dlg_search_file_date #dt_end').datepicker($.datepicker.regional["ru"]);
+    $('#dlg_search_file_date #dt_end').datepicker('setDate', new Date());
+    
+    $('#dlg_search_file_date #btn_search').click(function() {
+        var objSearch = {};
+        objSearch['id_form']    = $('#id_form').val();
+        objSearch['dt_start']   = $('#dlg_search_file_date #dt_start').val() + '00:00:00';
+        objSearch['dt_end']     = $('#dlg_search_file_date #dt_end').val() + '00:00:00';
+                
+        $('#lock_pane').attr('class', 'lock_on');
+        $.ajax({
+            url: URL_GET_FILE_DATE_LIST,
+            method: 'POST',
+            data: objSearch,
+            async: false,
+            cache: false,
+            success: function (e) {
+                $('#lock_pane').attr('class', 'lock_off');
+
+                if (e['err_id'] == 0) {
+                    var sel = $('#dlg_search_file_date #date_lst');
+                    
+                    sel.empty();
+                    for(var i = 0; i < e['content'].length; i++)
+                        sel.append('<option value="' + e['content'][i]['id_file'] + '">' + e['content'][i]['date'] + '</option>');
+                }
+                else
+                    $.dialogen('okdlg', {text: e['content']});                            
+            },
+            error: function (e) {
+                $('#lock_pane').attr('class', 'lock_off');
+
+                $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+            }                                                                   
+        });                  
+    });
+});

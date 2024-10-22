@@ -1,0 +1,16 @@
+{% extends 'layout.html.twig' %}
+{# {% extends '::base.html.twig' %} #}
+
+{% block content %}
+
+
+    {{ form(form) }}
+
+        <ul class="record_actions">
+    <li>
+        <a href="{{ path('foivpvo',{'foivid' : foiv.id }) }}">
+            Back to the list
+        </a>
+    </li>
+</ul>
+{% endblock %}

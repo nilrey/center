@@ -1,0 +1,105 @@
+{% extends 'new_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}  
+
+{% block javascripts %}
+    {{ parent() }}
+     
+{% endblock %}  
+
+{% block breadcrumb %}
+    <i class="fa fa-angle-left" title="Закрыть" data-bs-dismiss="modal" style="padding-right: 5px"></i> <a href="{{ path('oiv') }}" style="color: #959EA9; text-decoration: none">Паспорта ФОИВ</a>
+{% endblock %}    
+
+{% block nameheader %}
+  {% if oiv is defined %}
+<div class="container-fluid" style="line-height: 40px">
+  <div class="row">
+    <div class="col-8" style="font-weight: 600; font-size: 16px; margin-left: 34px">
+        <span class="foiv-logo">{% autoescape %}{{ oiv.heraldic_img|raw }}{% endautoescape %}</span> {% if oiv.name is defined %}{{ oiv.name }}{% endif %}<span class="favor-star"><i class="fa fa-star"></i>На главном экране</span>
+    </div>
+    <div class="col" id="dt-search" style="text-align: right; padding-right: 38px">
+        <i id="search-placeholder" class="fa fa-search" style="top: 38px"></i>
+        <form method="post" action="{{ path('search_update', {} ) }}">
+        <input type="hidden" name="FIELDS[oiv_id]" value='{% if oiv.id is defined %}{{ oiv.id }}{% endif %}'>
+        <input type="hidden" name="FIELDS[oiv_name]" value='{% if oiv.name is defined %}{{ oiv.name }}{% endif %}'>
+        <input type="text" name="FIELDS[search]" style="border: 1px solid #E1E3E8; border-radius: 4px; margin-top: 10px" placeholder="{% block phSearch %}{% endblock %}">
+        </form>
+    </div>
+  </div>
+</div>
+  {% endif %}
+{% endblock %}    
+
+{% block content %}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col" style="border-bottom: 1px solid #E1E3E8; margin: 0px 38px 0px 50px; padding: 0px">
+      <table class="psp-menu-top" cellpadding="0" cellspacing="0">
+        <tr>
+          <td id="toptab_oiv_common"><a href="{{ path('oiv_show', { 'id_oiv': oiv.Id }) }}">Общая информация</a></td>
+          <td id="toptab_executives_info"><a href="{{ path('executives_info_show', { 'id_oiv': oiv.Id }) }}">Руководство и  структура</a></td>
+          <td id="toptab_resources_info"><a href="{{ path('resources_info_show', { 'id_oiv': oiv.Id }) }}">Информационные ресурсы</a></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<div style="width: 95%; margin: auto">
+<div class="container-fluid">
+  <div class="row">
+
+    <div class="col-2">
+      <ul id="block_oiv_common" class="psp-menu-left displayNone">
+        <li id="tab_oiv_show"><a href="{{ path('oiv_show', { 'id_oiv': oiv.Id }) }}">Карточка ФОИВ</a></li>
+        <li id="tab_foundamental_docs"><a href="{{ path('foundamental_docs_show', { 'id_oiv': oiv.Id }) }}">Основополагающие документы</a></li>
+        <li id="tab_competencies_info"><a href="{{ path('competencies_info_show', { 'id_oiv': oiv.Id }) }}">Область компетенции</a></li>
+        <li id="tab_contact_info"><a href="{{ path('contact_info_show', { 'id_oiv': oiv.Id }) }}">Контакты</a></li>
+      </ul>
+      <ul id="block_executives_info" class="psp-menu-left displayNone">
+        <li id="tab_executives_info"><a href="{{ path('executives_info_show', { 'id_oiv': oiv.Id }) }}">Руководство</a></li>
+        <li id="tab_structure_scheme"><a href="{{ path('structure_scheme_show', { 'id_oiv': oiv.Id }) }}">Структура (состав)</a></li>
+        <li id="tab_disposable_funds_info"><a href="{{ path('disposable_funds_info_show', { 'id_oiv': oiv.Id }) }}">Подведомственные учреждения, силы и средства</a></li>
+      </ul>
+      <ul id="block_resources_info" class="psp-menu-left displayNone">
+        <li id="tab_resources_info"><a href="{{ path('resources_info_show', { 'id_oiv': oiv.Id }) }}">Информационные ресурсы</a>
+      </ul>
+    </div>
+    <div class="col-10" style="padding: 32px 0px 0px 32px;">
+      <div class="col" style="box-shadow: 0px 2px 6px 2px rgba(119, 119, 119, 0.15); border-radius: 4px; padding:0px 14px 0px 14px">
+
+
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-8" style="margin-left: 0px; padding-left: 0px;">
+              <div style="margin-left: 0px; padding-top: 24px; font-weight: normal; font-size: 16px; line-height: 20px;display: flex;flex-grow: 0;">{% block subtitle %}
+                {% endblock %}</div>
+            </div>
+            <div class="col-4" style="margin-left: 0px; padding-left: 0px;">
+              <div style="margin-left: 0px; padding-top: 24px" id="subheader-right"></div>
+            </div>            
+<!--
+            <div class="col-2" style="text-align: right; padding-right: 0px; ">
+                <a href="#edit" class="btn btn-primary" style="background: none; color: #228BE6; width: 140px; margin-top: 15px;">Редактировать</a>
+            </div>
+-->
+          </div>
+        </div>
+        <div class="col" style="padding-left: 14px">
+        {% block foivContent %}
+        {% endblock %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>{% block foivTabMenuActive %}{% endblock %}</script>
+
+{% endblock %}

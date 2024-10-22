@@ -1,0 +1,19 @@
+        <div class="container-fluid" style="padding-bottom: 50px">
+            <div class="row">
+              <div class="col" style="text-align: left; padding-left: 0px;">
+            {% if rolePerms is defined %}
+                {% if rolePerms["update"] == true %}
+                {% if urlEdit is defined and urlEdit != "" %}
+                <button class="btn btn-primary" style="margin: 15px 25px 0px 0px; padding: 7px 20px; background-color: #FFF; color: #228be6" onclick="window.location.replace('{{urlEdit}}')"  title="Редактировать">Редактировать</button>
+                {% endif %}
+                {% endif %}
+            {% endif %}
+            {% if urlBack is defined and urlBack != "" %}
+                <button class="btn btn-primary" style="margin: 15px 25px 0px 0px; padding: 7px 20px; background-color: #FFF; color: #228be6" onclick="window.location.replace('{{urlBack}}')"  title="Вернуться">Вернуться</button>
+            {% endif %}
+            {% if urlList is defined and urlList != "" %}
+               <button id="btnList" class="btn btn-primary" style="margin: 15px 25px 0px 0px; padding: 7px 20px; background-color: #FFF; color: #228be6" onclick="window.location.replace('{{urlList}}')"  title="К списку">К списку</button>
+            {% endif %}
+              </div>
+            </div>
+        </div>  

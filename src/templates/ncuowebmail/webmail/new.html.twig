@@ -1,0 +1,208 @@
+{% extends 'ncuowebmail/new_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        #dt-search { width: 100%} 
+        .maxwidth800{max-width:800px !important}
+        #dt-bottom { padding-top: 20px !important}
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+        <script src="{{ asset('bundles/ncuoportal/js/ckeditor/ckeditor.js') }}"></script>
+        <script src="{{ asset('bundles/ncuoportal/js/js2/sample.js') }}"></script>
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+{% endblock %}
+
+{% block subtitle %}
+	<h5>Новое сообщение</h5>
+{% endblock %}
+
+{% block foivContent %}
+    <div class="contentHolder">
+        {#% if entity.ModifiedDate is defined and entity.id > 0 %}<p>Дата последнего изменения: {{ entity.ModifiedDate|date("d.m.Y (H:i:s)")}}</p>{% endif %#}
+        <p>* Поля отмеченные звездочкой обязательны к заполнению</p>
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <form class="form-inline" id="create_data" method="post" action="{{urlAction}}" enctype="multipart/form-data">
+            <table class="table table-striped table-bordered dataTable ">
+                    <tbody>
+
+                        <tr>
+                            <td id="td_name_full">
+                                <table>
+                                    <tr>
+                                        <td style="border:0px !important; padding: 0px 15px; text-align: left; min-width: 200px">
+                                Получатель *:
+                                        </td>
+                                        <td style="border:0px !important">
+                                            <input type="text" name="FIELDS[emails_to_send]" id="emails_to_send" style="width: 875px; margin: 0px 0px 15px 3px;" value="">
+                                            <div id="btnusersList" onclick="getModalDialogEmails()" style="cursor:pointer; color: #333">Выбрать из адресной книги</div>
+            <!-- Modal Emails List -->
+            <div class="modal fade" id="dialog-modal-emails" tabindex="-1" role="dialog" aria-labelledby="emailsModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered maxwidth800" role="document">
+                <div class="modal-content">
+                  <div class="modal-header" style="background-color: #f0f8ff">
+                    <h5 class="modal-title" id="emailsModalLabel">Адресная книга</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                  </div>
+                  <div class="modal-body" id="dialog-msg-emails" style="margin-bottom: 0px; ">
+                    <span id="usersList">
+                        <table id="example" class="row-border" style="width:100%; border-bottom: 0px !important">
+                            <thead>
+                                <tr>
+                                    <th>Пользователи</th>
+                                    <th>Email</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% if usersList is defined %}
+                            {% for entity in usersList %}
+                                <tr role="row">
+                                <td><input type="checkbox" name="u" value="{{ entity.email|trim  }}" style="margin-right: 5px">{% if entity.email|trim == 'lu1@local.citis' or entity.email|trim == 'lu3@local.citis' %}<span> </span>{%endif%}{{ entity.lastname }} {{ entity.firstname }} {{ entity.middlename }}</td><td style="color: #333333">{{ entity.email }}</td>
+                                </tr>
+                            {% endfor %}
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </span>
+                    <div class="col" style="text-align: left; padding: 45px 0px 0px 0px;">
+                        <button type="button" id="btnCheckEmailList" class="btn btn-primary" style="margin-right: 25px; padding: 7px 20px; background-color: #FFF; color: #228be6" form="create_data" title="Добавить" data-bs-dismiss="modal" >Добавить</button>
+                        <button type="button" class="btn btn-primary" style="margin-right: 25px; padding: 7px 20px; background-color: #FFF; color: #228be6" data-bs-dismiss="modal" title="Закрыть">Закрыть</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- \ Modal Emails List -->
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="border:0px !important; padding: 0px 15px; text-align: left; min-width: 200px">
+                                Заголовок *:
+                                        </td>
+                                        <td style="border:0px !important">
+                                 <textarea name="FIELDS[subj]" cols="100" rows="1"></textarea>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:0px !important; padding: 0px 15px; text-align: left; min-width: 200px">
+                                Сообщение:
+                                        </td>
+                                        <td style="border:0px !important">
+                                 <textarea name="FIELDS[content]" cols="100" rows="5"></textarea>
+                                            
+                                        </td>
+                                    <tr>
+                                        <td>
+                                            Добавить файл:
+                                        </td>
+                                        <td>
+                                            <p style="font-size: 11px">Размер файла не должен превышать {{post_max_size}}Мб.</p>
+                                            <input type="file" name="file_upload[]" multiple class="fileUpload"/><br>
+                                        </td>
+                                    </tr>
+                                 </table>
+                            </td>
+                        </tr>
+                    </tbody>
+            </table>
+        </form>
+        
+        {% include 'buttons_email_send.twig' ignore missing with {
+            'urlList': urlList
+        } %}
+        
+	
+        <script>initSample();</script>  
+        <script>$('#mail_toptab_new').addClass('active')</script>  
+
+        <script type="text/javascript">
+          $(document).ready(function() {
+            var table = $('#example').DataTable( {
+                "order": [[ 0, 'asc' ]],
+                //"dom": '<"top"i>rt<"bottom"flp><"clear">'
+                "dom": '<"#dt-search"f><t><"#dt-bottom"pl>',
+                    "language": {
+                        searchPlaceholder: "Фильтр по списку пользователей",
+                        sInfoEmpty: "Записи с 0 до 0 из 0 записей",
+                        sInfo: "Записи с _START_ до _END_ из _TOTAL_ записей",
+                        sLengthMenu: "Отображать на странице _MENU_",
+                        //"url": '/public/bundles/light/js/ru_Ru_search.json',
+                        //"url": "http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Russian.json",
+                        paginate: {
+                            "previous": '<i class="fa fa-angle-left"></i>',
+                            "next": '<i class="fa fa-angle-right"></i>',
+                        },
+                        search: '<i id="search-placeholder" class="fa fa-search"></i>',
+                    },
+
+            } );
+
+            //$('#btnSaveForm').click(function () {
+            //    var data = table.$('input').serialize();
+            //    $('#emails_to_send').val(data);
+            //    return true;
+            //});
+
+            $('#btnCheckEmailList').click(function () {
+                var email_all = $('#emails_to_send').val().replace(/\ /g, '').split(',');
+                table.$('input[type=checkbox]').each(function () {
+                    this.checked ? email_all.push( $(this).val() ) : null ; 
+                });
+                if(email_all.length > 0 )
+                {
+                    var emails_to = email_all.filter(function(itm, i, email_all) {
+                        return i == email_all.indexOf(itm);
+                    });
+                    var str_emails = "";
+                    $.each(emails_to, function (index, email ) {
+                        if (email != "")
+                        {
+                            str_emails += str_emails == "" ? email :  ', ' + email;
+                        }
+                    } );
+                    $('#emails_to_send').val(str_emails);
+                }
+
+                return true;
+            });
+
+            $("#dialog-modal-emails").on("hidden.bs.modal", function () {
+                
+            });
+
+        } );
+
+        function expandBlock(id){
+            $('#'+id).css('display', 'block');
+            $('#btn'+id).css('display', 'none');
+        }
+
+        function getModalDialogEmails(){ 
+          var modal = new bootstrap.Modal(document.getElementById('dialog-modal-emails'), {});
+          modal.show();
+        }
+     
+
+
+        </script>		
+
+        {% if message is defined and message.message_text is defined and message.message_text|length > 0 %}
+        <script>
+        $(document).ready( function (){
+            getModalDialogInfo('{{ message.message_text }}');
+        } )
+        </script>
+        {% endif %}
+
+
+    </div> <!-- \ contentHolder -->
+
+{% endblock %}

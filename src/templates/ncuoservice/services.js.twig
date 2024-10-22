@@ -1,0 +1,381 @@
+$(document).ready(function() {
+    
+    /*
+     * Таблица cервисов
+     */
+    
+    var tblServices = $('#tbl_services').DataTable({
+        dom: '<"#dt-search"f><t><"#dt-bottom"pl>',
+        language: {
+            url: DATATABLES_RU_JSON            
+        },
+        ordering: false,
+        serverSide: true,
+        processing: true,
+        ajax: {
+            url: URL_GET_SERVICE_LIST,
+            method: 'POST'
+        },
+        columnDefs: [{className: 'text-center', targets: [1, 2, 3, 4, 5, 6]}],
+        rowCallback: function(row, data, index) {
+            // Установка стиля для колонки статуса
+            if (data[2] == 'Выполняется')
+                $('td:eq(2)', row).css('background-color', '#f0ad4e');
+            else if (data[2] == 'Остановлен')
+                $('td:eq(2)', row).css('background-color', '#777');
+            
+            $('td:eq(2)', row).css('color', 'white');
+        }
+    });
+    //tblSources.column(0).visible(false); // ID
+    
+    /**
+     * Добавление сервиса
+     */
+    
+    $('#btn_add_service').click(function() {
+        // Открываем диалог
+        var dlg_edit = $('#service_edit_dlg');
+        dlg_edit.attr('title', 'Создание');
+        
+        dlg_edit.find('#service_name').val('');
+        dlg_edit.find('#service_descr').val('');
+        dlg_edit.find('#service_shell_cmd').val('');
+        dlg_edit.find('#service_pkill_pattern').val('');
+        dlg_edit.find('#service_sched_interval_min').val('0');
+		dlg_edit.find('#service_autocontrol_interval_min').val('');
+        dlg_edit.find('#service_sched_next_date_d').val('');
+        dlg_edit.find('#service_sched_next_date_h').val('00');
+        dlg_edit.find('#service_sched_next_date_m').val('00');
+        dlg_edit.find('#service_show_last_output').hide();
+        $('#service_last_output_dlg #last_output').val('');
+        
+        $('#service_edit_dlg').dialog({
+            closeOnEscape: true,
+            resiziable: false,
+            width: 550,
+            height: 700,
+            position: {at: 'center center-200'},
+            modal: true, 
+            buttons: {
+                Сохранить: function() {
+                    // Сохраняем на сервер
+                    objSave = {};
+                    objSave['id_service']                   		= -1;
+                    objSave['service_name']                 		= dlg_edit.find('#service_name').val();
+                    objSave['service_descr']                		= dlg_edit.find('#service_descr').val();
+                    objSave['service_shell_cmd']            		= dlg_edit.find('#service_shell_cmd').val();
+                    objSave['service_pkill_pattern']        		= dlg_edit.find('#service_pkill_pattern').val();
+                    objSave['service_sched_interval_min']   		= dlg_edit.find('#service_sched_interval_min').val();
+					objSave['service_autocontrol_interval_min']   	= dlg_edit.find('#service_autocontrol_interval_min').val();
+                    objSave['service_sched_next_date']      		= dlg_edit.find('#service_sched_next_date_d').val() + ' ' + dlg_edit.find('#service_sched_next_date_h').val() + ':' + dlg_edit.find('#service_sched_next_date_m').val();                    
+                    
+                    $('#lock_pane').attr('class', 'lock_on');
+                    $.ajax({
+                        url: URL_SERVICE_SAVE,
+                        method: 'POST',
+                        data: objSave,
+                        async: false,
+                        cache: false,
+                        success: function (e) {
+                            $('#lock_pane').attr('class', 'lock_off');
+                           
+                            if (e['err_id'] == 0) {
+                                tblServices.draw(false);
+                                dlg_edit.dialog('destroy');
+                            }
+                            else
+                                $.dialogen('okdlg', {text: e['content']});                            
+                        },
+                        error: function (e) {
+                            $('#lock_pane').attr('class', 'lock_off');
+
+                            $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                        }                                                                                           
+                    });
+                },
+                Отмена: function() {
+                    $(this).dialog('destroy');
+                }
+            }
+        });
+    });
+
+    /**
+     * Редактирование сервиса
+     */
+    
+    $('#tbl_services').on('click', '.service_edit', function() {
+        // Идентификатор источника
+        var row_index  = tblServices.row($(this).closest('tr')).index();
+        var id_service = tblServices.cell(row_index, 0).data();
+               
+        // Запрашиваем информацию по источнику
+        $('#lock_pane').attr('class', 'lock_on');
+        $.ajax({
+            url: URL_GET_SERVICE,
+            method: 'GET',
+            async: false,
+            cache: false,
+            data: {
+                id_service: id_service
+            },
+            success: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+                
+                if (e['err_id'] != 0) {
+                    $.dialogen('okdlg', {text: e['content']});
+                    return;
+                }
+                
+                // Открываем диалог
+                var dlg_edit = $('#service_edit_dlg');
+                dlg_edit.attr('title', 'Редактирование');
+
+                dlg_edit.find('#service_name').val(e['content']['service_name']);
+                dlg_edit.find('#service_descr').val(e['content']['service_descr']);
+                dlg_edit.find('#service_shell_cmd').val(e['content']['service_shell_cmd']);
+                dlg_edit.find('#service_pkill_pattern').val(e['content']['service_pkill_pattern']);
+                dlg_edit.find('#service_sched_interval_min').val(e['content']['service_sched_interval_min']);
+				dlg_edit.find('#service_autocontrol_interval_min').val(e['content']['service_autocontrol_interval_min']);
+                dlg_edit.find('#service_sched_next_date_d').val(e['content']['service_sched_next_date_d']);
+                dlg_edit.find('#service_sched_next_date_h').val(e['content']['service_sched_next_date_h']);
+                dlg_edit.find('#service_sched_next_date_m').val(e['content']['service_sched_next_date_m']);
+                dlg_edit.find('#service_show_last_output').show();
+                $('#service_last_output_dlg #last_output').val(e['content']['service_last_output']);
+               
+                $('#service_edit_dlg').dialog({
+                    closeOnEscape: true,
+                    resiziable: false,
+                    width: 550,
+                    height: 700,
+                    position: {at: 'center center-200'},
+                    modal: true, 
+                    buttons: {
+                        Сохранить: function() {
+                            // Сохраняем на сервер
+                            objSave = {};
+                            objSave['id_service']                   		= id_service;
+                            objSave['service_name']                 		= dlg_edit.find('#service_name').val();
+                            objSave['service_descr']                		= dlg_edit.find('#service_descr').val();
+                            objSave['service_shell_cmd']            		= dlg_edit.find('#service_shell_cmd').val();
+                            objSave['service_pkill_pattern']        		= dlg_edit.find('#service_pkill_pattern').val();
+                            objSave['service_sched_interval_min']   		= dlg_edit.find('#service_sched_interval_min').val();
+							objSave['service_autocontrol_interval_min']   	= dlg_edit.find('#service_autocontrol_interval_min').val();
+                            objSave['service_sched_next_date']     			= dlg_edit.find('#service_sched_next_date_d').val() + ' ' + dlg_edit.find('#service_sched_next_date_h').val() + ':' + dlg_edit.find('#service_sched_next_date_m').val();
+                            
+                            $('#lock_pane').attr('class', 'lock_on');
+                            $.ajax({
+                                url: URL_SERVICE_SAVE,
+                                method: 'POST',
+                                data: objSave,
+                                async: false,
+                                cache: false,
+                                success: function (e) {
+                                    $('#lock_pane').attr('class', 'lock_off');
+                                   
+                                    if (e['err_id'] == 0) {
+                                        tblServices.draw(false);
+                                        dlg_edit.dialog('destroy');
+                                    }
+                                    else
+                                        $.dialogen('okdlg', {text: e['content']});                            
+                                },
+                                error: function (e) {
+                                    $('#lock_pane').attr('class', 'lock_off');
+        
+                                    $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                                }                                                                                           
+                            });
+                        },
+                        Отмена: function() {
+                            $(this).dialog('destroy');
+                        }
+                    }
+                });                
+            },
+            error: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+
+                $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});                 
+            }
+        });                
+    });
+    
+    /*
+     * Удаление сервиса
+     */
+    
+    $('#tbl_services').on('click', '.service_del', function() {
+        // Идентификатор источника
+        var row_index  = tblServices.row($(this).closest('tr')).index();
+        var id_service = tblServices.cell(row_index, 0).data();
+        
+        $.dialogen(
+            'yesnodlg',
+            {text: 'Вы действительно хотите удалить сервис?'},
+            function() {
+                // Отправляем запрос на удаление
+                var objDel = {};
+                objDel['id_service'] = id_service;
+                
+                $('#lock_pane').attr('class', 'lock_on');
+                $.ajax({
+                    url: URL_SERVICE_DELETE,
+                    method: 'POST',
+                    data: objDel,
+                    async: false,
+                    cache: false,
+                    success: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+                        
+                        if (e['err_id'] == 0)
+                            tblServices.draw(false);
+                        else
+                            $.dialogen('okdlg', {text: e['content']});                            
+                    },
+                    error: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+
+                        $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                    }                                                                   
+                });                
+            }
+        );
+    });      
+    
+    /**
+     * Ручной запуск сервиса
+     */
+    
+    $('#tbl_services').on('click', '.service_manual_start', function() {
+        // Идентификатор источника
+        var row_index  = tblServices.row($(this).closest('tr')).index();
+        var id_service = tblServices.cell(row_index, 0).data();
+        
+        $.dialogen(
+            'yesnodlg',
+            {text: 'Вы действительно хотите запустить сервис?'},
+            function() {
+                // Отправляем запрос на запуск
+                var objReq = {};
+                objReq['id_service'] = id_service;
+                
+                $('#lock_pane').attr('class', 'lock_on');
+                $.ajax({
+                    url: URL_SERVICE_MANUAL_START,
+                    method: 'POST',
+                    data: objReq,
+                    async: false,
+                    cache: false,
+                    success: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+                        
+                        if (e['err_id'] == 0)
+                            tblServices.draw(false);
+                        else
+                            $.dialogen('okdlg', {text: e['content']});                            
+                    },
+                    error: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+
+                        $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                    }                                                                   
+                });                
+            }
+        );        
+    });
+        
+    /*
+     * Принудительное завершение сервиса
+     */
+    
+    $('#tbl_services').on('click', '.service_pkill', function() {
+        // Идентификатор сервиса
+        var row_index  = tblServices.row($(this).closest('tr')).index();
+        var id_service = tblServices.cell(row_index, 0).data();
+        
+        $.dialogen(
+            'yesnodlg',
+            {text: 'Вы действительно хотите остановить сервис?'},
+            function() {
+                // Отправляем запрос на удаление
+                var objKill = {};
+                objKill['id_service'] = id_service;
+                
+                $('#lock_pane').attr('class', 'lock_on');
+                $.ajax({
+                    url: URL_SERVICE_PKILL,
+                    method: 'POST',
+                    data: objKill,
+                    async: false,
+                    cache: false,
+                    success: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+                        
+                        if (e['err_id'] == 0)
+                            tblServices.draw(false);
+                        else
+                            $.dialogen('okdlg', {text: e['content']});                            
+                    },
+                    error: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+
+                        $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                    }                                                                   
+                });                
+            }
+        );
+    });      
+    
+    // Диалог редактирования
+    $('#service_edit_dlg #service_start_interval_min').numeric();
+    $('#service_edit_dlg #service_sched_next_date_d').datepicker($.datepicker.regional["ru"]);
+    /*
+    $('#service_edit_dlg #service_sched_next_date_d').blur(function() {
+        $(this).datepicker('hide');
+    });
+    */
+    $('#service_edit_dlg #service_sched_next_date_h').numeric();
+    $('#service_edit_dlg #service_sched_next_date_m').numeric();
+    
+    $('#service_edit_dlg #service_show_last_output').click(function() {
+        $('#service_last_output_dlg').dialog({
+            closeOnEscape: true,
+            resiziable: false,
+            width: 700,
+            height: 500,
+            position: {at: 'center center-200'},
+            modal: true,
+            buttons: {
+                Закрыть: function() {
+                    $(this).dialog('destroy');
+                }
+            }
+        });
+    });
+    
+    /*
+     * Интервал обновления таблицы сервисов (для обновления меняющихся фоном статусов)
+     */
+    
+    setInterval(function() {
+        tblServices.draw(false);
+    }, 30000);
+	
+	/*
+	 * Интервал получения серверного времени
+	 */
+	
+	setInterval(function() {	
+		$.ajax({
+			url: URL_SRV_TIME,
+			method: 'GET',
+			async: false,
+			cache: false,
+			success: function(e) {
+				$('#srv_time').text(e['srv_time']);
+			}					
+		});
+	}, 10000);
+});

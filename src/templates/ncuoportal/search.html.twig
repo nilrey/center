@@ -1,0 +1,172 @@
+{% extends 'new_layout.html.twig' %}  
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+.tblSearchResults td {padding: 10px 10px 10px 10px; float: left; min-height: 70px}
+ #example_info { padding-bottom: 25px}
+    </style>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+{% endblock %}
+
+{% block subtitle %}
+	{{pageTitle}}
+{% endblock %}
+
+{% block nameheader %}
+<div class="container-fluid" style="line-height: 40px">
+  <div class="row">
+    <div class="col-8" style="font-weight: 600; font-size: 16px; margin-left: 38px">
+        Поиск в паспортах ФОИВ РФ и Субъектов РФ<span class="favor-star">
+    </div>
+  </div>
+</div>
+
+{% endblock %}    
+
+
+{% block content %}
+
+<form class="form-inline" id="search_data" method="post" action="{{urlAction}}">
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col" style="margin: 0px 38px 0px 50px; padding: 0px">
+        <div class="col6" id="dt-search" style="text-align: right; padding-right: 38px">
+            <i id="search-placeholder" class="fa fa-search" style="top: 38px"></i>
+            <input type='text' name="FIELDS[search]" value='{% if FIELDS['search'] is defined %}{{FIELDS['search']}}{% endif %}' style="border: 1px solid #E1E3E8; border-radius: 4px; margin-top: 10px" placeholder="Поиск в паспортах ФОИВ РФ и Субъектов РФ">
+        </div>
+        <div class="col2" id="dt-search" style="padding-top: 24px"><button onclick="$('#search_data').submit()" type="button" class="btn btn-primary" style="background: none; color: #0d6efd; width: 170px">Начать поиск</button><a class="btn btn-primary" href="search" style="background: none; color: #0d6efd; width: 170px; margin-left: 30px">Сбросить</a>
+        </div>
+        <div class="col2" id="dt-search" style="padding-top: 24px">
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col" style="margin: 0px 38px 20px 50px; padding: 0px">Искать в паспорте : 
+    <select class="" name="FIELDS[oiv_id]" >
+        <option value="">Во всех</option>
+        {% if oivs is defined %}
+        {% for oiv in oivs %}
+            {% set selected = '' %}
+                {% if ifOivId is defined %}
+                    {% if oiv.id == ifOivId %}
+                        {% set selected = 'selected=\'true\'' %}
+                    {% endif %}
+                {% endif %}
+                <option value='{{ oiv.id }}' {{selected}}>{{ oiv.name }}</option>
+                
+        {% endfor %}
+        {% endif %}  
+    </select>
+    </div>
+  </div>
+</div>
+
+</form>
+
+
+{% if entities is defined %}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col" style="margin: 0px 38px 0px 50px; padding: 0px">
+
+
+    <table id="example" class="row-border flag-list" style="width:100%; border-bottom: 0px !important">
+        <thead style="display: none">
+            <tr>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        {% if entities is defined %}
+        {% set cnt = 0 %}
+        {% for entity in entities %}
+            {% set cnt = cnt+1 %}
+            <tr role="row" class="odd">
+                <td style="width: 30px">{{cnt}}</td>
+                <td>
+                    <a href="{% autoescape %}{{ entity['data_res_link']|raw }}{% endautoescape %}" target="_blank">{% autoescape %}{{ entity['data_res']|raw }}{% endautoescape %}</a>
+                    <br>Раздел: <span style='font-style: italic'>{{entity['oiv_name']}} / {{entity['sec_name']}}</span>
+                    <br>{% autoescape %}{{ entity['data_res_txt']|raw }}{% endautoescape %}
+                </td>
+            </tr>
+        {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+
+
+{#
+        <table class="tblSearchResults" style="width:100%">
+            <tbody>
+                {% set cnt = 0 %}
+                {% for entity in entities %}
+                    {% set cnt = cnt+1 %}
+                    <tr style="border-bottom: 1px solid #dddddd; margin: 15px">
+                    <td style='width: 35px'>{{cnt}}.</td><td><a href="{% autoescape %}{{ entity['data_res_link']|raw }}{% endautoescape %}" target="_blank">{% autoescape %}{{ entity['data_res']|raw }}{% endautoescape %}</a>
+                    <br>Раздел: <span style='font-style: italic'>{{entity['oiv_name']}} / {{entity['sec_name']}}</span>
+                    <br>{% autoescape %}{{ entity['data_res_txt']|raw }}{% endautoescape %}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if pages is defined %}
+        <nav aria-label="" style='margin-top: 50px'>
+          <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
+            {% for page in pages %}
+                <li class="page-item"><a class="page-link" href="{{page['link']}}">{{page['number']}}</a></li>
+            {% endfor %}
+            <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+          </ul>
+        </nav>
+        {% endif %}
+#}
+    </div>
+  </div>
+</div>
+
+{% endif %}
+
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#example').DataTable( {
+        //"dom": '<"top"i>rt<"bottom"flp><"clear">'
+        dom: '<"#dt-search"if><t><"#dt-bottom"pl>',
+            language: {
+                searchPlaceholder: "Фильтр в найденом...",
+                sInfoEmpty: "Записи с 0 до 0 из 0 записей",
+                sInfo: "Записи с _START_ до _END_ из _TOTAL_ записей",
+                sLengthMenu: "Отображать на странице _MENU_",
+                sZeroRecords:  "Записи не найдены.",
+                //url: '/public/bundles/light/js/ru_Ru_search.json',
+                //"url": "http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Russian.json",
+                paginate: {
+                    "previous": '<i class="fa fa-angle-left"></i>',
+                    "next": '<i class="fa fa-angle-right"></i>',
+                },
+                search: '<i id="search-placeholder" class="fa fa-search"></i>',
+            },
+
+    } );
+} );
+</script>
+
+{% endblock %}

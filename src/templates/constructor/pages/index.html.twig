@@ -1,0 +1,41 @@
+{% extends 'constructor/list_layout.html.twig' %}
+
+
+{% block javascripts %}
+    {{ parent() }}   
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}      
+
+{% block foivContent %}
+<table id="example" class="row-border flag-list" style="width:100%; border-bottom: 0px !important">
+        <thead style="display: none">
+            <tr>
+                <th>Name</th>
+                <th>Действие</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        {% if entities is defined %}
+        {% for entity in entities %}
+            <tr role="row" class="odd">
+                <td><a href="#">{{ entity.name }}</a></td>
+                <td nowrap style="text-align: right; padding-right: 14px">
+                    <a class="ml10" href="javascript: void(0)" onclick="confirmDelete('test', '#')" ><i class="fa fa-trash" title="Удалить паспорт шаблон таблицы"></i></a>
+                </td>
+            </tr>
+        {% endfor %}
+        {% endif %}
+        </tbody>
+    </table> 
+ 
+<script>
+function confirmDelete(foivTitle, deleteUrl){
+    getModalDialogConfirm('Вы действительно хотите удалить шаблон таблицы?');
+    $('#dialog-modal-confirm-send').click( function() {window.location.replace(deleteUrl)} );
+}
+</script>
+{% endblock %}

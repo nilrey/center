@@ -1,0 +1,113 @@
+ALTER TABLE webmail.webmail_message
+DROP COLUMN IF EXISTS user_id;
+
+ALTER TABLE webmail.webmail_message
+DROP COLUMN IF EXISTS msg_important;
+
+ALTER TABLE webmail.webmail_message
+   ADD COLUMN msg_date character(32);
+ALTER TABLE webmail.webmail_message
+   ADD COLUMN msg_from TEXT;
+ALTER TABLE webmail.webmail_message
+   ADD COLUMN msg_to TEXT;
+ALTER TABLE webmail.webmail_message
+   ADD COLUMN cnt_files integer DEFAULT 0;
+ALTER TABLE webmail.webmail_message
+   ADD COLUMN modified timestamp without time zone NOT NULL DEFAULT date_trunc('second'::text, now())
+ALTER TABLE webmail.webmail_msg_recieved
+   ADD COLUMN modified timestamp without time zone NOT NULL DEFAULT date_trunc('second'::text, now())
+ALTER TABLE webmail.webmail_msg_sent
+   ADD COLUMN modified timestamp without time zone NOT NULL DEFAULT date_trunc('second'::text, now())
+
+CREATE SEQUENCE webmail.seq_webmail_msg_recieved_id
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1;
+ALTER TABLE webmail.seq_webmail_msg_recieved_id
+  OWNER TO postgres;
+
+CREATE TABLE webmail.webmail_msg_recieved
+(
+  id integer NOT NULL DEFAULT nextval('webmail.seq_webmail_msg_recieved_id'::regclass), 
+  msg_id,
+  email_to text,
+  user_id integer,
+  dir_id integer DEFAULT 0,  
+  important boolean DEFAULT False,
+  status text
+);
+
+
+CREATE SEQUENCE webmail.seq_webmail_msg_sent_id
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1;
+ALTER TABLE webmail.seq_webmail_msg_sent_id
+  OWNER TO postgres;
+
+CREATE TABLE webmail.webmail_msg_sent
+(
+  id integer NOT NULL DEFAULT nextval('webmail.seq_webmail_msg_sent_id'::regclass), 
+  msg_id,
+  email_from text, 
+  user_id integer,
+  dir_id integer DEFAULT 0,  
+  important boolean DEFAULT False,
+  status text
+);
+
+
+CREATE SEQUENCE webmail.seq_webmail_files_id
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1;
+ALTER TABLE webmail.seq_webmail_files_id
+  OWNER TO postgres;
+
+
+CREATE TABLE webmail.webmail_files
+(
+  id integer NOT NULL DEFAULT nextval('webmail.seq_webmail_files_id'::regclass), 
+  msg_id integer NOT NULL,
+  name_orig character varying(255) NOT NULL, 
+  name_hash character varying(32) NOT NULL, 
+  title text,
+  content_type character varying(255),
+  ext character varying(10),
+  size integer,
+  description text, 
+);
+
+CREATE TABLE webmail.webmail_access
+(
+  file_id integer NOT NULL,
+  msg_id integer NOT NULL
+);
+
+CREATE SEQUENCE webmail.seq_webmail_dir_id
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1;
+ALTER TABLE webmail.seq_webmail_dir_id
+  OWNER TO postgres;
+
+
+CREATE TABLE webmail.webmail_dir
+(
+  id integer NOT NULL DEFAULT nextval('webmail.seq_webmail_dir_id'::regclass), 
+  user_id integer NOT NULL,
+  parent_id integer DEFAULT 0,  
+  title character varying(255) NOT NULL, 
+  description text, 
+  sort integer DEFAULT 0,  
+  created timestamp without time zone NOT NULL DEFAULT date_trunc('second'::text, now()),
+  modified timestamp without time zone NOT NULL DEFAULT date_trunc('second'::text, now())
+);

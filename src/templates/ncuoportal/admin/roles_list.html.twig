@@ -1,0 +1,65 @@
+{% extends 'ncuoportal/list_layout.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}  
+
+{% block pageTitle %}Администрирование ролей{% endblock %}	
+
+{% block addNewLink %}{{ path('oiv_admin_roles_new') }}{% endblock %}
+
+{% block foivContent %}
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+
+    <table id="dTable" class="table table-striped table-bordered">
+            <thead>
+                <tr >
+                    <th width="5%">ID</th>
+                    <th width="20%">Роль</th>
+                    <th width="30%">Описание</th>
+                    <th width="10%" class="text-center">Действие</th>
+                </tr>
+            </thead>
+        <tbody>
+         {% if listRoles is defined %}
+        {% for item in listRoles %}
+            <tr>
+                <td>{{item['id']}}</td>
+                <td><a href="{{ path('oiv_admin_roles_edit', { 'id_roles': item['id'] }) }}">{{item['name']}}</a></td>
+                <td><a href="{{ path('oiv_admin_roles_edit', { 'id_roles': item['id'] }) }}">{{item['description']}}</a></td>
+                <td nowrap>
+                    <a href="{{ path('oiv_admin_roles_edit', { 'id_roles': item['id'] }) }}">Редактировать</a>
+                    {% if item['name'] != 'ROLE_ADMIN' and item['name'] != 'ROLE_NCUO' and item['name'] != 'ROLE_FOIV' and item['name'] != 'ROLE_VDL' and item['name'] != 'ROLE_ROIV' %}
+                        <a class="ml30" href="javascript: void(0)" onclick="confirmDelete('{{ item['description'] }}', '{{ path('oiv_admin_roles_delete', {'id_roles': item['id']}) }}')" >Удалить запись</a>
+                    
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+    
+   
+<script>
+dTable = $('#dTable').DataTable({
+    dom: '<"#dt-search"f><t><"#dt-bottom"pl>',
+	language: {
+		url: DATATABLES_RU_MENU_LIST_JSON,
+		searchPlaceholder: "Фильтр по названию"
+	},
+	order: [[0, 'asc']],
+	paging: false,
+});
+
+{% if message is defined and message.message_text != '' %}
+showInfoDialog('dialog_msg_info', '{{ message.message_text }}');
+{% endif %}
+
+</script>
+
+
+{% endblock %}

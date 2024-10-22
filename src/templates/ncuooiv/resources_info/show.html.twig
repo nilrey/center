@@ -1,0 +1,77 @@
+{% extends 'ncuooiv/layout.html.twig' %}  
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/oiv.css') }}" />
+    <style type="text/css">
+    #heraldic_img img, #flag_img img { width: 80px}
+    .table td {
+        border-bottom: 1px solid #cdcdcd !important;
+        height: 50px !important;
+    }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li>Информационные ресурсы</li>
+{% endblock %}
+
+{% block subtitle %}
+	<h5>Информационные ресурсы</h5>
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrTabs = ["tab_resources_info"];
+{% endblock %}
+
+{% block foivContent %}
+   
+    <div class="contentHolder">
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+     
+   {# ----------------------------------------------------------- </br> }
+   
+   {% dump(oiv) %}</br>
+    
+   {# ----------------------------------------------------------- </br> #}
+
+        
+        {#% if foiv.ModifiedDate  is defined %}<p>Дата последнего изменения: {{ foiv.ModifiedDate|date("d.m.Y (H:i:s)")}}</p>{% endif %#}
+        
+        
+        <table class="table table-info">
+         
+
+         {% if fields is defined %}
+        {% for field in fields %}         
+            <tr>
+                <td>
+                    {{field.name}}:
+                </td>
+                <td id='{{field.IdFldShort}}'>
+                    {% if field.data is defined %}
+                       {% autoescape %}
+                        {{ field.data|raw }}
+                        {% endautoescape %}
+                    {% endif %}
+                    
+                </td>
+            </tr>
+
+        {% endfor %}
+        {% endif %}
+        </table>
+        
+        
+        {% include 'ncuooiv_buttons_show.twig' ignore missing with {
+            'urlEdit': urlEdit
+        } %}
+        
+    </div> <!-- \ contentHolder -->
+
+{% endblock %}

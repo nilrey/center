@@ -1,0 +1,224 @@
+{% extends 'ncuoportal/list_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoeif/css/common.css') }}"/>
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/dataTables.bootstrap.css') }}"/> 
+    <style> .dataTables_wrapper .dataTables_filter { float: left; width: 100%; margin-top: 26px; }
+    .btnCreateNew {display: none !important } 
+    .table-thead {background: #FFF} 
+    </style>
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block javascripts %}    
+    {{ parent() }}
+            
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/dialogen.plugin.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/jquery.dataTables.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/dataTables.bootstrap.js') }}"></script>        
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/jquery.numeric.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datepicker-ru.js') }}"></script>
+    <script>
+        var MSG_SERVICE_ERROR           = '{{ msg_service_error }}';
+        var DATATABLES_RU_JSON          = '{{ asset('bundles/ncuoportal/js/datatables/ru_Ru.json') }}';
+        
+		var URL_SRV_TIME				= '{{ path('service_services__srv_time') }}';
+        var URL_GET_SERVICE             = '{{ path('service_services__get') }}';
+        var URL_GET_SERVICE_LIST        = '{{ path('service_services__get_list') }}';
+        var URL_SERVICE_SAVE            = '{{ path('service_services__save') }}';
+        var URL_SERVICE_DELETE          = '{{ path('service_services__delete') }}';
+        var URL_SERVICE_PKILL           = '{{ path('service_services__pkill') }}';
+        var URL_SERVICE_MANUAL_START    = '{{ path('service_services__manual_start') }}';
+    </script>    
+    
+    <script type="text/javascript" src="{{ path('service_js', {'file': 'services'}) }}"></script>    
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+{% block pageTitle %}
+Регламентные задачи
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block foivContent %}
+    {% if err_msg is defined %}
+		<h4>Ошибка:</h4>
+        <div id="error_msg" class="alert alert-danger">{{ err_msg }}</div>
+    {% else %}
+
+		<form class="form-inline">
+			<label>Время на сервере: <span id="srv_time">{{ srv_time }}</span></label>
+		</form>
+		
+		<!--<div class="list-buttons-top">
+			<button type="buton" class="btn btn-add" id="btn_add_service" title="Добавить регламентную задачу"></button>
+		</div>-->
+		
+        <div id="table_div" class="margin-top-15">        
+            <table id="tbl_services" class="table table-striped table-hover table-bordered">
+                <thead class="table-thead">
+                <tr>
+                    <th width="25%">ID</th>
+                    <th width="15%">Наименование регламентной задачи</th>
+                    <th width="5%">Статус</th>
+                    <th width="15%">Последний запуск: дата начала</th>
+                    <th width="15%">Последний запуск: дата окончания</th>
+                    <th width="15%">Дата следующего регламентного выполнения</th>
+                    <th width="10%" class="text-center">Действие</th>
+                </tr>
+                </thead>
+
+                <tfoot>
+                </tfoot>
+
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Диалог редактирования сервиса -->
+        <div id="service_edit_dlg" class="display-none" title="">
+            <form>
+                <div class="form-group">
+                    <label for="service_name">Наименование регламентной задачи:</label>
+                    <input type="text" class="form-control" id="service_name">
+                </div>
+                <div class="form-group">
+                    <label for="service_descr">Описание регламентной задачи:</label>
+                    <textarea class="form-control" id="service_descr" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="service_shell_cmd">Команда выполнения для регламентной задачи <i id="service_show_last_output" class="fa fa-file-text icon-link" title="Консольный вывод последнего запуска"></i>:</label>
+                    <input type="text" class="form-control" id="service_shell_cmd">
+                </div>
+                <div class="form-group">
+                    <label for="service_pkill_pattern">Метка команды принудительного завершения <i class="fa fa-question-circle icon-link" title="Команда pkill -9 -f <метка>"></i>:</label>
+                    <input type="text" class="form-control" id="service_pkill_pattern">
+                </div>                
+                <div class="form-group">
+                    <label for="service_sched_interval_min">Интервал регламентного запуска задачи (мин.) <i class="fa fa-question-circle icon-link" title="Интервал между автоматическими запусками регламентной задачи. Если 0 - автоматический запуск выключен."></i>:</label>
+                    <input type="text" class="form-control width-100" id="service_sched_interval_min">
+                </div>
+                <div class="form-group">
+                    <label for="service_autocontrol_interval_min">Интервал автоконтроля (мин.) <i class="fa fa-question-circle icon-link" title="Если дата следующего регламентного выполнения находится в прошлом, то новая дата регламентного выполнения = текущая дата + интервал автоконтроля"></i>:</label>
+                    <input type="text" class="form-control width-100" id="service_autocontrol_interval_min">
+                </div>				
+                <div class="form-group">
+                    <label for="service_sched_next_date">Дата следующего регламентного выполнения:</label>
+                </div>
+            </form>
+            <form class="form-inline">
+                <div class="form-group">
+                    <input type="text" class="form-control width-100" id="service_sched_next_date_d">
+                </div>
+                <div class="form-group">
+                    <select class="form-control width-70 margin-left-30" id="service_sched_next_date_h">
+                        <option value="00">00</option>
+                        <option value="01">01</option>
+                        <option value="02">02</option>
+                        <option value="03">03</option>
+                        <option value="04">04</option>
+                        <option value="05">05</option>
+                        <option value="06">06</option>
+                        <option value="07">07</option>
+                        <option value="08">08</option>
+                        <option value="09">09</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                        <option value="21">21</option>
+                        <option value="22">22</option>
+                        <option value="23">23</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select class="form-control width-70" id="service_sched_next_date_m">
+                        <option value="00">00</option>
+                        <option value="01">01</option>
+                        <option value="02">02</option>
+                        <option value="03">03</option>
+                        <option value="04">04</option>
+                        <option value="05">05</option>
+                        <option value="06">06</option>
+                        <option value="07">07</option>
+                        <option value="08">08</option>
+                        <option value="09">09</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                        <option value="21">21</option>
+                        <option value="22">22</option>
+                        <option value="23">23</option>
+                        <option value="24">24</option>
+                        <option value="25">25</option>
+                        <option value="26">26</option>
+                        <option value="27">27</option>
+                        <option value="28">28</option>
+                        <option value="29">29</option>
+                        <option value="30">30</option>
+                        <option value="31">31</option>
+                        <option value="32">32</option>
+                        <option value="33">33</option>
+                        <option value="34">34</option>
+                        <option value="35">35</option>
+                        <option value="36">36</option>
+                        <option value="37">37</option>
+                        <option value="38">38</option>
+                        <option value="39">39</option>
+                        <option value="40">40</option>
+                        <option value="41">41</option>
+                        <option value="42">42</option>
+                        <option value="43">43</option>
+                        <option value="44">44</option>
+                        <option value="45">45</option>
+                        <option value="46">46</option>
+                        <option value="47">47</option>
+                        <option value="48">48</option>
+                        <option value="49">49</option>
+                        <option value="50">50</option>
+                        <option value="51">51</option>
+                        <option value="52">52</option>
+                        <option value="53">53</option>
+                        <option value="54">54</option>
+                        <option value="55">55</option>
+                        <option value="56">56</option>
+                        <option value="57">57</option>
+                        <option value="58">58</option>
+                        <option value="59">59</option>                        
+                    </select>
+                </div>                        
+            </form>
+        </div>
+        
+        <!-- Диалог с текстом вывода последнего запуска сервиса -->
+        <div id="service_last_output_dlg" class="display-none" title="Вывод последнего запуска регламентной задачи">
+            <textarea id="last_output" class="form-control" cols="80" rows="20"></textarea>
+        </div>
+    {% endif %}
+{% endblock %}

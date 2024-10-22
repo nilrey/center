@@ -1,0 +1,126 @@
+{% extends "layout.html.twig" %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    
+    {% if not err_msg is defined %}
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoeif/css/common.css') }}"/>    
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/dataTables.bootstrap.css') }}"/> 
+    {% endif %}
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    {% if not err_msg is defined %}
+        <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/dialogen.plugin.js') }}"></script>    
+        <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/jquery.dataTables.min.js') }}"></script>
+		<script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/dataTables.bootstrap.js') }}"></script>
+        <script>
+            var DATATABLES_RU_JSON          	= '{{ asset('bundles/ncuoportal/js/datatables/ru_Ru.json') }}';
+            
+            var URL_GET_FILE_LIST           	= '{{ path('eif_files__get_list') }}';
+            var URL_FILE_DOWNLOAD           	= '{{ path('eif_files__download') }}';
+			
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_FOIV') %}
+                var URL_FILE_UPLOAD             	= '{{ path('eif_files__upload') }}';
+                var URL_FILE_DELETE             	= '{{ path('eif_files__delete') }}';
+            {% endif %}
+			
+            {% if is_granted('ROLE_ADMIN') %}
+                var URL_FILE_GET_STATUS         	= '{{ path('eif_files__get_status') }}';
+                var URL_FILE_SET_STATUS         	= '{{ path('eif_files__set_status') }}';
+                var URL_FILE_CLEAR_MIGRATION_FLAG	= '{{ path('eif_files__clear_migration_flag') }}';
+            {% endif %}
+            
+            var MSG_SERVICE_ERROR           	= '{{ msg_service_error }}';        
+        </script>    
+        
+        <script type="text/javascript" src="{{ path('eif_js', {'file': 'files'}) }}"></script>
+    {% endif %}
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block breadcrumb %}
+    <li><a href="{{ path('eif_sources') }}" title="Вернуться к списку источников">Данные ЕИФ</a></li>
+    
+    {% if not err_msg is defined %}
+        <li><a href="{{ path('eif_protocols') }}?id_source={{ source.IdSource }}" title="Вернуться к списку протоколов источника">Источник [{{ source.SourceName }}]</a></li>
+        <li class="active">Протокол [{{ protocol.ProtocolName }}]</li>
+    {% endif %}        
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block content %}    
+    {% if err_msg is defined %}
+		<h4>Ошибка:</h4>
+        <div id="error_msg" class="alert alert-danger">{{ err_msg }}</div>
+        <a href="{{ path('eif_sources') }}" title="Вернуться к списку источников"><button type="button" class="btn btn-default" title="Назад">Назад <i class="fa fa-reply"></i></button></a>
+    {% else %}            
+        <input type="hidden" id="id_protocol" value="{{ protocol.IdProtocol }}">
+
+		<h4>Список файлов:<a href="{{ path('eif_forms') }}?id_protocol={{ protocol.IdProtocol }}"><i class="fa fa-table icon-link float-right" style="line-height: 45px;" title="Формы хранения данных протокола"></i></a></h4>        
+        
+		<form class="form-inline">
+			<label>Тип файлов протокола: {{ protocol.ProtocolFileMimeType }}</label>
+		</form>
+		
+		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_FOIV') %}
+			<input type="file" id="inp_file" style="display: none;" multiple/>			
+			<div class="list-buttons-top">
+				<label id="lbl_load_msg" style="font-size: 12px;"></label>
+				<button type="buton" class="btn btn-add" id="btn_add_files" title="Добавить файлы"></button>				
+			</div>			
+		{% endif %}
+			
+        <div id="table_div" class="margin-top-15">            
+            <table id="tbl_files" class="table table-striped table-hover table-bordered">
+                <thead class="table-thead">
+                <tr>
+                    <th width="25%">ID</th>                    
+                    <th width="11%">Наименование файла</th>
+                    <th width="10%">Размер (КБ)</th>
+                    <th width="13%">Дата загрузки файла</th>
+					<th width="10%">Выгружен в Капитан</th>
+                    <th width="18%">Статус</th>
+                    <th width="13%" class="text-center"><i class="fa fa-cog"></i></th>
+                </tr>
+                </thead>
+
+                <tfoot>
+                </tfoot>
+
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+		
+		{% if is_granted('ROLE_ADMIN') %}
+			<a href="{{ path('eif_xmlcheck') }}"><button type="button" class="btn btn-default" title="Сервис проверки XML/XSD/XSLT"><i class="fa fa-wrench"></i></button></a>
+		
+			<div id="file_status_dlg" class="display-none" title="Установка статуса">
+				<form>  
+					<div class="form-group">
+						<label for="status">Статус:</label>
+						<select class="form-control" id="status">
+							<option value="-1">&lt;&lt;&lt; Выберите из списка &gt;&gt;&gt;</option>
+							{% for status in file_statuses %}
+								<option value="{{ status.IdStatus }}">{{ status.StatusName }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</form>
+			</div>
+		{% endif %}
+    {% endif %}
+{% endblock %}

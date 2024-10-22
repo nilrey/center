@@ -1,0 +1,85 @@
+{% extends 'ncuoportal/list_layout.html.twig' %}
+
+
+{% block javascripts %}
+    {{ parent() }}   
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}      
+
+{% block pageTitle %}Администрирование пользователей{% endblock %}
+
+{% block addNewTitle %}Создать нового пользователя{% endblock %}
+
+{% block addNewLink %}{{ path('oiv_admin_user_new') }}{% endblock %}
+
+{% block tableFilterTitle %}по списку пользователей{% endblock %}
+
+{% block foivContent %}
+
+    <table id="example" class="row-border flag-list" style="width:100%; border-bottom: 0px !important">
+        <thead>
+            <tr >
+                <th>Ф.И.О.</th>
+                <th>ID</th>
+                <th>Логин</th>
+                <th width="250">Роль</th>
+                <th width="30%" style='text-align: right; padding-right: 100px'>Действие</th>
+            </tr>
+        </thead>
+        <tbody>
+         {% if users is defined %}
+        {% for user in users %}
+            <tr>
+                <td><a href="{{ path('oiv_admin_users_edit', { 'id_user': user.id }) }}">{{ user.lastname }} {{ user.firstname }} {{ user.middlename }}</a></td>
+                <td>{{user.id }}</td>
+                <td><a href="{{ path('oiv_admin_users_edit', { 'id_user': user.id }) }}">{{user.username}}</a></td>
+                <td> {{ user.roleDescription }} </td>
+                <td nowrap >
+                    <div  style='float: right'>
+                        <a href="{{ path('oiv_admin_users_edit', { 'id_user': user.id }) }}">Редактировать</a>
+                        <a class="ml30" href="javascript: void(0)" onclick="confirmDelete('{{ user.username }}', '{{ path('oiv_admin_user_delete', {'id_user': user.id}) }}')" >Удалить пользователя</a>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+       
+<script>
+/*
+dTable = $('#dTable').DataTable({
+	language: {
+		url: DATATABLES_RU_USERS_LIST_JSON,
+		searchPlaceholder: "Фильтр по пользователям"
+	},
+	{#order: [[1, 'asc']],#}
+	paging: false,
+	"search": {
+			"width": "100%"
+	}
+});
+*/
+/*
+    $("#example thead th").each( function ( i ) {
+        var select = $('<select><option value=""></option></select>')
+            .appendTo( $(this).empty() )
+            .on( 'change', function () {
+                table.column( i )
+                    .search( $(this).val() )
+                    .draw();
+            } );
+ 
+        table.column( i ).data().unique().sort().each( function ( d, j ) {
+            select.append( '<option value="'+d+'">'+d+'</option>' )
+        } );
+    } );
+    */
+</script>
+
+
+
+{% endblock %}

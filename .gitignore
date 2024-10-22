@@ -2,7 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+*2024-10-21-0001.zip
+eif_db_bkp
 # C extensions
 *.so
 

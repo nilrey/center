@@ -1,0 +1,59 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    <div class="row" style="margin-top: 10px; margin-bottom: 4px;">
+        <div class="col-md-9">
+            <h4>
+				<i class="fa fa-eye fa-fw"></i>&nbsp;<a href="#"> Общая информация </a>
+				<i class="fa fa-angle-right"></i>&nbsp; Просмотр контактов взаимодействия ФОИВ</h4>
+        </div>
+         </div>
+
+    {# <table class="record_properties"> #}
+        <table class="table">
+        <tbody>
+            <tr>
+                {#<th>Id</th>
+                <td>{{ entity.id }}</td>#}
+            </tr>
+            <tr>
+                <th>Наименование контакта:</th>
+                <td>{{ entity.name }}</td>
+            </tr>
+            <tr>
+                <th>Телефоны:</th>
+                <td>{{ entity.phone }}</td>
+            </tr>
+            <tr>
+                <th>Электронная почта:</th>
+                <td>{{ entity.email }}</td>
+            </tr>
+            <tr>
+                <th>Почтовый адрес:</th>
+                <td>{{ entity.address }}</td>
+            </tr>
+			<tr>
+                <th>Должность:</th>
+                <td>{{ entity.person.Position }}</td>
+            </tr>
+			<tr>
+                <th>Служба:</th>
+                <td>{{ entity.person.Service }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+   <ul class="record_actions">
+     <li>
+        <a href="{{ path('foiv_contacts_list', {'foivid': foivid}) }}">
+            Назад к списку
+        </a> 
+    </li> 
+    <li>
+        <a href="{{ path('foivcontacts_edit', { 'id': entity.id }) }}">
+            Редактировать
+        </a> 
+    </li>
+    <li>{{ form(delete_form) }}</li>
+</ul>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'SonataAdminBundle::standard_layout.html.twig' %}
+
+{% block side_bar_before_nav %}
+    <ul class="sidebar-menu">
+        {{ include('ncuoportal/left_menu.html.twig') }}
+    </ul>    
+{% endblock %}
+
+{% block side_bar_after_nav %}
+    <p class="text-center small" style="border-top: 1px solid #444444; padding-top: 10px"><a href="https://citis.ru" rel="noreferrer" target="_blank">ФГАНУ ЦИТиС</a></p>
+{% endblock %}

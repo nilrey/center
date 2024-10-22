@@ -1,0 +1,129 @@
+{% extends 'constructor/new_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/foiv.form.css') }}" />
+    <style>.imagePreview img{max-width: 200px} table.dataTable input[type="file"]{ margin-left: 20px}</style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/ncuooiv/js/imgBase64.js') }}"></script>
+{% endblock %}
+
+{% block nameheader %}
+<div class="container-fluid" style="line-height: 40px">
+  <div class="row">
+    <div class="col-8" style="font-weight: 600; font-size: 16px; margin-left: 38px">
+        Новый шаблон таблицы. Шаг 5 - образец внешнего вида таблицы
+    </div>
+  </div>
+</div>
+{% endblock %} 
+
+{% block content %}
+
+<div style="width: 95%; margin: auto; margin-top: 30px">
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <h5>Шаблон таблицы 'Макроэкономические показатели региона'</h5>
+        <form class="form-inline" id="create_data" method="post" action="{{urlAction}}">
+
+            <table class="table">
+                    <tbody>
+                        <tr>
+                            <td style="background: #ececec; border: 1px solid #333">
+                                &nbsp;
+                            </td>
+                            <td colspan=4 style="background: #ececec; text-align: center; border: 1px solid #333">
+                                Отчетный год 2024
+                            </td>
+                            <td style="background: #ececec; border: 1px solid #333">
+                                &nbsp;
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 200px; text-align: center; background: #ececec; border: 1px solid #333">
+                                Наименование показателей
+                            </td>
+                            <td style="width: 200px; text-align: center; background: #ececec; border: 1px solid #333">
+                                1 квартал
+                            </td>
+                            <td style="width: 200px; text-align: center; background: #ececec; border: 1px solid #333">
+                                2 квартал
+                            </td>
+                            <td style="width: 200px; text-align: center; background: #ececec; border: 1px solid #333">
+                                3 квартал
+                            </td>
+                            <td style="width: 200px; text-align: center; background: #ececec; border: 1px solid #333">
+                                4 квартал
+                            </td>
+                            <td style="width: 250px; text-align: center; background: #ececec; border: 1px solid #333">
+                                Итого
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; background: #ececec; border: 1px solid #333">
+                                1
+                            </td>
+                            <td style="text-align: center; background: #ececec; border: 1px solid #333">
+                                2
+                            </td>
+                            <td style="text-align: center; background: #ececec; border: 1px solid #333">
+                                3
+                            </td>
+                            <td style="text-align: center; background: #ececec; border: 1px solid #333">
+                                4
+                            </td>
+                            <td style="text-align: center; background: #ececec; border: 1px solid #333">
+                                5
+                            </td>
+                            <td style="text-align: center; background: #ececec; border: 1px solid #333">
+                                6
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="border: 1px solid #333">
+                                <input type="text" style="width: 250px;" value="Строка">
+                            </td>
+                            <td style="border: 1px solid #333">
+                                <input type="text" style="width: 250px;" value="100">
+                            </td>
+                            <td style="border: 1px solid #333">
+                                <input type="text" style="width: 250px;" value="100">
+                            </td>
+                            <td style="border: 1px solid #333">
+                                <input type="text" style="width: 250px;" value="100">
+                            </td>
+                            <td style="border: 1px solid #333">
+                                <input type="text" style="width: 250px;" value="100">
+                            </td>
+                            <td style="border: 1px solid #333">
+                                <input type="text" style="width: 250px;" value="100">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            <div class="container-fluid" style="padding-bottom: 50px">
+                <div class="row">
+                  <div class="col" style="text-align: left; padding-left: 0px;">
+                    <button type="submit" name="save_form" value="True"  class="btn btn-primary" style="background: none; color: #228BE6; width: 140px; margin-top: 15px; margin-right: 15px;">Сохранить</button>
+                    <button type="button" onclick="window.location.replace('/public/constructor/table_new_step_4')" class="btn btn-primary" style="background: none; color: #228BE6; width: 170px; margin-top: 15px; margin-right: 50px;">Вернуться на шаг</button>
+                    <button type="button" onclick="window.location.replace('/public/constructor')" class="btn btn-primary" style="background: none; color: #228BE6; width: 190px; margin-top: 15px;">Вернуться к списку</button>
+                  </div>
+                </div>
+            </div> 
+        </form>
+</div>        
+
+        {% if message is defined and message.message_text is defined %}
+        <script>
+        $(document).ready( function (){
+            getModalDialogInfo('{{ message.message_text }}');
+        } )
+        </script>
+        {% endif %}
+        
+{% endblock %}
+

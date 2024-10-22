@@ -1,0 +1,60 @@
+{% extends 'ncuoportal/list_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}      
+
+{% block javascripts %}
+    {{ parent() }}   
+{% endblock %}
+
+{% block pageTitle %}Администрирование меню{% endblock %}
+
+{% block addNewTitle %}Создать новую страницу{% endblock %}
+
+{% block addNewLink %}{{ path('oiv_admin_menu_new') }}{% endblock %}
+
+{% block tableFilterTitle %}по названию{% endblock %}
+
+{% block foivContent %}
+    <table id="example" class="row-border" style="width:100%; border-bottom: 0px !important">
+            <thead>
+                <tr >
+                    <th width="5%">ID родительского меню</th>
+                    <th width="5%">Порядок в меню</th>
+                    <th width="5%">ID</th>
+                    <th width="20%">Наименование</th>
+                    <th width="25%">Url</th>
+                    <th width="30%">Роли</th>
+                    <th width="10%" class="text-center">Действие</th>
+                </tr>
+            </thead>
+        <tbody>
+         {% if listMenu is defined %}
+        {% for item in listMenu %}
+            <tr>
+                <td>{{item['parent_id']}}</td>
+                <td>{{item['item_position']}}</td>
+                <td>{{item['id']}}</td>
+                <td><a href="{{ path('oiv_admin_menu_edit', { 'id_menu': item['id'] }) }}">{{item['item_name']}}</a></td>
+                <td>{{item['url']}}</td> 
+                <td>{{item['roles']}}</td>
+                <td nowrap>
+                    <a href="{{ path('oiv_admin_menu_edit', { 'id_menu': item['id'] }) }}">Редактировать</a>
+                    <a class="ml10" href="javascript: void(0)" onclick="confirmDelete('{{ item['item_name'] }}', '{{ path('oiv_admin_menu_delete', {'id_menu': item['id']}) }}')" >Удалить</a>
+                </td>
+            </tr>
+        {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+
+    {% if message is defined and message.message_text != '' %}
+    <script>
+    $(document).ready( function (){
+        getModalDialogInfo('{{ message.message_text }}', '{{ message.message_error }}');
+    } )
+    </script>
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DeleteItemsHelpers.js') }}"></script>
+	<script src="{{ asset('bundles/ncuofoiv/js/DialogHelpers.js') }}"></script>
+	<script src="{{ asset('bundles/ncuofoiv/js/CreatePersonFormHelpers.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('bundles/ncuofoiv/js/SendDataHelpers.js') }}"></script>
+	<script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/foivPVO.js') }}"></script>
+{% endblock %}
+
+{% block foivContent %}
+    <style>.fa-angle-right, .col-md-9>h4>i.fa-database{margin-right: 10px}</style>
+    <div class="row" style="margin-top: 10px; margin-bottom: 4px;">
+        <div class="col-md-9">
+            <h4>
+				<i class="fa fa-database fa-fw"></i><i class="fa fa-angle-right"></i><a href="#">Структура
+                <i class="fa fa-angle-right"></i><a href="{{path('foivpvo', {'foivid' : foiv.id}) }}">Организации и предприятия</a>
+                <i class="fa fa-angle-right"></i>Создание новой записи
+            </h4>
+        </div>
+    </div>
+    <style>
+        .contentHolder input[type=text] { width: 100% }
+		.displayOff{ display: none }
+		.displayOn{ display: block }
+        .mtb10 {margin: 10px 0px}
+    </style>
+    <div class="contentHolder">
+        <p><small>* Поля отмеченные звездочкой обязательны к заполнению</small></p>
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <form class="form-inline" id="create_data" method="post" action="{{ActionURL}}">
+            <table class="table" cols=2>
+                    <tbody>
+                        <tr>
+                            <td><b>Полное наименование *:</b></td>
+							{% if entity.name is defined %}
+								<td class="td_control"><input class="form-control" type="text" required="required" name="name" value="{{ entity.name }}"></td>
+							{% else %}
+								<td class="td_control"><input class="form-control" type="text" required="required" name="name" value=""></td>
+							{% endif %}
+                        </tr>
+                        <tr>
+                            <td><b>Сокращенное наименование *:</b></td>
+							{% if entity.shortName is defined %}
+								<td class="td_control"><input class="form-control" type="text" required="required" name="shortName" value="{{ entity.shortName }}"></td>
+							{% else %}
+								<td class="td_control"><input class="form-control" type="text" required="required" name="shortName" value=""></td>
+							{% endif %}
+                        </tr>
+                        <tr>
+                            <td><b>Тип организации:</b></td>
+                            <td class="td_control">
+
+                            <select class="form-control" name="type">
+                                <option value="0" {% if entity.type.id is not defined %} selected{% endif %}> Не указано</option>
+                            {# Проверяем: определена ли переменная (массив с данными)  или нет ? #}
+                            {%  if  typeList is defined %}
+                                {% for item in typeList %}
+                                    {#
+                                        Если значение из списка совпадает с тем что выброано в объекте,
+                                        то отмечаем данный элемент списка выбранным
+                                    #}
+                                    {% if entity.type.id is defined and  entity.type.id|number_format and item.id == entity.type.id %}
+                                        <option value="{{item.id}}" selected > {{item.type}}</option>
+                                    {% else %}
+                                        <option value="{{item.id}}" > {{item.type}}</option>
+                                    {%endif%}
+                                {% endfor %}
+                            {%  endif  %}            
+                            </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>Руководитель:</b></td>
+                            <td class="td_control">
+                                <select class="form-control" name="director">
+                                    <option value="0" selected> Не указано</option>
+                                {%  if  personsList is defined  %}
+                                    {% for item in personsList %}
+                                        {% if  item.fio|trim != "" %}
+                                            {% if entity.director.id is defined and item.id == entity.director.id %}
+                                                <option value="{{item.id}}" selected > {{item.fio}}</option>
+                                            {% else %}
+                                                <option value="{{item.id}}" > {{item.fio}}</option>
+                                            {%endif%}
+                                        {%endif%}
+                                    {% endfor %}
+                                {%  endif  %}            
+                                </select><br>
+                            <div onclick="openFormNewOption('formNewOption')" class="btn btn-default mtb10">Добавить персоналию</div>
+							{# включаем шаблон мини-формы создания персоналии #}
+							{% include 'ncuofoiv/create_person_form.html.twig' %}
+                            
+                           
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><b>Контактные номера:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" name="phone" value=""></td>
+                        </tr>
+                        <tr>
+                            <td><b>Электронная почта:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" name="email" value=""></td>
+                        </tr>
+                        <tr>
+                            <td><b>Веб-сайт:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" name="websiteUrl" value=""></td>
+                        </tr>
+                        <tr>
+                            <td><b>Адрес *:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" required="required" name="address" value=""></td>
+                        </tr>
+                        <tr>
+                            <td><b>Основные функции:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" name="functions" value=""></td>
+                        </tr>
+                    </tbody>
+            </table>
+        </form>
+		 
+        {% include 'ncuofoiv_buttons_new.twig' ignore missing with {
+            'urlBack': urlBack
+        } %}
+
+        {% if message is defined and message.message_type > 0 %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ message.message_subj }}');
+        </script>
+        {% endif %}
+
+{% for flashMessage in app.session.flashbag.get('notice') %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ flashMessage }}');
+        </script>
+{% endfor %}
+
+    <div>
+{% endblock %}

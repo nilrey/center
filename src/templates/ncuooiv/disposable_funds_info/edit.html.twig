@@ -1,0 +1,80 @@
+{% extends 'ncuooiv/layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/foiv.form.css') }}" />
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li>Структура</li>
+    <li>Подведомственные учреждения, силы и средства</li>
+    <li>Редактирование записи</li>
+{% endblock %}
+
+{% block subtitle %}
+    <h5>Подведомственные учреждения, силы и средства > Редактирование записи</h5>
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrTabs = ["tab_foiv_struct", "tab_disposable_funds_info"];
+{% endblock %}
+
+{% block foivContent %}
+    <div class="contentHolder">
+        {#% if entity.ModifiedDate is defined and entity.id > 0 %}<p>Дата последнего изменения: {{ entity.ModifiedDate|date("d.m.Y (H:i:s)")}}</p>{% endif %#}
+        <p>* Поля отмеченные звездочкой обязательны к заполнению</p>
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <form class="form-inline" id="create_data" method="post" action="{{urlAction}}">
+            <table class="table table-striped table-bordered dataTable editForm">
+                    <tbody>
+
+       {% if fields is defined %}
+           {% for field in fields %}         
+                        <tr>
+                            <td>
+                                {{field.name}}:
+                            </td>
+                            <td id='td_{{field.IdFldShort}}'>
+                        {% if field.data is defined %}
+                            {% autoescape %}
+                                <textarea name="FIELDS[{{field.id}}]" cols=100 rows=15>{{ field.data|raw }}</textarea>
+                                <!--<input type="text" name="FIELDS[{{field.IdFldShort}}]" value="">-->
+                            {% endautoescape %}
+                        {% endif %}
+                                
+                            </td>
+                        </tr>
+   
+           {% endfor %}
+       {% endif %}                        
+                    </tbody>
+            </table>
+        </form>
+		
+		
+		{% include 'ncuooiv_buttons_edit.twig' ignore missing with {
+			'urlBack': urlBack,
+			'urlView': urlView
+		} %}
+		
+
+        {% if message is defined and message.message_error == false %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ message.message_text }}');
+        </script>
+        {% endif %}
+
+{#% for flashMessage in app.session.flashbag.get('notice') %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ flashMessage }}');
+        </script>
+{% endfor %#}
+
+    <div>
+{% endblock %}

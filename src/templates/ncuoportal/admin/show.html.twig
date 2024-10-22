@@ -1,0 +1,171 @@
+{% extends 'ncuooiv/layout.html.twig' %}  
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/oiv.css') }}" />
+    <style type="text/css">
+    #heraldic_img img, #flag_img img { width: 80px}
+    #name_full { font-weight: 600 }
+    .table td {
+        border-bottom: 1px solid #cdcdcd !important;
+        height: 50px !important;
+    }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li>Общая информация</li>
+    <li>Карточка ФОИВ</li>
+{% endblock %}
+
+{% block subtitle %}
+	<h5>Карточка ФОИВ</h5>
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrTabs = ["tab_oiv_common", "tab_oiv_show"];
+{% endblock %}
+
+{% block foivContent %}
+   
+    <div class="contentHolder">
+
+             <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+   {# ----------------------------------------------------------- </br> }
+   
+   {% dump(oiv) %}</br>
+    
+   {# ----------------------------------------------------------- </br> #}
+
+        
+        {#% if foiv.ModifiedDate  is defined %}<p>Дата последнего изменения: {{ foiv.ModifiedDate|date("d.m.Y (H:i:s)")}}</p>{% endif %#}
+        
+        
+        <table class="table table-info">
+         
+
+         {% if fields is defined %}
+        {% for field in fields %}         
+            <tr>
+                <td>
+                    {{field.name}}:
+                </td>
+                <td id='{{field.IdFldShort}}'>
+                    {% if field.data is defined %}
+                       {% autoescape %}
+                        {{ field.data|raw }}
+                        {% endautoescape %}
+                    {% endif %}
+                    
+                </td>
+            </tr>
+
+        {% endfor %}
+        {% endif %}            
+            {#   
+            <tr>
+                <td>
+                    Полное наименование:
+                </td>
+                <td>
+                    {% if oiv.name is defined %}
+                    {{ oiv.name }}
+                    {% endif %}
+                    
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Сокращённое наименование:
+                </td>
+                <td>
+                    {% if foiv.name is defined and foiv.shortname|trim %}
+                    {{ foiv.shortname }}
+                    {% endif %}
+                </td>
+            </tr>
+
+                <tr>
+                    <td>
+                        Руководящий орган:
+                    </td>
+                    <td>
+                        {% if foiv.superfoiv.id is defined  %}
+                        <a href="/foiv/{{ foiv.superfoiv.id }}">
+                            {{ foiv.superfoiv.name }}
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            
+            
+            <tr>
+                <td>
+                    Официальный сайт:
+                </td>
+                <td>
+                    <a id="siteUrl" href="{{ foiv.siteurl }}" target="_blank">{{ foiv.siteurl }}</a>
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                     Категория: 
+                </td>
+                <td>
+                     {% if foiv.type is defined and foiv.type|trim %}
+                    {{ foiv.type }}
+                    {% endif %}
+                </td>
+            </tr>
+            
+            {% if foiv.stateLink %}
+                <tr>
+                    <td>
+                         Положение по ФОИВ: 
+                    </td>
+                    <td>
+                        <a href="{{ foiv.stateLink }}" target="_blank">Просмотр</a>
+                    </td>
+                </tr>
+            {% endif %}
+            
+            <tr>
+                <td>
+                     Назначение: 
+                </td>
+                <td>
+                    {{ foiv.descriptionText | raw }}    
+                </td>
+            </tr>
+        </table>
+        <table class="table table-address">
+            <tr>
+                <td rowspan=10>
+                     Адрес: 
+                </td>
+                <tr><td>Индекс:</td>           <td>{% if foiv.address.index	    is defined  %} {{ foiv.address.index }} {% endif%}</td></tr>
+                <tr><td>Регион:</td>           <td>{% if foiv.address.region    is defined  %} {{ foiv.address.region }} {% endif%}</td></tr>
+                <tr><td>Населенный пункт:</td> <td>{% if foiv.address.city      is defined  %} {{ foiv.address.city }} {% endif%}</td></tr>
+                <tr><td>Улица:</td>            <td>{% if foiv.address.street    is defined  %} {{ foiv.address.street }} {% endif%}</td></tr>
+                <tr><td>Дом:</td>              <td>{% if foiv.address.houseNumber    is defined  %} {{ foiv.address.houseNumber }} {% endif%}</td></tr>
+                <tr><td>Корпус:</td>           <td>{% if foiv.address.houseSubNumber is defined  %} {{ foiv.address.houseSubNumber }} {% endif%}</td></tr>
+                <tr><td>Строение:</td>         <td>{% if foiv.address.buildingNumber is defined  %} {{ foiv.address.buildingNumber }} {% endif%}</td></tr>
+                <tr><td>Код по КЛАДР:</td>     <td>{% if foiv.address.kladrCode is defined  %} {{ foiv.address.kladrCode }} {% endif%}</td></tr>
+                <tr><td>Код по ОКАТО:</td>     <td>{% if foiv.address.okatoCode  is defined  %} {{ foiv.address.okatoCode }} {% endif%}</td></tr>
+            </tr>
+                #}
+        </table>
+        
+        
+        <div class="list-buttons">
+            <button class="btn btn-edit ml0" onclick="window.location.replace('{{ path('short_info_edit', { 'id_oiv': oiv.Id }) }}')"  title="Редактировать" />
+        </div>
+    </div> <!-- \ contentHolder -->
+
+{% endblock %}

@@ -1,0 +1,378 @@
+$(document).ready(function() {
+    
+    /*
+     * Таблица источников
+     */
+    
+    var tblSources = $('#tbl_sources').DataTable({
+        dom: '<"#dt-search"f><t><"#dt-bottom"pl>',
+        language: {
+            url: DATATABLES_RU_JSON            
+        },
+        ordering: false,
+        serverSide: true,
+        processing: true,
+        ajax: {
+            url: URL_GET_SOURCE_LIST,
+            method: 'POST'
+        },
+        columnDefs: [
+            {className: 'text-center', targets: [2, 3]},  
+            {
+                "targets": [ 3 ],
+                "visible": false
+            }
+        ] 
+    });
+    {% if not is_granted('ROLE_ADMIN') %}
+        tblSources.column(0).visible(false); // ID
+    {% endif %}
+    
+{% if is_granted('ROLE_ADMIN') %}
+
+    /**
+     * Добавление источника
+     */
+    
+    $('#btn_add_source').click(function() {
+        // Открываем диалог
+        var dlg_edit = $('#source_edit_dlg');
+        dlg_edit.attr('title', 'Создание');
+        
+        dlg_edit.find('#source_name').val('');
+        dlg_edit.find('#source_descr').val('');
+        dlg_edit.find('#fr_no').prop('checked', true).click();
+        
+        $('#source_edit_dlg').dialog({
+            closeOnEscape: true,
+            resiziable: false,
+            width: 500,
+            height: 450,
+            position: {at: 'center center-200'},
+            modal: true, 
+            buttons: {
+                Сохранить: function() {
+                    // Сохраняем на сервер
+                    objSave = {};
+                    objSave['id_source']      = -1;
+                    objSave['source_name']    = dlg_edit.find('#source_name').val();
+                    objSave['source_descr']   = dlg_edit.find('#source_descr').val();
+                    objSave['foiv_roiv_flag'] = dlg_edit.find('.fr_attach:checked').val();
+                    
+                    if (objSave['foiv_roiv_flag'] == 'FOIV')
+                        objSave['id_fr'] = dlg_edit.find('#foiv_lst').val();
+                    else if (objSave['foiv_roiv_flag'] == 'ROIV')
+                        objSave['id_fr'] = dlg_edit.find('#roiv_lst').val();                    
+                    
+                    $('#lock_pane').attr('class', 'lock_on');
+                    $.ajax({
+                        url: URL_SOURCE_SAVE,
+                        method: 'POST',
+                        data: objSave,
+                        async: false,
+                        cache: false,
+                        success: function (e) {
+                            $('#lock_pane').attr('class', 'lock_off');
+                           
+                            if (e['err_id'] == 0) {
+                                tblSources.draw(false);
+                                dlg_edit.dialog('destroy');
+                            }
+                            else
+                                $.dialogen('okdlg', {text: e['content']});                            
+                        },
+                        error: function (e) {
+                            $('#lock_pane').attr('class', 'lock_off');
+
+                            $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                        }                                                                                           
+                    });
+                },
+                Отмена: function() {
+                    $(this).dialog('destroy');
+                }
+            }
+        });
+    });
+    
+    /**
+     * Редактирование источника
+     */
+    
+    $('#tbl_sources').on('click', '.source_edit', function() {
+        // Идентификатор источника
+        var row_index  = tblSources.row($(this).closest('tr')).index();
+        var id_source = tblSources.cell(row_index, 0).data();
+               
+        // Запрашиваем информацию по источнику
+        $('#lock_pane').attr('class', 'lock_on');
+        $.ajax({
+            url: URL_GET_SOURCE,
+            method: 'GET',
+            async: false,
+            cache: false,
+            data: {
+                id_source: id_source
+            },
+            success: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+                
+                if (e['err_id'] != 0) {
+                    $.dialogen('okdlg', {text: e['content']});
+                    return;
+                }
+                
+                // Открываем диалог
+                var dlg_edit = $('#source_edit_dlg');
+                dlg_edit.attr('title', 'Редактирование');
+
+                dlg_edit.find('#source_name').val(e['content']['source_name']);
+                dlg_edit.find('#source_descr').val(e['content']['source_descr']);
+                
+                // Тип привязки ФОИВ/РОИВ
+                var fr_attach = e['content']['foiv_roiv_flag'];
+                if (fr_attach == 'NONE')
+                    dlg_edit.find('#fr_no').prop('checked', true).click();
+                else if (fr_attach == 'FOIV') {
+                    dlg_edit.find('#fr_foiv').prop('checked', true).click();
+                    dlg_edit.find('#foiv_lst').val(e['content']['id_fr']);
+                }
+                else if (fr_attach == 'ROIV') {
+                    dlg_edit.find('#fr_roiv').prop('checked', true).click();
+                    dlg_edit.find('#roiv_lst').val(e['content']['id_fr']);
+                }
+                
+                $('#source_edit_dlg').dialog({
+                    closeOnEscape: true,
+                    resiziable: false,
+                    width: 500,
+                    height: 450,
+                    position: {at: 'center center-200'},
+                    modal: true, 
+                    buttons: {
+                        Сохранить: function() {
+                            // Сохраняем на сервер
+                            objSave = {};
+                            objSave['id_source']        = id_source;
+                            objSave['source_name']      = dlg_edit.find('#source_name').val();
+                            objSave['source_descr']     = dlg_edit.find('#source_descr').val();                            
+                            objSave['foiv_roiv_flag']   = dlg_edit.find('.fr_attach:checked').val();
+
+                            if (objSave['foiv_roiv_flag'] == 'FOIV')
+                                objSave['id_fr'] = dlg_edit.find('#foiv_lst').val();
+                            else if (objSave['foiv_roiv_flag'] == 'ROIV')
+                                objSave['id_fr'] = dlg_edit.find('#roiv_lst').val();                            
+
+                            $('#lock_pane').attr('class', 'lock_on');
+                            $.ajax({
+                                url: URL_SOURCE_SAVE,
+                                method: 'POST',
+                                data: objSave,
+                                async: false,
+                                cache: false,
+                                success: function (e) {
+                                    $('#lock_pane').attr('class', 'lock_off');                                   
+
+                                    if (e['err_id'] == 0) {
+                                        tblSources.draw(false);
+                                        dlg_edit.dialog('destroy');
+                                    }
+                                    else
+                                        $.dialogen('okdlg', {text: e['content']}); 
+                                },
+                                error: function (e) {
+                                    $('#lock_pane').attr('class', 'lock_off');
+
+                                    $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                                }                                                                                           
+                            });
+                        },
+                        Отмена: function() {
+                            $(this).dialog('destroy');
+                        }
+                    }
+                });                
+            },
+            error: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+
+                $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});                 
+            }
+        });                
+    });
+    
+    /*
+     * Удаление источника
+     */
+    
+    $('#tbl_sources').on('click', '.source_del', function() {
+        // Идентификатор источника
+        var row_index  = tblSources.row($(this).closest('tr')).index();
+        var id_source = tblSources.cell(row_index, 0).data();
+        
+        $.dialogen(
+            'yesnodlg',
+            {text: 'Вы действительно хотите удалить источник?'},
+            function() {
+                // Отправляем запрос на удаление
+                var objDel = {};
+                objDel['id_source'] = id_source;
+                
+                $('#lock_pane').attr('class', 'lock_on');
+                $.ajax({
+                    url: URL_SOURCE_DELETE,
+                    method: 'POST',
+                    data: objDel,
+                    async: false,
+                    cache: false,
+                    success: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+                        
+                        if (e['err_id'] == 0)
+                            tblSources.draw(false);
+                        else
+                            $.dialogen('okdlg', {text: e['content']});                            
+                    },
+                    error: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+
+                        $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                    }                                                                   
+                });                
+            }
+        );
+    });
+	
+    /**
+     * Импортирование источника
+     */
+    
+    $('#btn_import_source').click(function() {
+        $('#inp_source_file').click();
+    });
+    
+    $('#inp_source_file').change(function() {		
+        var data = new FormData();
+        data.append('source_file', $(this)[0].files[0]);
+
+		$('#lock_pane').attr('class', 'lock_on');           
+		$.ajax({
+			url: URL_SOURCE_FILE_UPLOAD,
+			method: 'POST',
+			data: data,
+			async: false,
+			cache: false,
+			processData: false,
+			contentType: false,
+			success: function (e) {                                        
+				$('#lock_pane').attr('class', 'lock_off');
+			
+				if (e['err_id'] != 0) {
+					$.dialogen('okdlg', {text: e['content']});                    
+				} else {                                                                          
+					tblSources.draw(false); 
+				}                       
+			},
+			error: function (e) {
+				$('#lock_pane').attr('class', 'lock_off');
+				
+				$.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+			}                                                                   
+		}); 
+    });	
+    
+    /**
+     * Выбор типа привязки ФОИВ/РОИВ
+     */
+    
+    $('#source_edit_dlg .fr_attach').click(function() {
+        $('#source_edit_dlg #foiv_lst').toggle($('#source_edit_dlg #fr_foiv').is(':checked'));
+        $('#source_edit_dlg #roiv_lst').toggle($('#source_edit_dlg #fr_roiv').is(':checked'));
+    });
+    
+{% else %}
+    
+    /**
+     * Получение информации об источнике
+     */
+    
+    $('#tbl_sources').on('click', '.source_info', function() {
+        // Идентификатор источника
+        var row_index  = tblSources.row($(this).closest('tr')).index();
+        var id_source = tblSources.cell(row_index, 0).data();
+               
+        // Запрашиваем информацию по источнику
+        $('#lock_pane').attr('class', 'lock_on');
+        $.ajax({
+            url: URL_GET_SOURCE,
+            method: 'GET',
+            async: false,
+            cache: false,
+            data: {
+                id_source: id_source
+            },
+            success: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+                
+                if (e['err_id'] != 0) {
+                    $.dialogen('okdlg', {text: e['content']});
+                    return;
+                }
+                
+                // Открываем диалог
+                var dlg_info = $('#source_info_dlg');
+
+                dlg_info.find('#source_name').val(e['content']['source_name']);
+                dlg_info.find('#source_descr').val(e['content']['source_descr']);
+                
+                // Тип привязки ФОИВ/РОИВ
+                var fr_attach = e['content']['foiv_roiv_flag'];
+                if (fr_attach == 'NONE') {
+                    dlg_info.find('#fr_no').prop('checked', true).click();
+                    dlg_info.find('#fr_name').val('');
+                }
+                else if (fr_attach == 'FOIV') {
+                    dlg_info.find('#fr_foiv').prop('checked', true).click();
+                    dlg_info.find('#fr_name').val(e['content']['fr_name']);
+                }
+                else if (fr_attach == 'ROIV') {
+                    dlg_info.find('#fr_roiv').prop('checked', true).click();
+                    dlg_info.find('#fr_name').val(e['content']['fr_name']);
+                }
+                
+                dlg_info.dialog({
+                    closeOnEscape: true,
+                    resiziable: false,
+                    width: 500,
+                    height: 450,
+                    position: {at: 'center center-200'},
+                    modal: true, 
+                    buttons: {                        
+                        Закрыть: function() {
+                            $(this).dialog('destroy');
+                        }
+                    }
+                });                
+            },
+            error: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+
+                $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});                 
+            }
+        });                
+    });
+    
+{% endif %}
+    
+    /**
+     * Переход к редактированию протоколов
+     */
+    
+    $('#tbl_sources').on('click', '.to_protocols', function() {
+        // Идентификатор источника
+        var row_index  = tblSources.row($(this).closest('tr')).index();
+        var id_source = tblSources.cell(row_index, 0).data();
+        
+        window.location.assign(URL_PROTOCOL_LIST + id_source);
+    });
+});

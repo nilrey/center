@@ -1,0 +1,45 @@
+{% extends 'ncuooiv/item_show_tpl.html.twig' %}  
+
+{% block foivContent %}
+<style>.table td img{max-height:220px!important}</style>
+        <table class="table table-info">
+            <tr>
+                <td rowspan=3>{% autoescape %}{{arDirector['dir_photo']|raw}}{% endautoescape %}
+                </td>
+            </tr>
+            <tr>
+                <td style='width: 80% !important; '>
+                    <strong style="color: #333; font-size: 16px">{{arDirector['dir_position']}}</strong>
+                </td>
+            </tr>
+            <tr>
+                <td>{{arDirector['dir_rang']}}<br>
+                    {{arDirector['dir_surename']}} {{arDirector['dir_firstname']}} {{arDirector['dir_patronymic']}}
+                </td>
+            </tr>
+        </table>
+        
+        <table class="table table-info">
+            <tr>
+                <td rowspan=3>{% autoescape %}{{arDeputy['dh_photo']|raw}}{% endautoescape %}
+                </td>
+            </tr>
+            <tr>
+                <td style='width: 80% !important'>
+                     <strong style="color: #333; font-size: 16px">{{arDeputy['dh_position']}}</strong>
+                </td>
+            </tr>
+            <tr>
+                <td>{{arDeputy['dh_rang']}}<br>
+                    {{arDeputy['dh_surename']}} {{arDeputy['dh_firstname']}} {{arDeputy['dh_patronymic']}}
+                </td>
+            </tr>
+        </table>
+        
+        
+        {% include 'buttons_psp_show.twig' ignore missing with {
+            'urlEdit': urlEdit
+        } %}
+        
+
+{% endblock %}

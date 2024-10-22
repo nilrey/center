@@ -1,0 +1,59 @@
+$(document).ready(function() {
+
+    var tblData = null;
+
+    /*
+     * Запрос данных для отчета
+     */
+    
+    $('#lock_pane').attr('class', 'lock_on');
+    $.ajax({
+        url: URL_REPORT_GET_DATA,
+        method: 'GET',
+        async: false,
+        cache: false,
+        success: function(e) {
+            $('#lock_pane').attr('class', 'lock_off');
+            
+            if (e['err_id'] != 0) {
+                $.dialogen('okdlg', {text: e['content']});
+                return;
+            }
+            
+            $('#tbl_data_act_control tbody').append(e['content']);
+            tblData = $('#tbl_data_act_control').DataTable({
+                order: [],
+                dom: '<"#dt-search"f><t><"#dt-bottom"pl>',
+                //dom: 'ltipr',       /* Убрал глобальный поиск f */                
+                language: {
+                    url: DATATABLES_RU_JSON            
+                },
+                initComplete: function() {
+                    this.api().columns().every(function() {
+                        var column = this;
+                        
+                        var select = $(".tbl_col_search[data-pos='" + column.index() + "']");
+                        column.data().unique().each(function(d, j) {
+                            // Если ссылка, "вытаскиваем" из нее текст, если нет - оставляем как есть
+                            var filt = (d.indexOf("<a") != -1) ? $(d).text() : d;                            
+                            select.append($("<option></option>").attr("value", filt).text(filt));
+                        });
+                    });                    
+                }
+            });        
+        },
+        error: function(e) {
+            $('#lock_pane').attr('class', 'lock_off');
+
+            $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+        }
+    });
+    
+    /**
+     * Поиск в таблице
+     */
+    
+    $('.tbl_col_search').change(function() {
+        tblData.column($(this).attr('data-pos')).search($(this).val()).draw();
+    });
+});

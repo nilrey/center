@@ -1,0 +1,52 @@
+{% extends 'ncuooiv/list_layout.html.twig' %}
+
+
+{% block javascripts %}
+    {{ parent() }}   
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}  	
+
+{% block foivContent %}
+<table id="example" class="row-border flag-list" style="width:100%; border-bottom: 0px !important">
+        <thead style="display: none">
+            <tr>
+                <th>Flag</th>
+                <th>Name</th>
+                <th>Действие</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+         {% if entities is defined %}
+        {% for entity in entities %}
+            <tr role="row" class="odd">
+                <td style="width: 70px"><a href="{{ path('oiv_show', { 'id_oiv': entity.id }) }}">{% autoescape %}{{ entity.heraldic_img|raw }}{% endautoescape %}</a></td>
+                <td><a href="{{ path('oiv_show', { 'id_oiv': entity.id }) }}">{{ entity.name }} {% if entity.name_short != "" %}({{entity.name_short}}){% endif %}</a></td>
+                <td nowrap style="text-align: right; padding-right: 14px">
+                    <a class="ml10" href="javascript: void(0)" onclick="confirmDelete('{{ entity.name }}', '{{ path('oiv_delete', {'id_oiv': entity.id}) }}')" ><i class="fa fa-trash" title="Удалить паспорт ФОИВ"></i></a>
+                </td>
+            </tr>
+        {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+    {% if rolePerms is defined %}
+        {% if rolePerms["create"] == true %}
+   <div style="margin: 20px 0px 30px 0px">
+      <button onclick="window.location.replace('{{ path('oiv_new', {}) }}')" title="Создать паспорт ФОИВ" class="btn btn-add" /></a>
+   </div>
+        {% endif %}
+    {% endif %}
+
+<script>
+function confirmDelete(foivTitle, deleteUrl){
+    getModalDialogConfirm('Вы действительно хотите удалить паспорт "'+foivTitle+'"?');
+    $('#dialog-modal-confirm-send').click( function() {window.location.replace(deleteUrl)} );
+}
+</script>
+
+
+{% endblock %}

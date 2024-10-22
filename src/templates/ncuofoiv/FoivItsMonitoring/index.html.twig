@@ -1,0 +1,161 @@
+{% extends 'layout.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/dataTables.bootstrap.css') }}"/>
+    {{ parent() }}
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/jquery.dataTables.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/dataTables.bootstrap.js') }}"></script>
+    <script>
+        var DATATABLES_RU_JSON          = '{{ asset('bundles/ncuoportal/js/datatables/ru_Ru.json') }}';
+    </script>
+      
+{% endblock %}  
+
+
+{% block breadcrumb %}
+    <li>Контроль и управление функционированием</li>
+    <li>Мониторинг ФОИВ</li>
+{% endblock %}  
+{% block content %}
+        <h4>Мониторинг ФОИВ</h4>
+		
+        <div id="dialog_msg_info" class="display-none" title="Внимание" hidden></div>
+        <div id="dialog_rec_delete" class="display-none"  title="Внимание" hidden>Вы действительно хотите удалить запись?</div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <table id="dTable" class="table table-striped table-bordered dataTable">
+            <thead>
+                <tr >
+					<th>Наименование ФОИВ</th>
+					<th>Соглашение</th>
+					<th>Протокол ИТС</th>
+					<th>ИС,<br>подкл./<br>всего</th>
+					<th>Кабинет<br>подкл.</th>
+					<th>Эл. почта</th>
+					<th>VipNet</th>
+					<th>Видео<br>конференц<br>связь</th>
+					<th>Подкл.<br> АРМ</th>
+                    <th width="3%">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if entities is defined %}
+				{% set counter = 0 %}
+            {% for entity in entities %}
+				{% if entity.FoivId is defined and entity.FoivId.Id > 0 %}
+				{% set counter = counter + 1 %}
+                <tr id="item_{{ entity.Id }}">
+                    <td><a  href="{{ path('foiv_its_monitoring_view', { 'id': entity.Id }) }}">{{ entity.FoivId.Name }}</a></td>
+					<td style="font-size: 10px" >
+						{% if entity.convention is defined %}
+							{{entity.convention.Name}}
+						{% else %}
+							Нет
+						{% endif %}
+					</td>
+					<td style="font-size: 10px; width: 105px; white-space: nowrap" >
+						<span style="clear: both; float: left; display: inline">Не подписано: </span>
+						<span style="float: right; display: inline">
+						{#% set totalCountSys = 0 %}
+						{% if entity.itsProtocolsByStatus[0]["not_signed"] is defined %}
+							{{entity.itsProtocolsByStatus[0]["not_signed"]}}
+							{% set totalCountSys = totalCountSys + entity.itsProtocolsByStatus[0]["not_signed"] %}
+						{% else %}
+							0
+						{%endif%#}
+						</span>
+						
+						<span style="clear: both; float: left; display: inline">На согласовании: </span>
+						<span style="float: right; display: inline">
+						{#% if entity.itsProtocolsByStatus[0]["on_agreement"] is defined %}
+							{{entity.itsProtocolsByStatus[0]["on_agreement"]}}
+							{% set totalCountSys = totalCountSys + entity.itsProtocolsByStatus[0]["on_agreement"] %}
+						{% else %}
+							0
+						{%endif%#}
+						</span>
+						<span style="clear: both; float: left; display: inline">Подписано:</span>
+						<span style="float: right; display: inline">
+						{#% if entity.itsProtocolsByStatus[0]["signed"] is defined %}
+							{{entity.itsProtocolsByStatus[0]["signed"]}}
+							{% set totalCountSys = totalCountSys + entity.itsProtocolsByStatus[0]["signed"] %}
+						{% else %}
+							0
+						{%endif%#}
+						</span>
+					</td>
+					<td>
+						{#% if entity.SystemSum is defined and entity.SystemSum > 0 %}
+							{{entity.SystemSum}}
+						{% else %}
+							0
+						{% endif %#}
+						/ {#{ totalCountSys }#}
+						
+					</td>
+					<td>
+						{#% if  entity.CabinetSum > 0 %}
+							Да
+						{% else %}
+							Нет
+						{% endif %#}
+					</td>
+					<td>
+						
+						{#% if  entity.EmailSum > 0 %}
+							Да
+						{% else %}
+							Нет
+						{% endif %#}
+					</td>
+					<td>
+						{#% if entity.vipnet is defined and entity.vipnet > 0 %}
+							Да
+						{% else %}
+							Нет
+						{% endif %#}
+					</td>
+					<td>
+						{#% if entity.video is defined and entity.video > 0 %}
+							Да
+						{% else %}
+							Нет
+						{% endif %#}
+					</td>
+					<td>
+						{#% if entity.arm is defined and entity.arm > 0 %}
+							{{entity.arm}}
+						{% else %}
+							0
+						{% endif %#}
+					</td>
+                    <td style="text-align: center; white-space: nowrap" >
+						<a href="{{ path('foiv_its_monitoring_view', { 'id': entity.Id }) }}"><i class="fa fa-eye"></i></a>
+						<a href="{{ path('foiv_its_monitoring_edit', { 'id': entity.Id }) }}"><i class="fa fa-pencil"></i></a>
+					</td>
+                </tr>
+				{% endif %}
+            {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+<script>
+dTable = $('#dTable').DataTable({
+	language: {
+		url: DATATABLES_RU_JSON,
+		searchPlaceholder: "Поиск"
+	},
+	order: [[0, 'asc']],
+	//paging: false,
+	"pageLength": 100,
+	"search": {
+			"width": "100%"
+	}
+});
+</script>
+{% endblock %}

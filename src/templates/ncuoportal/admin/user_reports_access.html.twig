@@ -1,0 +1,81 @@
+{% extends "layout.html.twig" %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/admin/common.css') }}"/>
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/dataTables.bootstrap.css') }}"/> 
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block javascripts %}    
+    {{ parent() }}
+            
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/dialogen.plugin.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/jquery.dataTables.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/dataTables.bootstrap.js') }}"></script>
+    <script>
+        var MSG_SERVICE_ERROR           = '{{ msg_service_error }}';
+        var DATATABLES_RU_JSON          = '{{ asset('bundles/ncuoportal/js/datatables/ru_Ru.json') }}';        
+		
+        var URL_REP_LIST_SAVE		= '{{ path('admin_user_reports_access__save') }}';
+    </script>    
+    
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/admin/user_reports_access.js') }}"></script>    
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block breadcrumb %}
+    <li><a href="{{ path('admin') }}">Администрирование</a></li>
+	<li><a href="{{ path('admin_users') }}">Настройка пользователей</a></li>
+    <li class="active">Настройка доступа к динамическим отчетам</li>
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block content %}
+    {% if err_msg is defined %}
+        <div id="error_msg" class="alert alert-danger">{{ err_msg }}</div>
+    {% else %}
+        <h4>Настройка доступа к динамическим отчетам:</h4>
+        <label>Пользователь: {{ username }}</label>
+        <input type="hidden" id="id_user" value="{{ id_user }}"/>
+        <br>		        
+
+		<form class="form-inline">
+			<button id="btn_unsel_all" class="btn btn-default" type="button" title="Снять все"><i class="fa fa-square-o"></i></button>
+	        <button id="btn_sel_all" class="btn btn-default" type="button" title="Выделить все"><i class="fa fa-check-square-o"></i></button>		
+		</form>
+
+		<div class="list-buttons-top">
+			<button id="btn_save" class="btn btn-save" type="button" title="Сохранить"></button>
+		</div>
+
+        <div id="table_div" class="margin-top-15">        
+            <table id="tbl_reports" class="table table-striped table-hover table-bordered">
+                <thead style="background-color: #AAA;">
+                <tr>
+                    <th width="20%">ID</th>
+                    <th width="70%">Наименование отчета</th>
+                    <th width="10%" class="text-center">Доступ</th>
+                </tr>
+                </thead>
+
+                <tfoot>
+                </tfoot>
+
+                <tbody>
+                    {{ report_list|raw }}
+                </tbody>
+            </table>
+        </div>              
+    {% endif %}
+{% endblock %}

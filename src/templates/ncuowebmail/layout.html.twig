@@ -1,0 +1,148 @@
+{% extends 'layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/custom.tabs.foiv.css') }}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/region.css') }}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/region_custom.css') }}" />
+{% endblock %}  
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DialogHelpers.js')}}"></script>
+    <script  src="{{ asset('bundles/ncuofoiv/js/foivShow.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/jquery.dataTables.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/dataTables.bootstrap.js') }}"></script>
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/foiv.js') }}"></script>
+    <!-- <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DeleteItemsHelpers.js') }}"></script> -->
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/onDeleteTableRecord.js') }}"></script>
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/foiv_tab_menu.js') }}"></script>
+    <script src="{{ asset('bundles/ncuoportal/js/oiv/functions.js') }}"></script>
+    
+    <script>
+        var DATATABLES_RU_JSON = '{{ asset('bundles/ncuoportal/js/datatables/ru_Ru.json') }}';
+        var DATATABLES_RU_REG_LIST_JSON = '{{ asset('bundles/ncuoportal/js/datatables/ru_Ru_reg_list.json') }}';
+    </script>
+      
+{% endblock %}  
+
+{% block breadcrumb %}
+    
+    <li><a href="('region') }}">Паспорта ФОИВ РФ / Субьектов РФ</a></li>
+    <li><a href="('region') }}">Субьекты РФ</a></li>
+    {% if oiv is defined %}
+    <li><a href="('region_show', { 'id_reg': oiv.Id }) }}">{{ oiv.name }}</a></li>
+    {%endif %}
+{% endblock %}    
+
+{% block content %}
+    
+        {% if oiv.name is defined %}<h4>
+    <span class="foiv-logo">{% autoescape %}{{ oiv.heraldic_img|raw }}{% endautoescape %}</span>
+        {{ oiv.name }}
+        {% endif %}
+    </h4>
+    <div class="row-fluid">
+        <div class="span12">
+            <ul class="nav nav-tabs foiv-tabs">
+                <li id="tab_common_info" class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        Общие сведения <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li id="tab_s_geo_position"><a href="('s_geo_position', { 'id_reg': oiv.Id }) }}">Административно-географическое положение</a></li>
+                        <li id="tab_s_adm_structure"><a href="('s_adm_structure', { 'id_reg': oiv.Id }) }}">Административно-территориальное устройство субъекта РФ</a></li>
+                        <li id="tab_s_gov_structure"><a href="('s_gov_structure', { 'id_reg': oiv.Id }) }}">Органы государственной власти и местного самоуправления</a></li>
+                    </ul>
+                </li>
+                <li id="tab_economic_info" class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        Экономическое развитие <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li id="tab_s_macroecon"><a href="('s_macroecon', { 'id_reg': oiv.Id }) }}">Макроэкономические показатели</a></li>
+                        <li id="tab_s_industrial"><a href="('s_industrial', { 'id_reg': oiv.Id }) }}">Промышленное производство</a></li>
+                        <li id="tab_s_foreign_capital_org"><a href="('s_foreign_capital_org', { 'id_reg': oiv.Id }) }}">Организации с участием иностранного капитала</a></li>
+                        <li id="tab_s_small_business"><a href="('s_small_business', { 'id_reg': oiv.Id }) }}">Малые предприятия</a></li>
+                        <li id="tab_s_agriculture"><a href="('s_agriculture', { 'id_reg': oiv.Id }) }}">Сельское хозяйство</a></li>
+                        <li id="tab_s_communication"><a href="('s_communication', { 'id_reg': oiv.Id }) }}">Транспорт и связь</a></li>
+                        <li id="tab_s_building"><a href="('s_building', { 'id_reg': oiv.Id }) }}">Строительство</a></li>
+                        <li id="tab_s_investments"><a href="('s_investments', { 'id_reg': oiv.Id }) }}">Инвестиции в основной капитал</a></li>
+                        <li id="tab_s_consumers"><a href="('s_consumers', { 'id_reg': oiv.Id }) }}">Потребительский рынок</a></li>
+                        <li id="tab_s_prices"><a href="('s_prices', { 'id_reg': oiv.Id }) }}">Цены</a></li>
+                        <li id="tab_s_export"><a href="('s_export', { 'id_reg': oiv.Id }) }}">Внешнеэкономическая деятельность</a></li>
+                        <li id="tab_s_finance"><a href="('s_finance', { 'id_reg': oiv.Id }) }}">Финансы</a></li>
+                        <li id="tab_s_banking"><a href="('s_banking', { 'id_reg': oiv.Id }) }}">Банковская система</a></li>
+                    </ul>
+                </li>
+                <li id="tab_social_info" class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        Социальная сфера <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li id="tab_s_demography"><a href="('s_demography', { 'id_reg': oiv.Id }) }}">Демография</a></li>
+                        <li id="tab_s_healthcare"><a href="('s_healthcare', { 'id_reg': oiv.Id }) }}">Здравоохранение</a></li>
+                        <li id="tab_s_education"><a href="('s_education', { 'id_reg': oiv.Id }) }}">Образование</a></li>
+                        <li id="tab_s_living_conditions"><a href="('s_living_conditions', { 'id_reg': oiv.Id }) }}">Уровень жизни населения</a></li>
+                        <li id="tab_s_housing_conditions"><a href="('s_housing_conditions', { 'id_reg': oiv.Id }) }}">Жилищные условия населения</a></li>
+                        <li id="tab_s_utilities"><a href="('s_utilities', { 'id_reg': oiv.Id }) }}">Коммунальное хозяйство</a></li>
+                        <li id="tab_s_culture"><a href="('s_culture', { 'id_reg': oiv.Id }) }}">Культура</a></li>
+                        <li id="tab_s_sport"><a href="('s_sport', { 'id_reg': oiv.Id }) }}">Физическая культура</a></li>
+                        <li id="tab_s_labor"><a href="('s_labor', { 'id_reg': oiv.Id }) }}">Рынок труда</a></li>
+                        <li id="tab_s_criminality"><a href="('s_criminality', { 'id_reg': oiv.Id }) }}">Криминогенная обстановка</a></li>
+                    </ul>
+                </li>
+                <li id="tab_socio_politic" class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        Общественно-политическая ситуация <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li id="tab_s_electorat"><a href="('s_electorat', { 'id_reg': oiv.Id }) }}">Электоральная характеристика</a></li>
+                        <li id="tab_s_federal_elections"><a href="('s_federal_elections', { 'id_reg': oiv.Id }) }}">Результаты Федеральных выборов</a></li>
+                        <li id="tab_s_local_elections"><a href="('s_local_elections', { 'id_reg': oiv.Id }) }}">Выборы органов власти субъекта</a></li>
+                        <li id="tab_s_situation_rating"><a href="('s_situation_rating', { 'id_reg': oiv.Id }) }}">Оценка населением ситуации в регионе</a></li>
+                        <li id="tab_s_parties"><a href="('s_parties', { 'id_reg': oiv.Id }) }}">Общественно-политические партии и организации</a></li>
+                        <li id="tab_s_religion"><a href="('s_religion', { 'id_reg': oiv.Id }) }}">Религия</a></li>
+                        <li id="tab_s_massmedia"><a href="('s_massmedia', { 'id_reg': oiv.Id }) }}">Средства массовой информации</a></li>
+                    </ul>
+                </li>
+                <li id="tab_form_ncu" class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        Формы НЦУ <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li id="tab_ncu_1"><a href="('ncu1', { 'id_reg': oiv.Id }) }}">НЦУ/1. Сведения о количестве детей военнослужащих,<br>состоящих в очереди <br>на получение мест в дошкольных <br>образовательных организациях</a></li>
+                        <li id="tab_ncu_2"><a href="('ncu2', { 'id_reg': oiv.Id }) }}">НЦУ/2. Сведения о количестве членов семей военнослужащих,<br>зарегистрированных в центрах занятости для поиска<br>работы </a></li>
+                        <li id="tab_ncu_3"><a href="('ncu3', { 'id_reg': oiv.Id }) }}">НЦУ/3. Сведения о численности участников регионального<br>отделения Всероссийского детско-юношеского<br>военно-патриотического общественного<br>движения «ЮНАРМИЯ», количестве<br>территориальных организаций и отрядов</a></li>
+                        <li id="tab_ncu_4"><a href="('ncu4', { 'id_reg': oiv.Id }) }}">НЦУ/4. Сведения об основных мероприятиях<br>военно-патриотической направленности,<br>проведенных за прошедший и<br>планируемых на предстоящий месяц</a></li>
+                        <li id="tab_ncu_5"><a href="('ncu5', { 'id_reg': oiv.Id }) }}">НЦУ/5. Сведения о ходе создания парка «Патриот»</a></li>
+                        <li id="tab_ncu_6"><a href="('ncu6', { 'id_reg': oiv.Id }) }}">НЦУ/6. Сведения об оснащенности<br>информационно-коммуникационными системами<br>ситуационного центра</a></li>
+                        <li id="tab_ncu_7"><a href="('ncu7', { 'id_reg': oiv.Id }) }}">НЦУ/7. Сведения по основным региональным<br>автомобильным дорогам</a></li>
+                        <li id="tab_ncu_8"><a href="('ncu8', { 'id_reg': oiv.Id }) }}">НЦУ/8. Перечень государственных строительных<br>и дорожных организаций</a></li>
+                        <li id="tab_ncu_9"><a href="('ncu9', { 'id_reg': oiv.Id }) }}">НЦУ/9. Данные по железнодорожной инфраструктуре</a></li>
+                        <li id="tab_ncu_10"><a href="('ncu10', { 'id_reg': oiv.Id }) }}">НЦУ/10. Данные по аэродромной сети</a></li>
+                        <li id="tab_ncu_11"><a href="('ncu11', { 'id_reg': oiv.Id }) }}">НЦУ/11. Характеристика основных водных артерий</a></li>
+                        <li id="tab_ncu_12"><a href="('ncu12', { 'id_reg': oiv.Id }) }}">НЦУ/12. Сведения о составе органов исполнительной<br>власти субъекта Российской Федерации<br>и органов местного самоуправления</a></li>
+                        <li id="tab_ncu_13"><a href="('ncu13', { 'id_reg': oiv.Id }) }}">НЦУ/13. Сведения о состоянии объектов,<br>обеспечивающих жизнедеятельность населения,<br>функционирование транспорта, коммуникаций<br>и связи, объектов энергетики,<br>а также объектов, представляющих повышенную<br>опасность для жизни и здоровья<br>людей и окружающей природной среды</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div><!-- \ row-fluid -->
+    <script>{% block foivTabMenuActive %}{% endblock %}</script>
+    
+    
+    <div class="row">
+        <div class="span12">
+            <div class="tab-title">
+                {% block subtitle %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+    {% block foivContent %}
+    {% endblock %}
+
+
+{% endblock %}

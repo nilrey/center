@@ -1,0 +1,231 @@
+$(document).ready(function() {
+                  
+    /*
+     * Таблица полей формы
+     */
+    
+    var tblFormFields = $('#tbl_form_fields').DataTable({
+        language: {
+            url: DATATABLES_RU_JSON            
+        },
+        ordering: false,
+        serverSide: true,
+        processing: true,
+        ajax: {
+            url: URL_GET_FIELDS_LIST,
+            method: 'POST',
+            data: function(d) {
+                d['id_form'] = $('#id_form').val();
+            }
+        },
+        {% if is_granted('ROLE_ADMIN') %}
+            columnDefs: [{className: 'text-center', targets: [3, 4, 5]}]
+        {% else %}
+            columnDefs: [{className: 'text-center', targets: [3, 4]}]            
+        {% endif %}
+    });
+    
+    {% if not is_granted('ROLE_ADMIN') %}
+        tblFormFields.column(0).visible(false); // ID
+    {% endif %}
+    
+{% if is_granted('ROLE_ADMIN') %}    
+    
+    /**
+     * Добавление поля
+     */
+        
+    $('#btn_add_field').click(function() {
+        // Открываем диалог
+        var dlg_edit = $('#dlg_field_edit');
+        dlg_edit.attr('title', 'Создание');
+        
+        dlg_edit.find('#field_name').val('');
+        dlg_edit.find('#field_datatype option').removeAttr('selected');
+        dlg_edit.find('#field_datatype option:first').attr('selected', 'selected');
+        dlg_edit.find('#field_key_flag').val(0);
+        
+        dlg_edit.dialog({
+            closeOnEscape: true,
+            resiziable: false,
+            width: 500,
+            height: 400,
+            position: {at: 'center center-200'},
+            modal: true, 
+            buttons: {
+                Сохранить: function() {
+                    // Сохраняем на сервер
+                    objSave = {};
+                    objSave['id_field'] = -1;
+                    objSave['id_form'] = $('#id_form').val();                    
+                    objSave['field_name'] = dlg_edit.find('#field_name').val();
+                    objSave['field_id_datatype'] = dlg_edit.find('#field_datatype').val();
+                    objSave['field_key_flag'] = dlg_edit.find('#field_key_flag').val();
+
+                    // Сохранение
+                    $.ajax({
+                        url: URL_FIELD_SAVE,
+                        method: 'POST',
+                        data: objSave,
+                        async: false,
+                        cache: false,                          
+                        success: function (e) {
+                            $('#lock_pane').attr('class', 'lock_off');                           
+
+                            if (e['err_id'] == 0) {
+                                tblFormFields.draw(false);
+                                dlg_edit.dialog('destroy');
+                            }
+                            else
+                                $.dialogen('okdlg', {text: e['content']});                            
+                        },
+                        error: function (e) {
+                            $('#lock_pane').attr('class', 'lock_off');
+
+                            $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                        }                                                                                           
+                    }); 
+                },
+                Отмена: function() {
+                    $(this).dialog('destroy');
+                }
+            }
+        });        
+    });    
+    
+    /**
+     * Редактирование поля
+     */
+    
+    $('#tbl_form_fields').on('click', '.field_edit', function() {
+        // Идентификатор поля
+        var row_index  = tblFormFields.row($(this).closest('tr')).index();
+        var id_field = tblFormFields.cell(row_index, 1).data();
+               
+        // Запрашиваем информацию по источнику
+        $('#lock_pane').attr('class', 'lock_on');
+        $.ajax({
+            url: URL_GET_FIELD,
+            method: 'GET',
+            async: false,
+            cache: false,
+            data: {
+                id_field: id_field
+            },
+            success: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+                
+                if (e['err_id'] != 0) {
+                    $.dialogen('okdlg', {text: e['content']});
+                    return;
+                }
+                
+                // Открываем диалог
+                var dlg_edit = $('#dlg_field_edit');
+                dlg_edit.attr('title', 'Редактирование');
+
+                dlg_edit.find('#field_name').val(e['content']['field_name']);
+                dlg_edit.find('#field_datatype').val(e['content']['field_id_datatype']);
+                dlg_edit.find('#field_key_flag').val(e['content']['field_key_flag']);
+                                                
+                dlg_edit.dialog({
+                    closeOnEscape: true,
+                    resiziable: false,
+                    width: 500,
+                    height: 400,
+                    position: {at: 'center center-200'},
+                    modal: true, 
+                    buttons: {
+                        Сохранить: function() {
+                            // Сохраняем на сервер
+                            objSave = {};
+                            objSave['id_field'] = id_field;
+                            objSave['id_form'] = $('#id_form').val();                    
+                            objSave['field_name'] = dlg_edit.find('#field_name').val();
+                            objSave['field_id_datatype'] = dlg_edit.find('#field_datatype').val();        
+                            objSave['field_key_flag'] = dlg_edit.find('#field_key_flag').val();
+                            
+                            // Сохранение
+                            $.ajax({
+                                url: URL_FIELD_SAVE,
+                                method: 'POST',
+                                data: objSave,
+                                async: false,
+                                cache: false,                            
+                                success: function (e) {
+                                    $('#lock_pane').attr('class', 'lock_off');                                   
+
+                                    if (e['err_id'] == 0) {
+                                        tblFormFields.draw(false);
+                                        dlg_edit.dialog('destroy');
+                                    }
+                                    else
+                                        $.dialogen('okdlg', {text: e['content']});                                    
+                                },
+                                error: function (e) {
+                                    $('#lock_pane').attr('class', 'lock_off');
+
+                                    $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                                }                                                                                           
+                            });                        
+                        },
+                        Отмена: function() {
+                            $(this).dialog('destroy');
+                        }
+                    }
+                });                
+            },
+            error: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+
+                $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});                 
+            }
+        });            
+    });
+    
+    /**
+     * Удаление поля
+     */
+    
+    $('#tbl_form_fields').on('click', '.field_delete', function() {
+        // Идентификатор источника
+        var row_index  = tblFormFields.row($(this).closest('tr')).index();
+        var id_field = tblFormFields.cell(row_index, 1).data();
+        
+        $.dialogen(
+            'yesnodlg',
+            {text: 'Вы действительно хотите удалить поле?'},
+            function() {
+                // Отправляем запрос на удаление
+                objDel = {};
+                objDel['id_field']  = id_field;
+                objDel['field_pos'] = tblFormFields.cell(row_index, 0).data()
+                
+                $('#lock_pane').attr('class', 'lock_on');
+                $.ajax({
+                    url: URL_FIELD_DELETE,
+                    method: 'POST',
+                    data: objDel,
+                    async: false,
+                    cache: false,
+                    success: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+                        
+                        if (e['err_id'] == 0)
+                            tblFormFields.draw(false);
+                        else
+                            $.dialogen('okdlg', {text: e['content']});                            
+                    },
+                    error: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+
+                        $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                    }                                                                   
+                });                
+            }
+        );
+    });
+    
+{% endif %}    
+    
+});

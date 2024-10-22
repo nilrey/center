@@ -1,0 +1,321 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DeleteItemsHelpers.js') }}"></script>
+{% endblock %}
+
+{% block foivContent %}
+<script>
+;(function($, window, document, undefined) {
+    "use strict";
+
+    $.fn.chained = function(parent_selector, options) {
+
+        return this.each(function() {
+
+            /* Save this to child because this changes when scope changes. */
+            var child   = this;
+            var backup = $(child).clone();
+
+            /* Handles maximum two parents now. */
+            $(parent_selector).each(function() {
+                $(this).bind("change", function() {
+                    updateChildren();
+                });
+
+                /* Force IE to see something selected on first page load, */
+                /* unless something is already selected */
+                if (!$("option:selected", this).length) {
+                    $("option", this).first().attr("selected", "selected");
+                }
+
+                /* Force updating the children. */
+                updateChildren();
+            });
+
+            function updateChildren() {
+                var trigger_change = true;
+                var currently_selected_value = $("option:selected", child).val();
+
+                $(child).html(backup.html());
+
+                /* If multiple parents build classname like foo\bar. */
+                var selected = "";
+                $(parent_selector).each(function() {
+                    var selectedClass = $("option:selected", this).val();
+                    if (selectedClass) {
+                        if (selected.length > 0) {
+                            if (window.Zepto) {
+                                /* Zepto class regexp dies with classes like foo\bar. */
+                                selected += "\\\\";
+                            } else {
+                                selected += "\\";
+                            }
+                        }
+                        selected += selectedClass;
+                    }
+                });
+
+                /* Also check for first parent without subclassing. */
+                /* TODO: This should be dynamic and check for each parent */
+                /*       without subclassing. */
+                var first;
+                if ($.isArray(parent_selector)) {
+                    first = $(parent_selector[0]).first();
+                } else {
+                    first = $(parent_selector).first();
+                }
+                var selected_first = $("option:selected", first).val();
+
+                $("option", child).each(function() {
+                    /* Remove unneeded items but save the default value. */
+                    if ($(this).hasClass(selected) && $(this).val() === currently_selected_value) {
+                        $(this).prop("selected", true);
+                        trigger_change = false;
+                    } else if (!$(this).hasClass(selected) && !$(this).hasClass(selected_first) && $(this).val() !== "") {
+                        $(this).remove();
+                    }
+                });
+
+                /* If we have only the default value disable select. */
+                if (1 === $("option", child).size() && $(child).val() === "") {
+                    $(child).prop("disabled", true);
+                    $("#warn_no_protocols").css("display", "block");
+                } else {
+                    $(child).prop("disabled", false);
+                    $("#warn_no_protocols").css("display", "none");
+                }
+                if (trigger_change) {
+                    $(child).trigger("change");
+                }
+            }
+        });
+    };
+
+    /* Alias for those who like to use more English like syntax. */
+    $.fn.chainedTo = $.fn.chained;
+
+    /* Default settings for plugin. */
+    $.fn.chained.defaults = {};
+
+})(window.jQuery || window.Zepto, window, document);
+
+
+ $(document).ready(function(){
+      $("#protocol").chained("#foiv");
+ });
+
+</script>    
+    
+    <style>.fa-angle-right{padding-right: 5px}</style>
+    <div class="row" style="margin-top: 10px; margin-bottom: 4px;">
+        <div class="col-md-9">
+            <h4>
+                <i class="fa fa-database fa-fw"></i>&nbsp;
+            &nbsp;<i class="fa fa-angle-right"></i>&nbsp;Информационные ресурсы
+                <i class="fa fa-angle-right"></i>&nbsp;Редактирование записи
+            </h4>
+        </div>
+    </div>
+    <style>
+        .contentHolder input[type=text] { width: 100% }
+        .displayOff{ display: none }
+        .displayOn{ display: block }
+        .mtb10 {margin: 10px 0px}
+    </style>
+    <div class="contentHolder">
+        {% if message.type is defined and message.type > 0 %}
+            <div class="alert alert-{% if message.type == 2 %}info{% else %}danger{% endif %}" role="alert">{{ message.text }}</div>
+        {% endif %}
+        
+        <p><small>* Поля отмеченные звездочкой обязательны к заполнению</small></p>
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <form class="form-inline" id="create_data" method="post" action="{{urlAction}}">
+            <table class="table" cols=2>
+                    <tbody>
+                        <tr>
+                            <td nowrap><b>Полное наименование *:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" required="required" name="name" value="{{ entity.name }}"></td>
+                        </tr>
+                        <!--tr>
+                            <td  nowrap><b>Условный код (латинскими буквами) *:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" required="required" name="engName" value="{#{ entity.engName }#}"></td>
+                        </tr-->
+                        <tr>
+                            <td  nowrap><b>Федеральный орган *:</b></td>
+                            <td class="td_control">
+                            <!--<select class="form-control" required="required" name="foiv">-->
+                                <select id="foiv" name="foiv" class="form-control" required="required" style="width: 100%!important">
+                                <option value="">--</option>
+                                {%  if  foivList is defined  %}
+                                    {% for item in foivList %}
+                                        {% if entity.foiv.id is defined and item.id == entity.foiv.id %}
+                                            <option value="{{item.id}}" selected >{{item.Name}}</option>
+                                        {% else %}
+                                            <option value="{{item.id}}" >{{item.Name}}</option>
+                                        {%endif%}
+                                    {% endfor %}
+                                {%  endif  %}
+                            </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Регистрация в ЕИФ:</b></td>
+                            <td class="td_control">
+                            <!--<select class="form-control" name="protocol_id">-->
+                            <select id="protocol" name="protocol_id" class="form-control" style="float: left">
+                                <option value="">--</option>
+                                {%  if  protocols is defined and item.Source.Foiv.Id is defined %}
+                                    {% for item in protocols %}
+                                        {% if entity.ProtocolId.IdProtocol is defined and item.IdProtocol == entity.ProtocolId.IdProtocol %}
+                                            <option value="{{item.IdProtocol}}" class="{{item.Source.Foiv.Id}}" selected> {{item.ProtocolName}}</option>
+                                        {% else %}
+                                            <option value="{{item.IdProtocol}}" class="{{item.Source.Foiv.Id}}" > {{item.ProtocolName}}</option>
+                                        {%endif%}
+                                    {% endfor %}
+                                {%  endif  %}
+                            </select> <span id="warn_no_protocols" style="margin: 5px 0px 0px 80px; color: red">нет зарегестрированных</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Описание:</b></td>
+                            <td class="td_control"><textarea name="description" style="width: 100%; height: 150px">{{ entity.description }}</textarea></td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Владелец ресурса:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" name="owner" value="{{ entity.owner }}"></td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Разработчник:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" name="developer" value="{{ entity.developer }}"></td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Ответственное лицо:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" name="contactperson" value="{{ entity.contactperson }}"></td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Контактный номер ответственного лица:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" name="contactphone" value="{{ entity.contactphone }}"></td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Источник:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" name="url" value="{{ entity.url }}"></td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Реестр ФГИС (URL):</b></td>
+                            <td class="td_control"><input class="form-control" type="text" name="registryLink" value="{{ entity.registryLink }}"></td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Тип ресурса:</b></td>
+                            <td class="td_control">
+                                <select id="type" name="type" class="form-control regFormInput">
+                                    <option value=""></option>
+                                    <option value="Информационный ресурс ФОИВ" {% if entity.type is defined and entity.type == "Информационный ресурс ФОИВ" %} selected{% endif %}>Информационный ресурс ФОИВ</option>
+                                    <option value="Международный ресурс" {% if entity.type is defined and entity.type == "Международный ресурс" %} selected{% endif %}>Международный ресурс</option>
+                                    <option value="Интернет-ресурс" {% if entity.type is defined and entity.type == "Интернет-ресурс" %} selected{% endif %}>Интернет-ресурс</option>
+                                </select>                            
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Участвует в интеграции:</b></td>
+                            <td class="td_control">
+                                <select id="is_integration" name="is_integration" class="form-control" style="float: left">
+                                {%  if  statusYn is defined  %}
+                                    {% for item in statusYn %}
+                                        {% if entity.isIntegration.Id is defined and item.Id == entity.isIntegration.Id %}
+                                            <option value="{{item.Id}}" selected> {{item.Name}}</option>
+                                        {% else %}
+                                            <option value="{{item.Id}}"> {{item.Name}}</option>
+                                        {%endif%}
+                                    {% endfor %}
+                                {%  endif  %}
+                            </select>                     
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Состояние по протоколу ИТС:</b></td>
+                            <td class="td_control">
+                                <select id="protocol_its" name="protocol_its" class="form-control" style="float: left">
+                                {%  if  status3Opt is defined  %}
+                                    {% for item in status3Opt %}
+                                        {% if entity.ProtocolIts.Id is defined and item.Id == entity.ProtocolIts.Id %}
+                                            <option value="{{item.Id}}" selected> {{item.ProtocolIts}}</option>
+                                        {% else %}
+                                            <option value="{{item.Id}}"> {{item.ProtocolIts}}</option>
+                                        {%endif%}
+                                    {% endfor %}
+                                {%  endif  %}
+                            </select>                     
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Vipnet:</b></td>
+                            <td class="td_control">
+                                <select id="vipnet" name="vipnet" class="form-control" style="float: left">
+                                {%  if  statusYn is defined  %}
+                                    {% for item in statusYn %}
+                                        {% if entity.Vipnet.Id is defined and item.Id == entity.Vipnet.Id %}
+                                            <option value="{{item.Id}}" selected> {{item.Name}}</option>
+                                        {% else %}
+                                            <option value="{{item.Id}}"> {{item.Name}}</option>
+                                        {%endif%}
+                                    {% endfor %}
+                                {%  endif  %}
+                            </select>                     
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>СПО интеграции:</b></td>
+                            <td class="td_control">
+                                <select id="integration_spo" name="integration_spo" class="form-control" style="float: left">
+                                {%  if  status3Opt is defined  %}
+                                    {% for item in status3Opt %}
+                                        {% if entity.IntegrationSpo.Id is defined and item.Id == entity.IntegrationSpo.Id %}
+                                            <option value="{{item.Id}}" selected> {{item.IntegrationSpo}}</option>
+                                        {% else %}
+                                            <option value="{{item.Id}}"> {{item.IntegrationSpo}}</option>
+                                        {%endif%}
+                                    {% endfor %}
+                                {%  endif  %}
+                            </select>                     
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Логин:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" name="login" value="{{ entity.login }}"></td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Пароль:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" name="password" value="{{ entity.password }}"></td>
+                        </tr>
+                        <!--tr>
+                            <td  nowrap><b>Версия:</b></td>
+                            <td class="td_control"><input class="form-control" type="text" name="version" value="{#{ entity.version }#}"></td>
+                        </tr-->
+                        
+                    </tbody>
+            </table>
+        </form>
+        <button type="submit" class="btn btn-primary" form="create_data" >{{title_save}}</button>
+        {% if urlView is defined %}
+        <span class="pl10">&nbsp;</span>
+        <a class="btn btn-default" href="{{urlView}}">{{title_view}}</a>
+        {% endif %}
+        <span class="pl10">&nbsp;</span>
+        <a class="btn btn-default" href="{{urlBack}}">{{title_toList}}</a>
+        {% if message is defined and message.message_text is defined and message.message_text != "" %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ message.message_text }}');
+        </script>
+        {% endif %}
+
+{% for flashMessage in app.session.flashbag.get('notice') %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ flashMessage }}');
+        </script>
+{% endfor %}
+
+    <div>
+{% endblock %}

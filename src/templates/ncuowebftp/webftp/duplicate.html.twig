@@ -1,0 +1,30 @@
+{% extends 'ncuowebftp/new_layout.html.twig' %}
+
+{% block content %}
+
+<div class="container-fluid" style="line-height: 40px">
+  <div class="row">
+    <div class="col-12" style="font-weight: 600; font-size: 16px; margin-left: 37px">
+        Копирование файла
+    </div>
+  </div>
+</div>
+<div style="width: 95%; margin: auto; margin-top: 30px">
+
+   <div class="form-inline" > 
+      {% if message is defined and message.message_text is defined %}
+         {% if message.message_error == "false" %}
+         <div class="alert alert-success" role="alert">{{ message.message_text }}</div>
+         {% else %}
+         <div class="alert alert-warning" role="alert">{{ message.message_text }}</div>
+         {% endif %} 
+      {% endif %} 
+   </div>        
+   <div style="margin: 40px 0px 30px 0px">
+      <button onclick="window.location.replace('{{ path('webftp', {}) }}')" title="Вернуться к списку файлов" class="btn btn-return" /></a>
+   </div>
+        
+</div>
+   
+{% endblock %}
+

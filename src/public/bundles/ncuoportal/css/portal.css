@@ -1,0 +1,92 @@
+.auth #logo {
+    float: left;
+    width: 78px;
+    height: 70px;
+    margin-right: 20px;
+    margin-top: -8px;
+}
+.auth #header {
+    margin-top: 9px;
+}
+
+.auth #header h5 {
+    /*font-weight: 700;*/
+    color: #999;
+}
+
+.login-page-center-img {
+    background: url(/public/bundles/ncuoportal/img/ncuo-logo.gif) no-repeat center center;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+}
+
+.login-page-header {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    height: 80px;
+    width: 100%;
+    background: #296eaa;
+    line-height: 80px;
+    z-index: 1;
+    font-family: Tahoma;
+    color: white;
+    margin: 0 auto;
+}
+
+.login-page-content {
+    position: fixed;
+    left: 0px;
+    top: 80px;
+    width: 100%;
+    height: 100%;
+    background: url(/public/bundles/ncuoportal/img/bgr_01.jpg) no-repeat; 
+    background-size: 100% 100%;
+    -webkit-background-size: 100% 100%;
+    -moz-background-size: 100% 100%;
+    -o-background-size: 100% 100%;
+    background-size: 100% 100%;    
+}
+
+.login-page-footer {
+    position: fixed;
+    width: 100%;
+    height: 80px;
+    bottom: 0px;
+    left: 0px;
+    font-family: Tahoma;
+    font-size: 16px;
+    text-align: center;
+}
+
+#mainLogin .row .col-sm-6 {
+    margin-left: 25%;
+}
+
+@font-face {
+    font-family: 'NotoSans';
+    src: url('../fonts/noto/NotoSans-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'NotoSansBold';
+    src: url('../fonts/noto/NotoSans-Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'NotoSansItalic';
+    src: url('../fonts/noto/NotoSans-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'NotoSansBoldItalic';
+    src: url('../fonts/noto/NotoSans-BoldItalic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}

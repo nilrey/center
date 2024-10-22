@@ -1,0 +1,19 @@
+
+.sorting, .sorting_asc{ display: none}
+.dataTables_filter { float: left; }
+#dTable_filter label{ color: #EFF0F0; }
+.dataTables_filter input[type="search"]{
+	width: 100%;
+	margin: 20px 0px 20px -42px;
+	height: 45px;
+	padding: 10px 0px 10px 10px;
+	font-size: 16px;
+	font-style: italic;
+	color: #666;
+}
+.dataTables_filter,
+.dTable_wrapper row,
+#dTable_filter label,
+.col-sm-6{
+	width: 100%;
+}

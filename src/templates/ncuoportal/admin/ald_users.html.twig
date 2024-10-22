@@ -1,0 +1,87 @@
+{% extends 'ncuooiv/layout.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    
+   <!--<script src="{{asset('bundles/ncuofoiv/js/foiv.js') }}"></script>-->
+   
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuooiv/css/pageOivList.css') }}"/>  
+{% endblock %}  	
+
+{% block content %}
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+    <h4>Администрирование пользователей</h4>
+    <style>
+    #dTable tr td:nth-child(1) img {
+      width: 69px;
+      vertical-align: middle;
+      border: 0;
+      color: #555555;
+      box-sizing: border-box;
+      
+    }
+    </style>
+    <table id="dTable" class="table table-striped table-bordered">
+            <thead>
+                <tr >
+                    <th>Ф.И.О.</th>
+                    <th>ID</th>
+                    <th>Логин</th>
+                    <th width="250">Роль</th>
+                    <th width="30%">Действие</th>
+                </tr>
+            </thead>
+        <tbody>
+         {% if users is defined %}
+        {% for user in users %}
+            <tr>
+                <td><a href="{{ path('oiv_admin_users_edit', { 'id_user': user.id }) }}">{{ user.lastname }} {{ user.firstname }} {{ user.middlename }}</a></td>
+                <td>{{user.id }}</td>
+                <td><a href="{{ path('oiv_admin_users_edit', { 'id_user': user.id }) }}">{{user.username}}</a></td>
+                <td> {{ user.roleDescription }} </td>
+                <td nowrap>
+                    <a href="{{ path('oiv_admin_users_edit', { 'id_user': user.id }) }}"><i class="fa fa-eye" title="Просмотреть пользователя"></i></a>
+                    <a class="ml10" href="javascript: void(0)" onclick="showConfirmDialog('dialog_msg_info', 'Вы действительно хотите удалить паспорт \'{{ user.username }}\'?', '{{ path('oiv_admin_user_delete', {'id_user': user.id}) }}')" ><i class="fa fa-trash" title="Удалить пользователя"></i>{{ path('oiv_admin_user_delete', {'id_user': user.id}) }}</a>
+                </td>
+            </tr>
+        {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+    
+   <div style="margin: 20px 0px 30px 0px">
+      <button onclick="window.location.replace('{{ path('oiv_admin_user_new') }}')" title="Создать пользователя" class="btn btn-add" /></a>
+   </div>
+   
+<script>
+dTable = $('#dTable').DataTable({
+	language: {
+		url: DATATABLES_RU_USERS_LIST_JSON,
+		searchPlaceholder: "Фильтр по пользователям"
+	},
+	{#order: [[1, 'asc']],#}
+	paging: false,
+	"search": {
+			"width": "100%"
+	}
+});
+</script>
+
+<script>
+function confirmDelete(foivTitle, deleteUrl){
+   if( confirm('Вы действительно хотите удалить пользователя "'+foivTitle+'"?') ){
+      window.location.replace(deleteUrl);
+      //showInfoDialog('dialog_msg_info', 'Данная функциональность находится в разработке');
+   }
+}
+function getAlertUnderconst(foivTitle){
+   alert('Данная функциональность находится в разработке');
+      //showInfoDialog('dialog_msg_info', 'Данная функциональность находится в разработке');
+}
+</script>
+
+
+{% endblock %}

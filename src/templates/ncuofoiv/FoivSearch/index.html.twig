@@ -1,0 +1,115 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DeleteItemsHelpers.js') }}"></script>
+{% endblock %}
+
+
+{% block breadcrumb %}
+    <li>ФОИВ</li>
+    <li>Поиск по паспотам ФОИВ</li>
+{% endblock %}
+
+
+{% block foivContent %}
+    <style>.fa-angle-right, .col-md-9>h4>i.fa-database{margin-right: 10px}
+	.searchButton{
+		cursor: pointer;
+		font-size: 24px;
+		padding: 5px;
+		margin-left: -40px;
+	}
+	.searchResultTitle{
+		line-height: 32px;
+		font-size: 16px;
+		font-weight: 200;
+		padding-top: 10px;
+		padding-left: 3px;
+	}
+	.resultItem{
+		padding-top: 10px;
+		padding-left: 3px;
+	}
+	.resultItemTitle{
+		margin-left: 35px;
+	}
+	.resultItemContent{
+		font-size: 12px;
+		padding-top: 0px;
+		margin-left: 35px;
+	}
+	.resultItemCounter{
+		float: left;
+	}
+	</style>
+    <div class="row">
+        <div class="col-md-9">
+            <h4>
+                <i class="fa fa-database fa-fw"></i><i class="fa fa-angle-right"></i>Поиск по паспортам ФОИВ
+            </h4>
+        </div>
+	</div>
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+			{% if userAccess['accessType'] != "Deny" %}
+				<form method="POST" id="searchQuery">
+					<input name="textSearch" value="{{textSearch}}" placeholder="Поиск по паспортам ФОИВ" class="form-control input-sm" id="textSearch" type="search" style="height: 36px; float: left; display: inline; padding-right: 50px" onkeypress="checkPress()">
+					<i class="glyphicon glyphicon-search searchButton" onclick=searchQuery()></i>
+{#
+		<p class="searchResultTitle">{{resDep.sql}}</p>
+		<p class="searchResultTitle">{{resDep.cntResult}}</p>
+		{% if resDep.searchResult|length > 0  %}
+			{% for row in resDep.searchResult %}
+				{{row.foiv.name}}<br>
+			{% endfor %}
+		{% endif %}
+		<p class="searchResultTitle">{{resDepPar}}</p>
+#}
+{% if textSearch|trim !="" and searchResult is defined and searchResult is iterable %}
+	{% if searchResult|length > 0  %}
+		<p class="searchResultTitle">По Вашему запросу "{{textSearch}}" найдено результатов: {{isResult}}</p>
+				{% set counter = 0 %}
+		{% for row in searchResult %}
+				{% autoescape %}
+			<div class="resultItem">
+				{% set counter = counter + 1 %}
+				<p class="resultItemCounter">{{ counter }}.</p>
+				<p class="resultItemTitle">
+					 <a href="{{row.url}}">{{row.name|raw}}</a>
+				</p>
+				<p class="resultItemContent">{{row.content|raw}}</p>
+			</div>
+				{% endautoescape %}
+		{% endfor %}
+	{% else %}
+		<p class="searchResultTitle">По Вашему запросу "{{textSearch}}" результатов не найдено.</p>
+	{% endif %}
+{% endif %}
+					
+				</form>				
+			{% else %}
+				Извините, доступ к данной странице ограничен
+			{% endif %}
+			{#{userAccess['foivList'][0]}#}
+
+<script>
+	function checkPress() {
+		$(document).keypress(function(e) {
+			if(e.which == 13) {
+				searchQuery();
+				return false;
+			}
+		});
+    }
+	function searchQuery() {
+		if( $("#textSearch").val().length > 2 ){
+			$("#searchQuery").submit();
+			return true;
+		}else{
+            showInfoDialog('dialog_msg_info', 'Поисковое слово должно быть более 2 символов');
+			return false;
+		}
+    }
+</script>
+
+{% endblock %}

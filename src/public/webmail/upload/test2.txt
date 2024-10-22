@@ -1,0 +1,4 @@
+File 2 
+getApiVersion 	Устанавливает значение self::$apiVersion - версия API 	14.5.0
+getDeviceHeight 	Получает значение deviceHeight - высоту экрана устройства. 	14.5.0
+getDeviceWidth 	Получает значение deviceWidth - ширина экрана устройства. 	14.5.0

@@ -1,0 +1,79 @@
+
+.nav-tabs{
+	min-width: 980px;
+	margin: 0px;
+	margin-left: -1px;
+	height: 45px;
+	border-radius: 0px;
+	border: 0px;
+}
+
+.foiv-tabs{
+	letter-spacing: 0.01em !important;
+}
+
+.nav-tabs > li{
+	background: #CCCACB;
+}
+
+.nav-tabs li a,
+.nav-tabs li a:focus,
+.nav-tabs li a:hover,
+.nav-tabs li.active,
+.nav-tabs li.active a,
+.nav-tabs li.active a:focus,
+.nav-tabs li.active a:hover,
+.nav-tabs li.open a,
+.nav-tabs li.open a:focus,
+.nav-tabs li.open a:hover
+{
+	border-radius: 0px;
+	border: 0px;
+	cursor: pointer;
+	color: #555555;
+}
+
+/* hack for foiv tab width */
+.nav-tabs li:last-child a span{
+	margin-right: 9px;
+}
+
+.nav-tabs li.open > a,
+.nav-tabs li.open > a:focus,
+.nav-tabs li.open > a:hover{
+	color: #555555;
+	background: #ddd !important;
+	background-color: #ddd !important;
+}
+
+.nav-tabs > li.dropdown > .dropdown-menu > .active > a, 
+.nav-tabs > li.dropdown > .dropdown-menu > .active > a:hover, 
+.nav-tabs > li.dropdown > .dropdown-menu > .active > a:focus {
+	background-color: #296DAA;
+	color: #FFFFFF !important;
+}
+
+.nav-tabs > li.active > a, 
+.nav-tabs > li.active > a:hover, 
+.nav-tabs > li.active > a:focus {
+	color: #FFFFFF !important;
+	background-color: #296DAA !important;
+	height: 43px;
+}
+
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+	color: #ffffff;
+	background-color: #296DAA;
+	border: 0px;
+	border-bottom-color: transparent;
+	padding-top: 12px;
+}
+
+.nav-tabs > li > a,
+.nav-tabs > li > a:hover,
+.nav-tabs > li > a:focus {
+	padding-top: 12px;
+	height: 43px;
+}

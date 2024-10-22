@@ -1,0 +1,117 @@
+/*
+ * Custom buttons
+ * Gliphicons
+https://camo.githubusercontent.com/d4d176114d76f86e2016bd45b52ca6fa3a56b3ef/68747470733a2f2f7261772e6769746875622e636f6d2f66d616b2f626f6f7473747261702d676c79706869636f6e732d666f6e74732f6d61737465722f3230302d474c59504849434f4e532d48616c666c696e67732f676c79706869636f6e732d68616c666c696e67732e676966
+ *
+ */
+
+.btn-add, .btn-add:hover,
+.btn-edit, .btn-edit:hover,
+.btn-view, .btn-view:hover,
+.btn-delete, .btn-delete:hover,
+.btn-list, .btn-list:hover,
+.btn-import, .btn-import:hover,
+.btn-export, .btn-export:hover,
+.btn-save, .btn-save:hover,
+.btn-search, .btn-search:hover,
+.btn-return, .btn-return:hover,
+.btn-verify, .btn-verify:hover
+{
+	border:1px solid #CCCACB;
+	color: #FFF;
+	min-width: 150px;
+	height: 30px;
+	font-size: 10px;
+	background: #8EC63F;
+	padding: 4px 12px !important;
+}
+
+
+.btn-add:hover, .btn-add:focus,
+.btn-edit:hover, .btn-edit:focus,
+.btn-view:hover, .btn-view:focus,
+.btn-delete:hover, .btn-delete:focus,
+.btn-list:hover, .btn-list:focus,
+.btn-import:hover, .btn-import:focus,
+.btn-export:hover, .btn-export:focus,
+.btn-save:hover, .btn-save:focus,
+.btn-search:hover, .btn-search:focus,
+.btn-return:hover, .btn-return:focus,
+.btn-verify:hover, .btn-verify:focus
+{
+	color: #f1f2f2;
+}
+
+.btn-add, .btn-add:hover, .btn-add:focus		    { background: #8EC63F }
+.btn-edit, .btn-edit:hover, .btn-edit:focus		    { background: #5CC1DF }
+.btn-view, .btn-view:hover, .btn-view:focus		    { background: #8EC63F }
+.btn-delete, .btn-delete:hover, .btn-delete:focus	{ background: #F36523 }
+.btn-list, .btn-list:hover, .btn-list:focus		    { background: #9C9C9C }
+.btn-import, .btn-import:hover, .btn-import:focus	{ background: #8EC63F }
+.btn-export, .btn-export:hover, .btn-export:focus	{ background: #8EC63F }
+.btn-save, .btn-save:hover, .btn-save:focus		    { background: #8EC63F }
+.btn-search, .btn-search:hover, .btn-search:focus	{ background: #8EC63F }
+.btn-return, .btn-return:hover, .btn-return:focus   { background: #9C9C9C }
+.btn-verify, .btn-verify:hover, .btn-verify:focus	{ background: #F36523 }
+
+/* Set icons (left side) */
+
+.btn-add:before,
+.btn-edit:before,
+.btn-view:before,
+.btn-delete:before,
+.btn-list:before,
+.btn-import:before,
+.btn-export:before,
+.btn-save:before,
+.btn-search:before,
+.btn-return:before,
+.btn-verify:before
+{
+	position: relative;
+	top: 1px;
+	font-size: 11px;
+	font-family:"Glyphicons Halflings";
+}
+
+/* glyphicons halflings font UTF8 code */
+.btn-add:before		{ content:"\E081" }
+.btn-edit:before	{ content:"\270F" }
+.btn-view:before	{ content:"\E105" }
+.btn-delete:before	{ content:"\E020" }
+.btn-list:before	{ content:"\E056" }
+.btn-import:before	{ content:"\E169" }
+.btn-export:before	{ content:"\E169" }
+.btn-save:before	{ content:"\E166" }
+.btn-search:before	{ content:"\E166" }
+.btn-return:before	{ content:"\E056" }
+.btn-verify:before	{ content:"\E067" }
+
+.btn-add:after,
+.btn-edit:after,
+.btn-view:after,
+.btn-delete:after,
+.btn-list:after,
+.btn-import:after,
+.btn-export:after,
+.btn-save:after,
+.btn-search:after,
+.btn-return:after,
+.btn-verify:after
+{
+	font-size: 12px;
+	letter-spacing: 0.08em;
+	margin-left: 8px;
+}
+
+.btn-add:after		{ content:"Добавить" }
+.btn-edit:after		{ content:"Редактировать" }
+.btn-view:after		{ content:"Просмотреть" }
+.btn-delete:after	{ content:"Удалить" }
+.btn-list:after		{ content:"К списку" }
+.btn-import:after	{ content:"Выгрузка данных" }
+.btn-export:after	{ content:"Загрузка данных" }
+.btn-save:after		{ content:"Сохранить" }
+.btn-search:after	{ content:"Поиск" }
+.btn-return:after	{ content:"Вернуться" }
+.btn-verify:after	{ content:"Верифицировать" }

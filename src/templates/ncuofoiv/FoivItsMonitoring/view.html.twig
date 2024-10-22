@@ -1,0 +1,154 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DeleteItemsHelpers.js') }}"></script>
+{% endblock %}
+
+{% block foivContent %}
+    <style>.fa-angle-right{padding-right: 5px}</style>
+    <div class="row" style="margin-top: 10px; margin-bottom: 4px;">
+        <div class="col-md-9">
+            <h4>
+                <i class="fa fa-database fa-fw"></i>&nbsp;
+            &nbsp;<i class="fa fa-angle-right"></i>&nbsp;Мониторинг ФОИВ
+                <i class="fa fa-angle-right"></i>&nbsp;Просмотр записи
+            </h4>
+        </div>
+    </div>
+    <style>
+        .contentHolder input[type=text] { width: 100% }
+        .displayOff{ display: none }
+        .displayOn{ display: block }
+        .mtb10 {margin: 10px 0px}
+    </style>
+    <div class="contentHolder">
+        {% if message.type is defined and message.type > 0 %}
+            <div class="alert alert-{% if message.type == 2 %}info{% else %}danger{% endif %}" role="alert">{{ message.text }}</div>
+        {% endif %}
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+            <table class="table" cols=2>
+                    <tbody>
+                        <tr>
+                            <td nowrap><b>Наименование ФОИВ:</b></td>
+                            <td class="td_control">{{ entity.foivId.Name }}</td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Соглашение по протоколу ИТС:</b></td>
+                            <td class="td_control">
+                                {%  if  conventionList is defined  %}
+                                    {% for item in conventionList %}
+                                        {% if entity.Convention.Id is defined and item.Id == entity.Convention.Id %}
+                                            {{item.name}}
+                                        {%endif%}
+                                    {% endfor %}
+                                {%  endif  %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td nowrap><b>Протокол ИТС:</b><br><span style="font-size: 10px;">(автоматический учет)</span></td>
+                            <td class="td_control">
+                                <span style="clear: both; float: left; display: inline">Не подписано: </span>
+                                <span style="float: left; display: inline">
+        						{% set totalCountSys = 0 %}
+                                {% if entity.itsProtocolsByStatus[0]["not_signed"] is defined %}
+                                    {{entity.itsProtocolsByStatus[0]["not_signed"]}}
+                                    {% set totalCountSys = totalCountSys + entity.itsProtocolsByStatus[0]["not_signed"] %}
+                                {% else %}
+                                    0
+                                {%endif%}
+                                </span>
+                                <br>
+                                <span style="clear: both; float: left; display: inline">На согласовании: </span>
+                                <span style="float: left; display: inline">
+                                {% if entity.itsProtocolsByStatus[0]["on_agreement"] is defined %}
+                                    {{entity.itsProtocolsByStatus[0]["on_agreement"]}}
+                                    {% set totalCountSys = totalCountSys + entity.itsProtocolsByStatus[0]["on_agreement"] %}
+                                {% else %}
+                                    0
+                                {%endif%}
+                                </span>
+                                <br>
+                                <span style="clear: both; float: left; display: inline">Подписано:</span>
+                                <span style="float: left; display: inline">
+                                {% if entity.itsProtocolsByStatus[0]["signed"] is defined %}
+                                    {{entity.itsProtocolsByStatus[0]["signed"]}}
+                                    {% set totalCountSys = totalCountSys + entity.itsProtocolsByStatus[0]["signed"] %}
+                                {% else %}
+                                    0
+                                {%endif%}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td nowrap><b>ИС,подкл./всего:</b><br><span style="font-size: 10px;">(автоматический учет)</span></td>
+                            <td class="td_control">
+                                {% if entity.SystemSum is defined and entity.SystemSum > 0 %}
+                                    {{entity.SystemSum}}
+                                {% else %}
+                                    0
+                                {% endif %}
+        						/ {{ totalCountSys }}
+                                
+                            </td>
+                        </tr>
+                        <tr>
+                            <td nowrap><b>Кабинет подключен:</b><br><span style="font-size: 10px;">(автоматический учет)</span></td>
+                            <td class="td_control">
+                                {% if  entity.CabinetSum > 0 %}
+                                    Да
+                                {% else %}
+                                    Нет
+                                {% endif %}
+                                
+                            </td>
+                        </tr>
+                        <tr>
+                            <td nowrap><b>Эл. почта зарегистрированна:</b><br><span style="font-size: 10px;">(автоматический учет)</span></td>
+                            <td class="td_control">
+                                {% if  entity.EmailSum > 0 %}
+                                    Да
+                                {% else %}
+                                    Нет
+                                {% endif %}
+                                
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Vipnet подключение:</b></td>
+                            <td class="td_control">
+                                {%  if  statusYn is defined  %}
+                                    {% for item in statusYn %}
+                                        {% if entity.Vipnet is defined and item.Id == entity.Vipnet %}
+                                            {{item.Name}}
+                                        {%endif%}
+                                    {% endfor %}
+                                {%  endif  %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>Видеоконференцсвязь подключена:</b></td>
+                            <td class="td_control">
+                                {%  if  statusYn is defined  %}
+                                    {% for item in statusYn %}
+                                        {% if entity.Video is defined and item.Id == entity.Video %}
+                                            {{item.Name}}
+                                        {%endif%}
+                                    {% endfor %}
+                                {%  endif  %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td  nowrap><b>АРМ:</b></td>
+                            <td class="td_control">
+                                {% if entity.Arm is defined and entity.Arm > 0 %}{{entity.Arm}}{% else %}0{%endif%}</td>
+                        </tr>
+                    </tbody>
+            </table>
+        {% include 'ncuofoiv_buttons_view.twig' ignore missing with {
+            'urlBack': urlBack,
+            'urlEdit': urlEdit
+        } %}
+    </div>
+{% endblock %}

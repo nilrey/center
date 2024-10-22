@@ -1,0 +1,151 @@
+{% extends 'ncuowebmail/new_layout.html.twig' %}
+
+
+{% block javascripts %}
+    {{ parent() }}   
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>.tr_active{ background: red !important } .favor-star{cursor: pointer} .emailsListFrom{color: #d1d2d2} .markImportant, .markImportant-active{font-size:25px!important; border: 1px solid #d1d2d2; padding: 7px 16px; border-radius: 21px;color:  #d1d2d2!important} .markImportant-active{border-color: #248be6; color: #248be6!important;}</style>
+{% endblock %}      
+
+{% block foivContent %}
+
+    {% if emailsList is defined %}
+<img id="imgLoading" style="margin: 38px 0px 38px 38px; display: none" src="/public/bundles/light/img/loading.gif" width="64" onclick="$('#imgLoading').css('display', 'block')">    
+    <form method="POST" action="" style=" position: relative; top: -70px" id="frmEmailsList">
+        <input type="hidden" value="" name="FIELDS[isImportant]" id="isImportant">
+        <button type="button" id="btnDeleteSend" title="В корзину выбранные" 
+        class="btn btn-primary" 
+        style="margin-right: 25px; padding: 7px 20px; background-color: #FFF; color: #228be6; float: right; position: relative; top: 60px; z-index:999"
+        onclick="confirmDelete()"
+        disabled>В корзину выбранные</button>
+
+        <table class="table table-striped table-bordered dataTable editForm" id="emailsList" style="width:100%; border-bottom: 0px !important">
+            <thead>
+                <tr style='display: none'>
+                    <th style='display: none'>ID</th>
+                    <th style='border: 0px;'></th>
+                    <th style='border: 0px;'></th>
+                    <th style='border: 0px;'></th>
+                    <th style='border: 0px;'>Отправитель</th>
+                    <th style='border: 0px;'></th>
+                    <th style='border: 0px;'></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in emailsList %}
+                <tr role="row" id="tr_{{entity.messageId}}">
+                    <td style='display: none'>{{ entity.sortByDate }}</td>
+                    <td>{{ entity.fdate }}</td>
+                    <td><a href="{{ path('webmail', {}) }}{{entity.messageId}}/{% if urlShowMessage is defined %}{{urlShowMessage}}{% else %}show{% endif %}" class="dirListItem">{{ entity.subj }}</a></td>
+                    <td>{%if entity.cnt_files > 0 %}<i class="fa fa-file-text-o" style="font-size:25px;color:#D1D2D2" title="Есть вложенные файлы"></i>{%else%}&nbsp;{% endif %}</td>
+                    <td>{% if usersEmail[entity.from] is defined %}{{usersEmail[entity.from]['lastname']}} {{usersEmail[entity.from]['firstname']}} {{usersEmail[entity.from]['middlename']}}<div class="emailsListFrom">{{ entity.from }}</div>{% else %}{{ entity.from }}{%endif%}</td>
+                    <td>
+                    <span class="favor-star" onclick="setImportant(this, {%if entity.important %}1{% else %}0{% endif %})"><i class="fa fa-exclamation {%if entity.important %}markImportant-active{% else %}markImportant{% endif %}" title="Отметить как важное"></i></span>
+                    <input type="checkbox" name="FIELDS[important][]" value="{{entity.messageId}}" style="display: none">
+                    </td>
+                    <td>
+                    <input type="checkbox" name="FIELDS[deleteEmail][]" class="chbDelete" value="{{entity.messageId}}" onclick="showButtonDelete(this)">
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </form>
+    {% endif %} 
+
+<script>
+function showButtonDelete(elem){
+    hasChecked = 0;
+    $('.chbDelete').each(function () {
+        if(this.checked){
+            hasChecked = 1;
+        }
+    });
+    if ( hasChecked == 1 ){
+        // getModalDialogInfo('В корзину');
+        $('#btnDeleteSend').prop('disabled', false);
+    }else{
+        $('#btnDeleteSend').prop('disabled', true);
+    }
+}
+function confirmDelete(){
+    hasChecked = 0;
+    $('#dialog-modal-confirm-send').html('В корзину');
+    $('.chbDelete').each(function () {
+        if(this.checked){
+            hasChecked += 1;
+        }
+    });
+    getModalDialogConfirm('Вы действительно хотите поместить в корзину выбранные '+ hasChecked+' сообщения?');
+    $('#dialog-modal-confirm-send').click( function() { 
+        $('#dialog-modal-confirm-send').prop('disabled', true);
+        $('#frmEmailsList').submit();
+    } );
+}
+
+function setImportant(elem, i){
+    var inp = $(elem).closest('td').find("input[type=checkbox]");
+    inp.prop('checked', true);
+    //if(inp.is(':checked') ){
+    if( i == 1){
+        getModalDialogConfirm('Убрать выбранное сообщение из `Важное`?');
+        $('#dialog-modal-confirm-send').click( function() { 
+            $('#isImportant').val('none');
+            $('#frmEmailsList').submit();
+        } );
+
+        //inp.prop('checked', false);
+        //$(elem).find("i").css('color', '#D1D2D2');
+    }else{
+        getModalDialogConfirm('Выделить выбранное сообщение как `Важное`?');
+        $('#dialog-modal-confirm-send').click( function() { 
+            $('#isImportant').val('imp');
+            $('#frmEmailsList').submit();
+        } );
+        //inp.prop('checked', true);
+        //
+        //$(elem).find("i").css('color', '#0d6efd');
+    }
+}
+</script>
+    
+<script>
+$('#mail_toptab_{% if active_top_tab is defined %}{{active_top_tab}}{%else%}main{%endif%}').addClass('active');
+$('#mail_leftab_{% if active_left_tab is defined %}{{active_left_tab}}{%else%}inbox{%endif%}').addClass('active');
+</script>  
+
+<script type="text/javascript">
+$(document).ready(function() {
+    var table = $('#emailsList').DataTable( {
+        "dom": '<"#dt-search"f><t><"#dt-bottom"pl>',
+            "language": {
+                searchPlaceholder: "Фильтр по списку сообщений",
+                sInfoEmpty: "Записи с 0 до 0 из 0 записей",
+                sInfo: "Записи с _START_ до _END_ из _TOTAL_ записей",
+                sLengthMenu: "Отображать на странице _MENU_",
+                "emptyTable": "Сообщений нет",
+                paginate: {
+                    "previous": '<i class="fa fa-angle-left"></i>',
+                    "next": '<i class="fa fa-angle-right"></i>',
+                },
+                search: '<i id="search-placeholder" class="fa fa-search"></i>',
+            },
+        order: [[0, 'desc']]
+    } );
+} );
+</script>
+<style> #emailsList_filter{ float: unset} </style>
+
+
+{% if message is defined and message.message_text is defined and message.message_text|length > 0 %}
+<script>
+$(document).ready( function (){
+    getModalDialogInfo('{{ message.message_text }}');
+} )
+</script>
+{% endif %}
+
+{% endblock %}

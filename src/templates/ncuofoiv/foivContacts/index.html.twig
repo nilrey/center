@@ -1,0 +1,72 @@
+{% extends 'ncuofoiv/layout.html.twig' %} 
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li>Общая информация</li>
+    <li>Список контактной информации</li>
+{% endblock %}
+
+{% block subtitle %}
+	<h5>Список контактной информации</h5>
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrTabs = ["tab_foiv_common", "tab_foiv_contacts"];
+{% endblock %}
+
+{% block foivContent %}
+	<div class="list-buttons-top">
+		<button type="button" class="btn btn-add" id="btn_add_source" title="Добавить" onclick="window.location.replace('{{ path('foivcontactsl_new', {'foivid': foiv.id}) }}')"></button>   
+	</div> 
+    
+        {# Три нижеследующих div'a являются элементами для создания диалоговых окон. Ключевое слово "hidden" не убирать - иначе далог будет вести непредсказуемо #}
+        <div id="dialog_msg_info" class="display-none" hidden>Запись успешно обновлена.</div>
+        <div id="dialog_rec_delete" class="display-none"  title="Внимание" hidden>Вы действительно хотите удалить запись?</div>
+        <!--<div id="del_cont_dialog" class="display-none"  title="Внимание" hidden>Вы действительно хотите удалить контакт?</div>-->
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <table id="dTable" class="table table-striped table-bordered dataTable" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>№</th>
+                   {#<th>Id</th>#}
+                    <th>ФИО</th>
+                    <th>Телефоны</th>
+                    <th>Электронная почта</th>
+                    <th>Почтовый адрес</th>
+					<th>Служба</th>
+					<th>Изменено</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody id="contacts_tbody">
+            {% if entities is defined %}
+				{% set counter = 0 %}
+				{% for entity in entities %}
+					{% if entity is defined %}
+						{% set counter = counter + 1 %}
+                <tr id="item_{{ entity.id }}">
+                    <td>{{ counter }}</td>
+                    {#<td><a href="{{ path('foivcontacts_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>#}
+					<td>{{entity.person.position}} {{entity.person.fio}}</td>
+                    <td>{{ entity.phone }}</td>
+                    <td>{{ entity.email }}</td>
+                    <td>{{ entity.address }}</td>
+					<td>{{ entity.person.service }}</td>
+					<td>{% if entity.person.ModifiedDate is defined %}{{ entity.person.ModifiedDate|date("d.m.Y H:i:s")}}{% endif %}</td>
+                    <td>
+                        {% include 'ncuofoiv_icons_list.twig' ignore missing with {
+                            'urlEdit': "",
+                            'urlView': path('foivcontacts_edit', { 'id': entity.id }),
+                            'entity_id' : entity.id,
+                            'urlDelete' : path('foivcontacts_delete',{'id' : entity.id})
+                        } %}
+                    </td>
+                </tr>
+					{%endif%}
+				{% endfor %}
+            {%endif%}
+            </tbody>
+        </table>
+    </div>
+    
+{% endblock %}

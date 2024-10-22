@@ -1,0 +1,134 @@
+{% extends 'layout-new.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuofoiv/css/profile.css') }}"/>  
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/tabs.css') }}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/dataTables.bootstrap.css') }}"/>
+{% endblock %}  
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    <script src="{{ asset('bundles/ncuofoiv/js/foivShow.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/jquery.dataTables.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/dataTables.bootstrap.js') }}"></script>
+    <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/foiv.js') }}"></script>
+    
+    <script>
+        var DATATABLES_RU_JSON          = '{{ asset('bundles/ncuoportal/js/datatables/ru_Ru.json') }}';
+    </script>
+   
+{% endblock %}  
+
+{% block breadcrumb %}
+{% endblock %}    
+
+{% block content %}
+
+
+					<h4>
+                    {% if foiv is defined %}
+					<span class="foiv-logo"><img id="foiv-Logo" src="{{ foiv_upload_url }}/logos/{{ foiv.id }}.png" onerror="this.src='{{ foiv_upload_url }}/logos/no-logo.png'" class="foiv-logo-img"></span>{{ foiv.name }}
+                    {% endif %}
+                    </h4>
+					<div class="row-fluid">
+						<div class="span12">
+							<ul class="nav nav-tabs foiv-tabs">
+								<li class="dropdown active">
+									<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+										Общая информация
+										<span class="caret"></span>
+									</a>
+									<ul class="dropdown-menu" role="menu">
+										<li>
+											<a href="/foiv/48">Описание</a>
+										</li>
+										<li class="active">
+											<a href="/foiv/48/tasks">Основные задачи</a>
+										</li>
+										<li>
+											<a href="/foiv/48/foivcontacts">Информация по взаимодействию</a>
+										</li>
+									</ul>
+								</li>
+								<li class="dropdown">
+									<a dropdown-toggle"=" href="#" data-toggle="dropdown">
+										Структура
+										<span class="caret"></span>
+									</a>
+									<ul class="dropdown-menu" role="menu">
+										<li>
+											<a href="/foiv/48/supervisory">Руководство</a>
+										</li>
+										<li>
+											<a href="/foiv/48/departments">Структурные подразделения</a>
+										</li>
+										<li>
+											<a href="/foiv/48/subinsts">Подведомственные ФОИВ</a>
+										</li>
+										<li>
+											<a href="/foiv/48/pvo">Организации и предприятия</a>
+										</li>
+									</ul>
+								</li>
+								<li class="dropdown">
+									<a class="dropdown-toggle" href="#" data-toggle="dropdown">
+										Территориальные органы
+										<span class="caret"></span>
+									</a>
+									<ul class="dropdown-menu" role="menu">
+										<li>
+											<a href="/foiv/48/fdo">В Федеральных округах</a>
+										</li>
+										<li>
+											<a href="/foiv/48/rdo">В Регионах</a>
+										</li>
+									</ul>
+								</li>
+								<li>
+									<a href="/foiv/sitcenter/48/sitcenter">Ситуационный центр</a>
+								</li>
+								<li class="dropdown">
+									<a class="dropdown-toggle" href="#" data-toggle="dropdown">
+										Информационное взаимодействие
+										<span class="caret"></span>
+									</a>
+									<ul class="dropdown-menu" role="menu">
+										<li>
+											<a href="/foiv/48/resources">Информационные системы</a>
+										</li>
+										<li>
+											<a href="/foiv/48/conventions">Соглашение по инф-му взаимодействию</a>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</div>
+
+					</div>
+					<div class="row-fluid">
+						<div class="span12">
+							<div class="tab-title">
+								<h5>Общая информация
+								<button type="button" class="btn btn-default btn-tab-title"><i class="glyphicon glyphicon-th-list mr5"></i>К списку ФОИВ</button>
+								</h5>
+							</div>
+						</div>
+					</div>
+
+					<div class="contentHolder">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="tab-content" style=" margin-bottom: 15px;">
+                                    {% block foivContent %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+
+					</div>
+            		<!-- \ contentHolder -->
+    
+{% endblock %}

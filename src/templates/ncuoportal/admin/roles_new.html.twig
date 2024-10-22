@@ -1,0 +1,100 @@
+{% extends 'ncuoportal/item_edit.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/foiv.form.css') }}" />
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block pageTitle %}Администрирование ролей{% endblock %}
+
+{% block addNewTitle %}Создать новую страницу{% endblock %}
+
+{% block addNewLink %}{{ path('oiv_admin_roles_new') }}{% endblock %}
+
+{% block tableFilterTitle %}по названию{% endblock %}
+
+
+{% block foivContent %}
+
+        <p>* Поля отмеченные звездочкой обязательны к заполнению</p>
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <form class="form-inline" id="create_data" method="post" action="{{urlAction}}">
+            <table class="table table-striped table-bordered dataTable editForm">
+                    <tbody>
+
+       {% if menuItem is defined %}
+                        <tr>
+                            <td>
+                                Наименование *:
+                                <p style="font-size: 11px; color: red">Только латинские буквы в верхнем регистре и знак нижнего подчеркивания _</p>
+                            </td>
+                            <td>
+                                <input type="text" name="FIELDS[name]" value="{{menuItem["name"]}}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Описание *:
+                            </td>
+                            <td style="text-align:left">
+                                <input type="text" name="FIELDS[description]" value="{{ menuItem["description"] }}" style="width: 100%">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Тип авторизации *:
+                            </td>
+                            <td style="text-align:left">
+                                <select name="FIELDS[auth_type]" style="width: 100%" onChange="showPrioritySelect(this)">
+                                    <option value="AUTH_ALD_DB" {% if menuItem["auth_type"] == 'AUTH_ALD_DB' %}selected{%endif%} >ALD или База данных</option>
+                                    <option value="AUTH_ALD" {% if menuItem["auth_type"] == 'AUTH_ALD' %}selected{%endif%} >ALD</option>
+                                    <option value="AUTH_DB" {% if menuItem["auth_type"] == 'AUTH_DB' %}selected{%endif%} >База данных</option>
+                                </select>
+                                <select name="FIELDS[auth_priority]" id="fld_auth_priority" style="margin-top: 15px;width: 100%; {% if menuItem["auth_type"] == 'AUTH_ALD_DB' or menuItem["auth_type"] == 'AUTH_DB_ALD' %} display: block; {%endif%}" >
+                                    <option value="AUTH_ALD_DB" {% if menuItem["auth_type"] == 'AUTH_ALD_DB' %}selected{%endif%} >Приоритет ALD</option>
+                                    <option value="AUTH_DB_ALD" {% if menuItem["auth_type"] == 'AUTH_DB_ALD' %}selected{%endif%} >Приоритет Базы данных</option>
+                                </select>
+                            </td>
+                        </tr>
+       {% endif %}                        
+                    </tbody>
+            </table>
+            <div class="container-fluid" style="padding-bottom: 50px">
+                <div class="row">
+                  <div class="col" style="text-align: left; padding-left: 0px;">
+                      <button type="submit" onclick="window.location.replace('{{urlAction}}')" class="btn btn-primary" style="background: none; color: #228BE6; width: 140px; margin-top: 15px;">Сохранить</button><a class="btn btn-primary" href="{{urlBack}}" style="background: none; color: #0d6efd; width: 140px; margin-left: 30px; margin-top: 15px;">Вернуться</a>
+                  </div>
+                </div>
+            </div> 
+        </form>
+		
+		
+		{% include 'ncuooiv_buttons_edit.twig' ignore missing with {
+			'urlBack': urlBack,
+		} %}
+		
+
+        {% if message is defined and message.message_text != '' %}
+        <script>
+        $(document).ready( function (){
+            getModalDialogInfo('{{ message.message_text }}');
+        } )
+        </script>
+        {% endif %}
+        
+        <script>
+        function showPrioritySelect(sel) {
+          if(sel.options[sel.selectedIndex].value != 'AUTH_ALD_DB' ){
+            $('#fld_auth_priority').css('display', 'none');
+          }else{
+            $('#fld_auth_priority').css('display', 'block');
+          }
+        }
+        </script>
+
+{% endblock %}

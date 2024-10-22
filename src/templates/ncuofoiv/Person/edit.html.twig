@@ -1,0 +1,163 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+      {# Подключаем скрипт с вспомогательными функциями по работе с  всплывающими диалоговыми окнами (MessageBox) #}
+      <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DialogHelpers.js')}}"></script>
+      {# Подключаем скрипт с обрабочтком событий #}
+       {% if( ScriptFileName is defined) %}
+       <script src="{{asset(ScriptFileName) }}"></script> 
+      {% endif %}
+{% endblock %}
+
+{% block foivContent %}
+    <style>.fa-angle-right{padding-right: 5px}</style>
+    <div class="row" style="margin-top: 10px; margin-bottom: 4px;">
+        <div class="col-md-9">
+            <h4>
+                <i class="fa fa-database fa-fw"></i>
+                <i class="fa fa-angle-right"></i>{{ActionTitle}}
+            </h4>
+        </div>
+    </div>
+    <style>
+        .contentHolder input[type=text] { width: 100% }
+    </style>
+<div class="contentHolder">
+{# Нижеследующий div является элементом для создания диалогового окна. Ключевое слово "hidden" не убирать - иначе далог будет вести непредсказуемо #}
+<div id="msg_dialog" class="display-none"  title="Внимание" hidden></div>
+<form class="form-inline" id="create_data" method="post" action="{{ActionURL}}" enctype="multipart/form-data">
+       <table class="table" cols=2>
+            <tbody>
+                <tr>
+                    <td width="15%"><b>Фамилия</b></td>
+                    <td align="left" class="td_control"><input class="form-control" type="text"  style="width: 50%" name="SURNAME" value="{{person.surname}}"></td>
+                </tr>
+                <tr>
+                    <td width="15%"><b>Имя</b></td>
+                    <td align="left" class="td_control"><input class="form-control" type="text"  style="width: 50%" name="NAME" value="{{person.name}}"></td>
+                </tr>
+                <tr>
+                    <td width="15%"><b>Отчество</b></td>
+                    <td align="left" class="td_control"><input class="form-control" type="text"  style="width: 50%" name="PATRONYMIC" value="{{person.patronymic}}"></td>
+                </tr>
+                <tr>
+                    <td width="15%"><b>Должность</b></td>
+                    <td align="left" class="td_control"><textarea class="form-control"   rows="3"  style="width: 50%"  name="POSITION">{{person.position}}</textarea></td>
+                </tr>
+                <tr>
+                    <td width="15%"><b>Адрес</b></td>
+                    <td align="left" class="td_control"><input class="form-control" type="text"  style="width: 50%" name="ADDRESS" value="{{person.address}}"></td>
+                </tr>
+                <tr>
+                    <td width="15%"><b>Телефон</b></td>
+                    <td align="left" class="td_control"><input class="form-control" type="text"  style="width: 50%" name="PHONE" value="{{person.phone}}"></td>
+                </tr>
+                <tr>
+                    <td width="15%"><b>Фото</b></td>
+                    <td align="left" class="td_control">
+                        <table >
+                            <tr>
+                                <td width="45%">
+                                    <table>
+                                        <tr>
+                                        {%  if  person.PhotoFullPath == null  %}
+                                               <img id="PERSON_PHOTO_IMAGE" style="width: 150px;" src="/img/foiv/persons/no-user.jpg" >
+                                        {% else %}
+                                               <img  id="PERSON_PHOTO_IMAGE" style="width: 150px;" src="{{person.PhotoFullPath}}" onerror="this.src='/img/foiv/persons/no-user.jpg'" >
+                                        {%endif%}
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input type="hidden" id="RELOAD_URL" value="{{ReloadURL}}">
+                                                
+                                                <select class="form-control" id="PHOTO_FILE"  name="PHOTO_FILE" onchange="OnSelFileChanged('PHOTO_FILE', 'PERSON_PHOTO_IMAGE','{{GettingFileURL}}','msg_dialog')">
+                                                   {# Проверяем: определена ли переменная (массив с данными)  или нет ? #}
+                                                   {%  if  PhotoFiles is defined  %}
+                                                       {% for FileID, Caption in PhotoFiles %}
+                                                           {#
+                                                               Если значение из списка совпадает с тем что выброано в объекте,
+                                                               то отмечаем данный элемент списка выбранным
+                                                           #}
+                                                           {% if  person.photofile.id is defined and FileID == person.photofile.id %}
+                                                               <option value="{{FileID}}" selected > {{Caption}}</option>
+                                                           {% else %}
+                                                               <option value="{{FileID}}">{{Caption}}</option>
+                                                           {%endif%}
+                                                       {% endfor %}
+                                                   {%  endif  %}            
+                                                  </select>
+                                             </td>
+                                             <td>
+                                                  <button id="add_photo_person_btn" class="btn btn-default" style="width: 100px" type="button"  onclick="OnShowHideMiniForm('add_photo_form', 'add_photo_person_btn')">Добавить</button>
+                                             </td>
+                          </tr>
+                          </table>
+                        </td>
+                          <td>
+                          {#<input id="NEW_PHOTO" class="btn btn-lg" name="NEW_PHOTO" type="file" onchange="OnFileUpload('NEW_PHOTO')"/>#}
+                          
+                          </td>
+                          </tr>
+                            <tr>
+                                <td >
+                                    {#панель для хранения встроенной формы добавления других персон#}
+                                        <div class="panel panel-default"  id="add_photo_form"  hidden="true">
+                                            <div class="panel-heading">Другое фото персоны</div>
+                                                <div class="panel-body">
+                                                    <div class="form-group col-xs-11" >
+                                                             <label  class="control-label col-xs-4">Название файла</label>
+                                                             <div class="col-xs-8">
+                                                                <input class="form-control" type="text" id="TITLE_FILE"/>       
+                                                             </div>
+                                                    </div>
+                                                    <div class="form-group col-xs-11" >
+                                                             <label  class="control-label col-xs-4">Описание</label>
+                                                             <div class="col-xs-8">
+                                                                    <input class="form-control" type="text" id="DESCRIPTION_FILE"/>
+                                                             </div>
+                                                    </div>
+                                                    <div class="form-group col-xs-11" >
+                                                             <label  class="control-label col-xs-4">Фотофайл</label>
+                                                             <div class="col-xs-8">
+                                                                    <input  type="file" id="SELECTED_FILE"/>
+                                                             </div>
+                                                    </div>
+                                                    <div class="form-group col-xs-11" >
+                                                        <a class="btn btn-default"  onclick="OnFileUpload('SELECTED_FILE', 'msg_dialog')">Загрузить</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </td>
+                            </tr>
+                          </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="15%"><b>Веб-сайт</b></td>
+                    <td align="left" class="td_control"><input class="form-control" type="text"  style="width: 50%" name="WEBSITE_URL" value="{{person.websiteurl}}"></td>
+                 </tr>
+                  <tr>
+                    <td width="15%"><b>E-mail</b></td>
+                    <td align="left" class="td_control"><input class="form-control" type="text"  style="width: 50%" name="EMAIL" value="{{person.email}}"></td>
+                 </tr>
+                <tr>
+                    <td width="15%"><b>Биография</b></td>
+                    <td align="left" class="td_control"><textarea class="form-control"   rows="3"  style="width: 50%"  name="BIOGRAPHY">{{person.biography}}</textarea></td>
+                </tr>
+            </tbody>
+    </table>
+    </form>
+</div>
+<div>
+            <button type="button" class="btn btn-primary" form="create_data" onclick="{{SaveFunctionName}}"> Сохранить </button>
+            <a class="btn btn-default" href="{{RetunedURL}}">Вернуться к списку</a>
+           
+</div>
+<!-- Скрытая форма -->
+{#<form  action="/foiv/persons/add_photo" method="post" id="InternalAddPhotoForm">
+  <input type="hidden" id="UPLOAD_PHOTO" name="UPLOAD_PHOTO" value="">
+</form>#}
+<!-- Конец скрытая форма -->
+{% endblock %}

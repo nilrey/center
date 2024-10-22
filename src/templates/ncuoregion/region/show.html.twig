@@ -1,0 +1,76 @@
+{% extends 'ncuoregion/new_layout.html.twig' %}  
+
+{% block stylesheets %}
+    {{ parent() }}
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+{% endblock %}
+
+{% block subtitle %}
+    Административно-географическое положение
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrMenus = ["block_common_info"];
+    var arrTabs = ["tab_common_info", "tab_s_geo_position"];
+{% endblock %}
+
+{% block foivContent %}
+ <style>
+.geo_position_1_1__common_1, 
+.geo_position_1_1__common_1 tr,
+.geo_position_1_1__prir_res_1,
+.geo_position_1_1__prir_res_1 tr,
+.geo_position_1_1__prir_ter_1,
+.geo_position_1_1__prir_ter_1 tr
+ { 
+    border: 1px solid #e1e3e8
+ }
+ .geo_position_1_1__common_1{margin: 30px 0px}
+ </style>
+            <table style="margin-top: 20px">
+                    <tbody>
+                        <tr>
+                            <td style="border:0px !important; padding: 15px 15px 0px 0px; text-align: left; min-width: 200px; vertical-align: top">
+                                <strong>Полное наименование:</strong>
+                            </td>
+                            <td id="td_name_full" style="border:0px !important; padding: 15px 15px 0px 0px; text-align: left; min-width: 200px; vertical-align: top">
+                                 <strong>{{oiv.name}}
+                                                                                    
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border:0px !important; padding: 15px 15px 15px 0px; text-align: left; min-width: 200px">
+                                <strong>Флаг:</strong>
+                            </td>
+                            <td id="td_flag_img">
+                                {% autoescape %} {{oiv.getHeraldicImg|raw}}     {% endautoescape %}                             
+                            </td>
+                        </tr>
+                    </tbody>
+            </table>
+        
+         
+    {% if fields is defined %}
+        {% for field in fields %}      
+            {% if field.data is defined %}   
+                {% autoescape %}
+                    {{ field.data|raw }}
+                {% endautoescape %}
+            {% endif %}
+       {% endfor %}
+    {% endif %}
+        
+        {% include 'buttons_psp_show.twig' ignore missing with {
+            'urlEdit': urlEdit
+        } %}
+        
+
+{% endblock %}

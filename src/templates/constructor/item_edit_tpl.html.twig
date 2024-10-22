@@ -1,0 +1,78 @@
+{% extends 'ncuoregion/new_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/foiv.form.css') }}" />
+    <style>.imagePreview img{max-width: 200px}</style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/ncuooiv/js/imgBase64.js') }}"></script>
+    <script src="{{ asset('bundles/ncuoportal/js/ckeditor/ckeditor.js') }}"></script>
+    <script src="{{ asset('bundles/ncuoportal/js/js2/sample.js') }}"></script>
+    <script src="{{ asset('bundles/ncuoportal/js/func_export_imp.js') }}"></script>
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+{% endblock %}
+
+{% block subtitle %}
+    {{pageTitle}} > Редактирование записи 
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrMenus = ["block_{{tabmenu['parent_id']}}"];
+    var arrTabs = ["toptab_{{tabmenu['parent_id']}}", "tab_{{tabmenu['current_id']}}"];
+{% endblock %}
+
+{% block phSearch %}
+    {% if oiv.name is defined %}Поиск по Субъекту РФ - {{ oiv.name }}{% endif %}
+{% endblock %}
+
+{% block foivContent %}
+
+        {%if tabmenu['parent_id'] == 'ncu_forms' %}
+            {% block btnExportImport %}
+            {% endblock %}
+        {% endif %}
+
+
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <p style="margin-top: 25px">* Поля отмеченные звездочкой обязательны к заполнению</p>
+
+        {% block formContent %}
+		{% endblock %}
+		
+		{% include 'buttons_psp_edit.twig' ignore missing with {
+			'urlBack': urlBack,
+			'urlView': urlView
+		} %}
+		
+
+        {% if message is defined and message.message_text != '' %}
+        <script>
+        $(document).ready( function (){
+            getModalDialogInfo('{{ message.message_text }}');
+        } )
+        </script>
+        {% endif %}
+
+        {% if export is defined %}
+        <script>
+        $(document).ready( function (){
+            getModalDialogInfo('<p>Выгрузка подготовлена.</p><a href="/public/export/{{export_file_link}}">Скачать данные</a>');
+        } )
+        </script>        
+        {% endif %}
+
+        <script>
+        function getDialogImport(){
+            getModalDialogForm('<div id="dialogImport" title="Загрузка данных" class="ui-widget"><p>Выберите файл загрузки в формате CSV</p><form enctype="multipart/form-data" id="frmImport" action="import" method="post"><input type="file" name="import_file" id="import_file"></form></div><div class="modal-footer"><button type="button" class="btn btn-primary" onclick="$(\'#frmImport\').submit()">Отправить</button></div>', 'Загрузка данных');
+        }
+        //
+        </script>
+
+{% endblock %}

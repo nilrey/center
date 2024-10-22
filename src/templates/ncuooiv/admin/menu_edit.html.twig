@@ -1,0 +1,127 @@
+{% extends 'ncuooiv/layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/foiv.form.css') }}" />
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block breadcrumb %}
+    <li>Контроль и управление функционированием</li>
+    <li>Администрирование меню</li>
+    <li>Редактирование записи</li>
+{% endblock %}
+
+{% block subtitle %}
+    <h5> Администрирование меню > Редактирование записи</h5>
+{% endblock %}
+
+
+{% block foivContent %}
+<h4 style="position: relative; top: -90px">Администрирование меню</h4>
+    <div class="contentHolder" style="position: relative; top: -30px">
+        {#% if entity.ModifiedDate is defined and entity.id > 0 %}<p>Дата последнего изменения: {{ entity.ModifiedDate|date("d.m.Y (H:i:s)")}}</p>{% endif %#}
+        <p>* Поля отмеченные звездочкой обязательны к заполнению</p>
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <form class="form-inline" id="create_data" method="post" action="{{urlAction}}">
+            <table class="table table-striped table-bordered dataTable editForm">
+                    <tbody>
+
+       {% if menuItem is defined %}
+                        <tr>
+                            <td>
+                                Наименование *:
+                            </td>
+                            <td>
+                        {% if menuItem["item_name"] is defined %}
+                                {#
+                                {% autoescape %}
+                                <textarea name="FIELDS[{{field.id}}]" cols=100 rows=1>{{ field.data|raw }}</textarea>
+                                {% endautoescape %}
+                                #}
+                                <input type="text" name="FIELDS[item_name]" value="{{menuItem["item_name"]}}">
+                        {% endif %}
+                                
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Роль *:
+                            </td>
+                            <td style="text-align:left">
+                             {% if arGrantedUsers is defined %}    
+                                {% for role in arGrantedUsers %}
+                                    {% set selected = '' %}
+                                    {% if role["selected"] > 0 %}
+                                        {% set selected = 'checked' %}
+                                    {% endif %} 
+                                        <p><input type="checkbox" name="FIELDS[roles][]" value="{{ role["id"] }}" {{selected}}> {{ role["description"] }}</p> 
+                                {% endfor %}
+                             {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Родительский элемент:
+                            </td>
+                            <td style="text-align:left">
+                             {% if listMenu is defined %}
+                                <select name="FIELDS[parent_id]">
+                                    <option value=""></option>
+                                {% for item in listMenu %}
+                                    {% set selected = '' %}
+                                    {% if item["id"] == menuItem["parent_id"] %}
+                                        {% set selected = 'selected' %}
+                                    {% endif %} 
+                                    <option value="{{item['id']}}" {{selected}} >{{item['item_name']}}</option>
+                                {% endfor %}
+                                </select>
+                             {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Позиция:
+                            </td>
+                            <td style="text-align:left">
+                                <input type="text" name="FIELDS[item_position]" value="{{ menuItem["item_position"] }}" style="width: 100%">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                URL:
+                            </td>
+                            <td style="text-align:left">
+                                <input type="text" name="FIELDS[url]" value="{{ menuItem["url"] }}" style="width: 100%">
+                            </td>
+                        </tr>
+       {% endif %}                        
+                    </tbody>
+            </table>
+        </form>
+		
+		
+		{% include 'ncuooiv_buttons_edit.twig' ignore missing with {
+			'urlBack': urlBack,
+			'urlView': urlView
+		} %}
+		
+
+        {% if message is defined and message.message_error == false %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ message.message_text }}');
+        </script>
+        {% endif %}
+
+{#% for flashMessage in app.session.flashbag.get('notice') %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ flashMessage }}');
+        </script>
+{% endfor %#}
+
+    <div>
+{% endblock %}

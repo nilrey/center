@@ -1,0 +1,67 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block foivContent %}
+    <div class="row" style="margin-top: 10px; margin-bottom: 4px;">
+        <div class="col-md-9">
+            <h4>
+                <i class="fa fa-database fa-fw"></i>
+                <i class="fa fa-angle-right"></i>{{ActionTitle}}
+            </h4>
+        </div>
+    </div>
+    
+    <div class="contentHolder">
+        <table class="table table-bordered table-striped">
+            <tr>
+                <td><b>Фамилия<b></td>
+                <td>{{person.surname}}</td>
+            </tr>
+            <tr>
+                <td><b>Имя<b></td>
+                <td>{{person.name}}</td>
+            </tr>
+            <tr>
+                <td><b>Отчество<b></td>
+                <td>{{person.patronymic}}</td>
+            </tr>
+            <tr>
+                <td><b>Должность<b></td>
+                <td>{{person.position}}</td>
+            </tr>
+            <tr>
+                <td><b>Адрес<b></td>
+                <td>{{person.address}}</td>
+            </tr>
+            <tr>
+                <td><b>Телефон<b></td>
+                <td>{{person.phone}}</td>
+            </tr>
+        
+            <tr>
+                <td><b>Фото<b></td>
+                <td>
+                   {%  if  person.PhotoFullPath == null  %}
+                        <img style="width: 150px;" src="/img/foiv/persons/no-user.jpg" >
+                    {% else %}
+                        <img style="width: 150px;" src="{{person.PhotoFullPath}}" onerror="this.src='/img/foiv/persons/no-user.jpg'" >
+                    {%endif%}
+                </td>
+            </tr>
+            <tr>
+                <td><b>Веб-сайт<b></td>
+                <td>{{person.websiteurl}}</td>
+            </tr>
+            <tr>
+                <td><b>E-mail<b></td>
+                <td>{{person.email}}</td>
+            </tr>
+            <tr>
+                <td><b>Биография<b></td>
+                <td>{{person.biography}}</td>
+            </tr>
+        </table>
+        <a class="btn btn-warning" href="{{ ActionURL }}" >Редактировать</a>
+        <a class="btn btn-default" href="{{ ReturnedURL}}">Вернуться к списку</a>
+    </div>
+
+{% endblock %}

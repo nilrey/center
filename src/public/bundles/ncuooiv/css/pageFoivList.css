@@ -1,0 +1,44 @@
+.container-fluid p.foiv-list-annot{
+	margin: -7px 0px 8px 0px;
+	line-height: 28px;
+	text-align: justify;
+}
+
+.sorting, .sorting_asc{ display: none}
+.dataTables_filter { float: left; }
+#dTable_filter label{ color: #EFF0F0; }
+.dataTables_filter input[type="search"]{
+	width: 100%;
+	height: 35px;
+	margin-top: 4px !important;
+}
+
+.dataTables_filter{
+	height: 29px !important;
+}
+
+.dTable_wrapper row,
+#dTable_filter label,
+.col-sm-6{
+	width: 100%;
+}
+.dataTables_wrapper > .row > div.col-sm-6:last-child{
+	margin-top: 0px !important;
+}
+
+.dataTables_filter {
+	margin-bottom: 20px !important;
+}
+
+													/* Mozzila FireFox hack */
+
+@-moz-document url-prefix() {
+	.dataTables_filter {
+		margin-bottom: 0px !important;
+	}
+
+	div#dTable_wrapper div.row:nth-child(1) {
+		padding-bottom: 40px;
+	}	
+	
+}

@@ -1,0 +1,36 @@
+.editForm tr:hover{
+    /*background: #eeeeee !important;    */
+}
+
+.editForm td:first-child{
+    width: 30% !important;
+}
+
+.editForm td input[type=text]{
+    width: 100% !important;
+    padding-left: 5px;
+    height: 28px;
+}
+
+.editForm td select {
+    height: 28px;
+    
+}
+.editForm td select option{
+    padding: 2px 0px 2px 7px;
+}
+
+.editForm td select option:first-child{
+    height: 23px;
+}
+
+.list-buttons{
+    margin-top: 25px !important;
+}
+
+.photo-dir {
+	width: 180px;
+	padding: 0px;
+	margin: 0px 20px 0px 0px;
+    float: left;
+}

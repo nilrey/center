@@ -1,0 +1,71 @@
+.pl20{ padding-left: 20px }
+.pl10{ padding-left: 10px }
+.pl5{ padding-left: 5px }
+.pt20{ padding-top: 20px }
+.pt10{ padding-top: 10px }
+.pt5{ padding-top: 5px }
+
+.gerb {
+    width: 50px;
+    /*height: 50px;*/
+}
+#foivList {
+    margin-top: 10px;
+}
+#foivList td, #listHeader td {
+    padding: 9px;
+    vertical-align: middle;
+}
+#foivList a {
+    color: #555555;
+}
+#foivList a:hover {
+    text-decoration: none;
+    color: #d33834;
+}
+._label {
+    font-weight: 400;
+}
+.dialogBox {
+    position: fixed;
+    margin: auto;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 15px 25px;
+}
+.dialogBoxHolder {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 250px;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(233, 233, 233, 0.5);
+    padding: 145px 50% 0 20%;
+    z-index: 1000;
+}
+.dialogCloser {
+    color: #999;
+    font-size: 90%;
+}
+.dialogCloser:hover {
+    color: #555;
+}
+
+.collapseLink {
+    color: #555;
+}
+.collapseLink:hover {
+    text-decoration: none;
+    color: #d33834;
+}
+
+td.td_control
+{
+    width: 80%;
+}
+
+textarea
+{
+    resize: none;
+}

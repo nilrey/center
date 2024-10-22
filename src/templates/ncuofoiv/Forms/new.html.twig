@@ -1,0 +1,76 @@
+{% extends 'layout.html.twig' %}
+
+{% block stylesheets %}
+   {{parent()}}
+   <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuofoiv/css/profile.css') }}"/>
+   
+{% endblock %}
+
+{% block content %}
+<form class="form-inline" id="create_data" method="post" action="{{ActionURL}}">
+    <table class="table" cols="2">
+            <tbody>
+                {% for Key, DataItem in FieldNames %}
+                <tr>
+                    <td ><b>{{DataItem[1]}}:</b></td>
+                    {# Проверяем тип контрола и в зависимости от типа создаем соответсвующий HTML-контрол #}
+                    {% if DataItem[0] == 'editbox' %}
+                     <td align="left"  class="td_control">
+                           {# Проверяем является ли поле обязательным или нет при вводе данных#}
+                            {%if DataItem[2] == true%}
+                            <input class="form-control" type="text" align="left" required="required" style="width: 50%"  name="{{Key}}"/>
+                            {% else %}
+                                <input class="form-control" type="text" align="left" style="width: 50%"  name="{{Key}}"/>
+                            {% endif %}
+                     </td>
+                    {% elseif   DataItem[0] == 'textarea' %}
+                        <td align="left" class="td_control">
+                            {# Проверяем является ли поле обязательным или нет при вводе данных#}
+                             {%if DataItem[2] == true%}
+                            <textarea class="form-control"  required="required" rows="3"  style="width: 50%"  name="{{Key}}"></textarea>
+                             {% else %}
+                                 <textarea class="form-control"  rows="3"  style="width: 50%"  name="{{Key}}"></textarea>
+                            {% endif %}  
+                        </td>
+                    {% elseif   DataItem[0] == 'updown' %}
+                        <td align="left" class="td_control">
+                            {# Проверяем является ли поле обязательным или нет при вводе данных#}
+                             {%if DataItem[2] == true%}
+                                 <input class="form-control" type="number" required="required" style="width: 50%" name="{{Key}}" />
+                             {% else %}
+                                <input class="form-control" type="number" style="width: 50%" name="{{Key}}" />
+                            {% endif %}
+                        </td>
+                    {% elseif   DataItem[0] == 'combobox' %}
+                        <td align="left" class="td_control">
+                            {# Проверяем является ли поле обязательным или нет при вводе данных#}
+                             {%if DataItem[2] == true%}
+                                <select class="form-control" required="required" name="{{Key}}" style="width: 50%">
+                            {% else %}
+                                <select class="form-control" name="{{Key}}" style="width: 50%">
+                             {% endif %}
+                            {# Проверяем: определена ли переменная (массив с данными)  или нет ? #}
+                            {%  if  SourceData is defined  and SourceData[Key] is defined %}
+                                {% for OptionKey, OptionData in SourceData[Key] %}
+                                    {%if OptionKey != -1 %}
+                                    <option value="{{OptionKey}}">{{OptionData}}</option>
+                                {%else %}
+                                    <option selected disabled>{{OptionData}}</option>
+                                {%endif%}
+                                {% endfor %}
+                            {%  endif  %}            
+                            </select>
+                        </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+    </table>
+    
+    </form>
+
+<div>
+            <button type="submit" class="btn btn-primary" form="create_data" > Создать </button>        
+            <a class="btn btn-default" href="{{RetunedURL}}">Отмена</a>
+</div>
+{% endblock %}

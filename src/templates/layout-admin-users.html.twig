@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">	
+    <meta content="IE=8" http-equiv="X-UA-Compatible">
+	<meta http-equiv="cache-control" content="no-cache"/>
+
+    <title>Единое Автоматизированное Рабочее Место НЦУО</title>
+
+    <!-- CSS -->
+    {% block stylesheets %}
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/bootstrap.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/jquery-ui.min.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/jquery-ui.theme.min.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/font-awesome.min.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/sb-admin.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/navigation.css') }}"/>  
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/interface.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/margin.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/buttons.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/custom.left-menu.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/custom.bootstrap.css') }}"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/custom.dataTables.css') }}"/>
+    {% endblock %}
+        
+        <!--<link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/colors.css') }}"/>-->
+    <!-- Scripts -->
+    {% block javascripts %}
+        <script src="{{ asset('bundles/ncuoportal/js/jquery-1.11.1.min.js') }}"></script>
+        <script src="{{ asset('bundles/ncuoportal/js/bootstrap.js') }}"></script>
+        <script src="{{ asset('bundles/ncuoportal/js/jquery-ui.min.js') }}"></script>      
+        <script src="{{ asset('bundles/ncuoportal/js/jquery.metisMenu.js') }}"></script>
+        <script src="{{ asset('bundles/ncuoportal/js/sb-admin.js') }}"></script>
+        <script src="{{ asset('bundles/ncuoportal/js/back-to-top.js') }}"></script>
+        <script src="{{ asset('bundles/ncuoportal/js/interface.js') }}"></script>
+    {% endblock %}
+    
+    <script>
+        // Активация тултипов
+        $(document).tooltip({
+			items: ':not(.ui-dialog-titlebar)'
+        });
+		
+		$(document).ready(function() {
+			var cur_path = window.location.pathname;
+			var bfind = 0;
+			
+			$('#side-menu a').each(function() {
+				var menu_item_url   = $(this).attr('href');
+				
+				// Ищем по полному совпадению
+				if (cur_path == menu_item_url) {
+					$(this).addClass('active');
+					$(this).parent('li').addClass('active');
+					$(this).parents('ul').prev('a[href=#]').trigger('click');
+			
+					bfind = 1;	   
+					return false;
+				}								
+			});
+			
+			if (bfind == 1)
+				return;
+			
+			$('#side-menu a').each(function() {
+				var menu_item_url   = $(this).attr('href');
+				
+                var first8chars = cur_path.substring(0, 8);
+                
+				// Ищем по началу строку
+				if (
+                   !(menu_item_url == '/foiv/' && first8chars == '/foiv/0/') && // исключение для пункта меню /foiv/ , при открытии страниц начинающихся с /foiv/0/
+                    cur_path.indexOf(menu_item_url) == 0) {
+				   $(this).addClass('active');
+				   $(this).parent('li').addClass('active');
+				   $(this).parents('ul').prev('a[href=#]').trigger('click');
+				}
+			});				
+		});
+    </script>
+
+</head>
+<body>
+
+<!-- Locker -->
+<div id="lock_pane" class="lock_off"><img src="{{ asset('bundles/ncuoportal/images/ajax-loader.gif') }}"/></div>
+<div id="wrapper">
+	<div class="hd-top">
+		<div class="hd-top-title">
+			<div class="logo-title">
+				<a href="/">Центр управления повседневной деятельностью НЦУО РФ </a>
+			</div>
+			<div class="navbar-user">
+				{% if is_granted('ROLE_ADMIN') %}
+					АРМ Администратора
+				{% elseif is_granted('ROLE_FOIV') %}
+					{% if not app.user.foiv.name is empty %}
+					АРМ Пользователя ФОИВ{# "{{ app.user.foiv.name }}"#}
+					{% else %}
+					АРМ Пользователя ФОИВ{# "{{ app.user.roiv.name }}"#}
+					{% endif %}
+				{% elseif is_granted('ROLE_NCUO') %}
+				АРМ Пользователя НЦУО РФ
+				{% elseif is_granted('ROLE_VDL') %}
+				АРМ Высшего должностного лица
+				{% endif %}
+			</div>
+		</div><!-- \ hd-top-title -->
+		<div class="hd-top-sets">
+			{% if app.user and is_granted('ROLE_ADMIN') %}
+			<div class="hts-admin">
+				<a href="{{ path("admin") }}">
+					<i class="fa fa-gears mr5"></i>
+					Администрирование
+				</a>
+			</div>
+			{% endif %}
+			{% if app.user %}
+			<div class="btn-group hts-user-sets" role="group">
+				<div class="btn-group" role="group">
+					<button type="button" class="btn btn-default dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<i class="fa fa-user fa-fw mr5"></i>
+						{{ app.user }}
+						<span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu">
+						<li>
+							<a href="{{ path("profile") }}">Профиль</a>
+						</li>
+						<li>
+							<a href="{{ path("logout") }}">Выход</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			{% endif %}
+		</div> <!-- \ hd-top-sets -->
+	</div> <!-- \ hd-top -->
+	<div class="breadcrumb-top-line"></div>	
+	<div class="breadcrumb-block">
+		<div class="col-lg-12 mr0">
+			<ul class="breadcrumb-list">
+				{% block breadcrumb %} 
+				{% endblock %}    			
+			</ul>
+			<div class="search">
+				<i class="ico-resize" onclick="wideScreenView()" title="Полноэкранный режим"></i><!--<input type="text" placeholder="Поиск...">-->
+			</div>
+		</div>
+	</div>	
+	<div class="menu-left-block">
+		<div class="navbar-default" role="navigation">
+			<div class="sidebar-collapse">
+				{{ include('ncuoportal/left_menu-admin-users.html.twig') }}
+			</div>
+		</div>
+	</div>
+
+	<!-- Page Content -->
+	<div id="page-wrapper">
+		<div class="container-fluid">
+				{% block content %}
+				{% endblock %}							
+		</div> <!-- \ container-fluid -->
+	</div> <!-- \ page-wrapper -->
+
+</div> <!-- \ wrapper -->
+
+</body>
+</html>

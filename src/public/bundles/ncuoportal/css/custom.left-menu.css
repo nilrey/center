@@ -1,0 +1,94 @@
+/* LEFT MENU */
+
+/*.nav > li > a { padding: 12px 15px }*/
+
+.menu-left-block{
+	width: 250px;
+	height: 100%;
+	float: left;
+	overflow: hidden;
+}
+
+.menu-left-block a {
+	color: #CCCBCB;
+}
+
+.side-nav{ 
+	position: fixed;
+	top: 146px;    
+	bottom: 0;
+	margin: 0px;
+	overflow-y: auto;
+	overflow-x: hidden;	
+}
+
+.navbar-static-side ul {
+	background: #3A3633;
+}
+
+.navbar-static-side{ top: 94px }
+
+.menu-left{
+	width: 250px;
+}
+
+.menu-left li { min-height: 43px }
+
+.menu-left li a { border-right: 4px solid transparent }
+
+.menu-left li a.active,
+.menu-left li a:hover{ border-right: 4px solid #5bc0de }
+
+.nav > li.active > a.active{
+	/*border-bottom: 0px !important;*/
+}
+.menu-left li a.active{
+	color: #FFFFFF;
+	/*border-bottom: 1px solid transparent !important;*/
+}
+
+
+.menu-left > li.active > ul > li a {
+	margin-left: 10px;
+}
+
+.menu-left > li.active > ul > li{
+	background: #555555;
+	border-bottom: 1px solid transparent !important;
+}
+.menu-left > li.active > ul > li:first-child{
+	/*border-bottom: 1px solid transparent !important;*/
+}
+
+.menu-left li i{
+	width: 16px;
+	display: inline;
+	float: left;
+}
+
+.menu-left li i,
+.menu-left li .arrow{ margin-top: 3px }
+
+.smi-title{
+	margin-left: 0px;
+	margin-right: 15px;
+	padding: 2px 0px;
+}
+
+#side-menu > li,
+.nav-n-level li {
+	border-top: 1px solid #808080;
+	margin-bottom: 0px;
+}
+
+#side-menu > li:last-child{
+	border-bottom: 1px solid #808080 !important;
+}
+
+.nav-second-level li a {
+	padding-left: 15px;
+}
+
+.nav > li > a {
+	padding: 10px 15px 9px 15px !important;
+}

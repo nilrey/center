@@ -1,0 +1,77 @@
+{% extends 'ncuoregion/layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/foiv.form.css') }}" />
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+        <script src="{{ asset('bundles/ncuoportal/js/ckeditor/ckeditor.js') }}"></script>
+        <script src="{{ asset('bundles/ncuoportal/js/js2/sample.js') }}"></script>
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li>Общая информация</li>
+    <li>Органы государственной власти и местного самоуправления	</li>
+    <li>Редактирование записи</li>
+{% endblock %}
+
+{% block subtitle %}
+	<h5>Органы государственной власти и местного самоуправления	 > Редактирование записи</h5>
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrTabs = ["tab_common_info", "tab_s_gov_structure"];
+{% endblock %}
+
+{% block foivContent %}
+
+    <div class="contentHolder">
+        {#% if entity.ModifiedDate is defined and entity.id > 0 %}<p>Дата последнего изменения: {{ entity.ModifiedDate|date("d.m.Y (H:i:s)")}}</p>{% endif %#}
+        <p>* Поля отмеченные звездочкой обязательны к заполнению</p>
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <form class="form-inline" id="create_data" method="post" action="{{urlAction}}">
+            <table class="table table-striped table-bordered dataTable ">
+                    <tbody>
+
+       {% if fields is defined %}
+           {% for field in fields %}         
+                        <tr>
+                            <td id='td_{{field.IdFldShort}}'>
+                                <h5>{{field.name}}:</h5>
+                        
+                            {% autoescape %}
+                                <textarea id="editor" name="FIELDS[{{field.IdFldShort}}]" cols=150 rows=15>{% if field.data is defined %}{{ field.data|raw }}{% endif %}</textarea>
+                                <!-- <input type="text" name="FIELDS[{{field.IdFldShort}}]" value=""> -->
+                            {% endautoescape %}
+                                
+                            </td>
+                        </tr>
+   
+           {% endfor %}
+       {% endif %}                        
+                    </tbody>
+            </table>
+        </form>
+	
+        <script>initSample();</script>	
+		
+		
+		{% include 'ncuooiv_buttons_edit.twig' ignore missing with {
+			'urlBack': urlBack,
+			'urlView': urlView
+		} %}
+		
+
+        {% if message is defined and message.message_error == false %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ message.message_text }}');
+        </script>
+        {% endif %}
+
+
+    </div> <!-- \ contentHolder -->
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "layout.html.twig" %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    
+    {% if not err_msg is defined %}
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoeif/css/common.css') }}"/>    
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/dataTables.bootstrap.css') }}"/> 
+        <style type="text/css">
+            td {
+                font-size: 12px;
+            }
+            
+            th {
+                font-size: 13px;
+            }
+        </style>
+    {% endif %}
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    {% if not err_msg is defined %}
+        <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/dialogen.plugin.js') }}"></script>    
+        <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/jquery.dataTables.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/dataTables.bootstrap.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datepicker-ru.js') }}"></script>
+        <script>
+            var DATATABLES_RU_JSON          = '{{ asset('bundles/ncuoportal/js/datatables/ru_Ru.json') }}';
+            
+            var URL_GET_DATA                = '{{ path('eif_form_view_act__get_data') }}';
+            
+            var MSG_SERVICE_ERROR           = '{{ msg_service_error }}';        
+        </script>    
+        
+        <script type="text/javascript" src="{{ path('eif_js', {'file': 'form_view_act'}) }}"></script>
+    {% endif %}
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block breadcrumb %}
+    <li><a href="{{ path('eif_sources') }}" title="Вернуться к списку источников">Данные ЕИФ</a></li>
+    
+    {% if not err_msg is defined %}
+        <li><a href="{{ path('eif_protocols') }}?id_source={{ source.IdSource }}" title="Вернуться к списку протоколов источника">Источник [{{ source.SourceName }}]</a></li>
+        <li><a href="{{ path('eif_forms') }}?id_protocol={{ protocol.IdProtocol }}" title="Вернуться к списку форм хранения данных протокола">Протокол [{{ protocol.ProtocolName }}]</a></li>
+        <li class="active">Форма [{{ form.FormName }}]</li>
+    {% endif %}
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block content %}
+    {% if err_msg is defined %}
+        <div id="error_msg" class="alert alert-danger">{{ err_msg }}</div>
+        <a href="{{ path('eif_sources') }}" title="Вернуться к списку источников"><button type="button" class="btn btn-default" title="Назад">Назад <i class="fa fa-reply"></i></button></a>
+    {% else %}    
+        <input type="hidden" id="id_form" value="{{ form.IdForm }}">
+        <input type="hidden" id="req_flag" value="0">
+        
+        <h4>Просмотр данных формы [{{ form.FormName }}] на дату актуальности:</h4>
+        
+        <form class="form-inline">
+            <div class="form-group">
+                <label>Период актуальности данных <i class="fa fa-question-circle icon-link" title="Выбирается самые последние (по ключевым полям), не удаленные данные, загруженные (дата загрузки файла) в заданном периоде (макс. 31 день):"></i></label>
+                с <input id="dt_from" type="text" class="form-control width-100" readonly="true">
+                по <input id="dt_to" type="text" class="form-control width-100" readonly="true">
+                <button type="button" id="btn_get_data" class="btn btn-default" title="Поиск"><i class="fa fa-search"></i></button>                
+            </div>
+            <button type="button" id="btn_filter" class="btn btn-warning float-right" title="Применить фильтр по столбцам"><i class="fa fa-filter"></i></button>                
+        </form>
+            
+        <div id="table_div" class="margin-top-15">
+            <table id="tbl_form_view_act" class="table table-striped table-hover table-bordered">
+                <thead class="table-thead">
+                    <tr>
+                        {% for ff in form_fields %}
+                            <th><input type="text" placeholder="Поиск" class="form_col_search" data-pos="{{ loop.index - 1 }}"/></th>
+                        {% endfor %}                        
+                    </tr>
+                    <tr>
+                        {% for ff in form_fields %}
+                            {% if ff.KeyFlag == 0 %}
+                                <th>{{ ff.FieldName }}</th>
+                            {% else %}
+                                <th class="color-key-field">{{ ff.FieldName }}</th>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>                    
+                </thead>
+                
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>                 
+    {% endif %}
+{% endblock %}

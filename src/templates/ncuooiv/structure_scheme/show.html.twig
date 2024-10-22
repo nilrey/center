@@ -1,0 +1,30 @@
+{% extends 'ncuooiv/item_show_tpl.html.twig' %}  
+
+{% block foivContent %}
+<style>.table td img{max-height: none !important}</style>
+        <table class="table">
+         
+
+         {% if fields is defined %}
+        {% for field in fields %}         
+            <tr>
+                <td id='{{field.IdFldShort}}'>
+                    {% if field.data is defined %}
+                       {% autoescape %}
+                        {{ field.data|raw }}
+                        {% endautoescape %}
+                    {% endif %}
+                    
+                </td>
+            </tr>
+
+        {% endfor %}
+        {% endif %} 
+        </table>
+        
+        {% include 'buttons_psp_show.twig' ignore missing with {
+            'urlEdit': urlEdit
+        } %}
+        
+
+{% endblock %}

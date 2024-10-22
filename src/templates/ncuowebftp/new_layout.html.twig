@@ -1,0 +1,74 @@
+{% extends 'new_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}  
+
+{% block javascripts %}
+    {{ parent() }}
+     
+{% endblock %}  
+
+{% block breadcrumb %}
+    <i class="fa fa-angle-left" title="" data-bs-dismiss="modal" style="padding-right: 5px"></i> <a href="{{ path('webftp') }}" style="color: #959EA9; text-decoration: none">Служба передачи файлов. Список файлов</a>
+{% endblock %}    
+
+{% block nameheader %}
+  {% if oiv is defined %}
+<div class="container-fluid" style="line-height: 40px">
+  <div class="row">
+    <div class="col-8" style="font-weight: 600; font-size: 16px; margin-left: 34px">
+        <span class="foiv-logo">{% autoescape %}{{ oiv.heraldic_img|raw }}{% endautoescape %}</span> {% if oiv.name is defined %}{{ oiv.name }}{% endif %}<span class="favor-star"><i class="fa fa-star"></i>На главном экране</span>
+    </div>
+    <div class="col" id="dt-search" style="text-align: right; padding-right: 38px">
+        <i id="search-placeholder" class="fa fa-search" style="top: 38px"></i>
+        <form method="post" action="{{ path('search_update', {} ) }}">
+        <input type="hidden" name="FIELDS[oiv_id]" value='{% if oiv.id is defined %}{{ oiv.id }}{% endif %}'>
+        <input type="hidden" name="FIELDS[oiv_name]" value='{% if oiv.name is defined %}{{ oiv.name }}{% endif %}'>
+        <input type="text" name="FIELDS[search]" style="border: 1px solid #E1E3E8; border-radius: 4px; margin-top: 10px" placeholder="{% block phSearch %}{% endblock %}">
+        </form>
+    </div>
+  </div>
+</div>
+  {% endif %}
+{% endblock %}    
+
+{% block content %}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col" style="border-bottom: 1px solid #E1E3E8; margin: 0px 38px 0px 50px; padding: 0px"> 
+    </div>
+  </div>
+</div>
+
+
+<div style="width: 95%; margin: auto">
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-2">
+ 
+    </div>
+    <div class="col-10" style="padding: 32px 0px 0px 32px;">
+      <div class="col" style="box-shadow: 0px 2px 6px 2px rgba(119, 119, 119, 0.15); border-radius: 4px; padding:0px 14px 0px 14px">
+
+
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-10" style="margin-left: 0px; padding-left: 0px;">
+              <div style="margin-left: 0px; padding-top: 24px; font-weight: normal; font-size: 16px; line-height: 20px;display: flex;flex-grow: 0;">{% block subtitle %}
+                {% endblock %}</div>
+            </div>
+          </div>
+        </div>
+        <div class="col" style="padding-left: 14px">
+        {% block foivContent %}
+        {% endblock %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

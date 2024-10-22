@@ -1,0 +1,106 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/foiv.form.css') }}" />
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li>Структура</li>
+    <li>Структурные подразделения</li>
+    <li>Просмотр записи</li>
+{% endblock %}
+
+{% block subtitle %}
+    <h5>Просмотр записи</h5>
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrTabs = ["tab_foiv_struct", "tab_foiv_departments"];
+{% endblock %}
+
+{% block foivContent %}
+    <div class="contentHolder">
+        {% if entity.ModifiedDate is defined and entity.id > 0 %}<p>Дата последнего изменения: {{ entity.ModifiedDate|date("d.m.Y (H:i:s)")}}</p>{% endif %}
+            <table class="table table-striped table-bordered dataTable editForm">
+                    <tbody>
+                        <tr>
+                            <td>Тип:</td>
+                            <td class="td_control">
+							{% if entity.type.type is defined %}
+                                {{ entity.type.type }}
+							{% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Название:</td>
+                            <td class="td_control">{{ entity.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Руководитель:</td>
+                            <td class="td_control">
+								{%  if  personsList is defined  %}
+									
+									{% for item in personsList %}
+										{% if  item.fio|trim != "" %}
+										
+											{% if entity.supervisor.id is defined and item.id == entity.supervisor.id %}
+											
+												<img style="width: 150px;" src="/img/foiv/persons/no-user.jpg">
+												<ul style="padding: 1%">
+													<li>
+														ФИО: {{item.fio}}
+													</li>
+													{%  if  item.position is defined and item.position|trim != "" %}
+													<li>
+														<span class="_label">Должность: </span>
+														{{item.position}}
+													</li>
+													{%endif%}
+													{%  if  item.phone is defined and item.phone|trim != "" %}
+													<li>
+														<span class="_label">Телефон: </span>
+														{{item.phone}}
+													</li>
+													{%endif%}
+													{%  if  item.email is defined and item.email|trim != "" %}
+													<li>
+														<span class="_label">Адрес эл. почты: </span>
+														{{item.email}}
+													</li>
+													{%endif%}
+													{%  if  item.websiteurl is defined and item.websiteurl|trim != "" %}
+													<li>
+														<span class="_label">Адрес веб-сайта: </span>
+														{{item.websiteurl}}
+													</li>
+													{%endif%}
+													{%  if  item.address is defined  and item.address|trim != "" %}
+													<li>
+														<span class="_label">Адрес веб-сайта: </span>
+														{{item.address}}
+													</li>
+													{%endif%}
+												</ul>
+											{%  endif  %}
+										{%  endif  %}
+									{% endfor%}
+								
+								{%  endif  %}
+                            {#{ entity.supervisor.fio }#}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Функции:</td>
+                            <td class="td_control">{{ entity.functions }}</td>
+                        </tr>
+                    </tbody>
+            </table>
+        {% include 'ncuofoiv_buttons_view.twig' ignore missing with {
+            'urlBack': urlBack,
+            'urlEdit': urlEdit
+        } %}
+
+    </div><!-- \ contentHolder -->
+{% endblock %}

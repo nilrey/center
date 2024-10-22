@@ -1,0 +1,172 @@
+{% extends "layout.html.twig" %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuomap/css/common.css') }}"/>
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/datatables/css/jquery.dataTables.min.css') }}"/>  
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block javascripts %}    
+    {{ parent() }}
+            
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/dialogen.plugin.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/jquery.dataTables.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/jquery.numeric.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datepicker-ru.js') }}"></script>
+    <script>
+        var MSG_MAP_ERROR           = 'MSG_MAP_ERROR'; //'{#{ msg_service_error }#}';
+        var DATATABLES_RU_JSON          = '{{ asset('bundles/ncuoportal/js/datatables/ru_Ru.json') }}';
+        
+        var URL_GET_MAP_UNLOAD          = '{{ path('map_adm__get') }}';
+        var URL_GET_MAP_UNLOAD_LIST     = '{{ path('map_adm__get_list') }}';
+        var URL_MAP_SAVE                = '{{ path('map_adm__save') }}';
+        var URL_MAP_EXEC                = '{{ path('map_adm__exec') }}';
+        var URL_MAP_DELETE              = '{{ path('map_adm__delete') }}';
+        var URL_MAP_CLEAR               = '{{ path('map_adm__clear') }}';
+        var URL_MAP_ADD_SERVICE         = '{{ path('map_adm__add_service') }}';
+        var URL_MAP_RECREATE_UNLOADS    = '{{ path('map_adm__recreate_unloads') }}';
+        var URL_MAP_RECREATE_SERVICES   = '{{ path('map_adm__recreate_services') }}';
+        var URL_MAP_DOWNLOAD_EXAMPLE    = '{{ path('map_adm__download_example') }}';
+    </script>    
+    
+    <script type="text/javascript" src="{{ asset('bundles/ncuomap/js/adm/map.js') }}"></script>    
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block breadcrumb %}
+    <li>Контроль и управление функционированием</li>
+    <li>Выгрузка в ГИC</li>
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block content %}
+    <h4>Выгрузка в ГИC</h4>
+    {% if err_msg is defined %}
+        <div id="error_msg" class="alert alert-danger">{{ err_msg }}</div>
+    {% else %}
+        <p>
+        <!--<button type="buton" class="btn btn-success" id="btn_add_map" title="Добавить выгрузку ГИС">Добавить выгрузку ГИС&nbsp;<i class="fa fa-plus"></i></button>-->
+        {# temporary hide
+        <button type="buton" class="btn btn-info" id="btn_reconf_map" title="Заново создать все функци выгрузки данных на основе конфигурации">Переконфигурировать&nbsp;<i class="glyphicon glyphicon-repeat"></i></button>
+        <button type="buton" class="btn btn-info" id="btn_srv_map" title="Создать или обновить если уже есть сервисы выгрузки ГИС">Обновить сервисы выгрузки&nbsp;<i class="glyphicon glyphicon-cog"></i></button>
+        #}
+        </p>
+        <div id="table_div" class="margin-top-15">        
+            <table id="tbl_unloads" class="display">
+                <thead>
+                <tr>
+                    <th width="20%">ID</th>
+                    <th width="20%">Наименование</th>
+                    <th width="40%">Конфигурация</th>
+                    <th width="10%">Дата создания</th>
+                    <th width="10%" class="text-center">Действие</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Диалог редактирования/создания выгрузки ГИС -->
+        <div id="map_edit_dlg" class="display-none" title="">
+            <form>
+                <div class="form-group">
+                    <label for="map_name">Наименование выгрузки ГИС:</label>
+                    <input type="text" class="form-control" id="map_name">
+                </div>
+                <div class="form-group">
+                    <label for="map_command">Команда создания
+                        <i id="map_manual_btn" class="fa fa-question-circle icon-link" title="Параметры создания выгрузки."></i>
+                        :
+                    </label>
+                    <textarea class="form-control" id="map_command" rows="16"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" >Дата создания:</label>
+                    <label id="map_date"></label>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Диалог отображения справки выгрузки ГИС -->
+        <div id="map_manual" class="display-none" title="">
+            Команда выгрузки состоит из набора пар <b>ключ=значение</b> разделённых символом <b>;</b>(точка с запятой)
+            <br/>
+            Допустимые ключи:
+            <ul>
+                <li><b>main</b> - ид основной формы выгрузки (<i>обязательный</i>)</li>
+                <li><b>xml-id</b> - алиас поля который будет использаван как ключ в выгрузке - поле &lt;id&gt; (<i>обязательный</i>)</li>
+                <li><b>maxtime</b> - время в минутах для ограничения выборки выгружаемых данных. Отсчитывается от текущего значения минус значение этого параметра (<i>обязательный</i>)</li>
+                <li><b>map-layer</b> - идентификатор слоя в выгрузке - поле &lt;parent_id&gt;</li>
+                <li><b>classcode</b> - классификатор знака в выгрузке - поле &lt;class_id&gt;</li>
+                <li><b>coordtype</b> - тип координат в выгрузке. допустимые значения: <b>point</b> - точечные, <b>string</b> в виде строки адреса, <b>polygon</b> полигон с одной подметрикой, значение должно иметь следующий вид "POLYGON((X1 Y1, X2 Y2, ..., Xn Yn))". В выгрузке может быть несколько типов координат одновременно, для этого нужно типы перечислить через двоеточие. (<i>обязательный</i>)</li>
+                <li><b>lon</b> - алиас поля в котором задана <b>долгота</b> </li>
+                <li><b>lat</b> - алиас поля в котором задана <b>широта</b> </li>
+                <li><b>coordline</b> - алиас поля в котором задан <b>адрес</b> </li>
+                <li><b>coordfun</b> - имя хранимой функции которая модифицирует координаты</li>
+                <li><b>notnullpos</b> - если координаты содержат пустую строку, то данная запись не будет выгружена</li>
+                <li><b>table</b> - присоединяемая таблица с данными к выгрузке</li>
+                <li><b>attr-angle</b> - имя поля для тэга в выгрузке - поле &lt;sign_angle&gt;</li>
+                <li><b>attr-name</b> - имя поля для тэга в выгрузке - поле &lt;name&gt;</li>
+                <li><b>attr-label</b> - имя поля для тэга в выгрузке - поле &lt;label&gt;</li>
+            </ul>
+            <p/>
+            Примечание:
+            <ul>
+                <li>ключ<b>classcode</b> может содержать функцию вычисления значения поля </li>
+                <li>если <b>coordtype=point</b>, то поля <b>lon</b> и <b>lat</b> обязательны. при <b>coordtype=string</b> - <b>coordline</b></li>
+                <li><b>notnullpos</b> уже своим присутствием говорит что пустые координаты не нужны, поэтому указывать значение этого ключа не обязательно</li>
+                <li>ключ <b>table</b> является сложным по своей структуре и состоит из трёх блоков, блоки разделены символом <b>:</b> (двоеточие)
+                    <ul>    
+                        <li>1. ид присоединяемой формы</li>
+                        <li>2. номера полеей из присоединяемой формы через запятую</li>
+                        <li>3. номера полеей через запятую из таблицы указанной ключём <b>main</b></li>
+                    </ul>
+                    поля на тождественность проверяются поэлементно и их количество должно совпадать.<br/>
+                    Количество ключёй <b>table</b> - не ограничено, т.е. монжно присоединять любое количество таблиц
+                </li>
+                <li><b>алиас поля</b> - служит для однозначной идентификации полей в выгрузке и избежания коллиций.
+                    алиас имеет следующий вид <b>t</b>&lt;номер&nbsp;формы&gt;<b>_</b>&lt;номер&nbsp;поля&gt;. Номер формы назначается так:
+                    основная форма  - 0, далее от 1 и далее получают присоединяемые формы в порядке их следования ключей. Номер поля начинается с 1 и до количетва полей в каждой конкретной форме.
+                </li>
+            </ul>
+            <p/>
+            пример выгрузки для РосМорРечФлота:<br/>
+            <i>
+            main=f2211e98-c3ec-4140-a407-ca3b8a267547; <br/>
+            table=2492acec-63ba-44c4-b841-f035c51759b3   :5 :5;<br/>
+            table=244609ea-966d-447a-89d0-cdabc24aa689   :4 :4;<br/>
+            map-layer=89AD796E-155E-45F0-B69F-E14245625ABA; <br/>
+            xml-id=t0_13; <br/>
+            maxtime=20; <br/>
+            classcode=CASE WHEN date_part(''day'', now() - t0_12::timestamp) <= 1 THEN 1326080010201 WHEN date_part(''day'', now() - t0_12::timestamp) <= 3 THEN 1326080010202 ELSE 1326080010203 END + CASE WHEN upper(trim(t0_15)) = ''VICTORIA'' THEN -100 ELSE 0 END; <br/>
+            coordtype=point; <br/>
+            lon=t0_9; <br/>
+            lat=t0_8; <br/>
+            attr-angle=t0_10;<br/>
+            attr-name=t0_6;<br/>
+            attr-label=t0_6;<br/>
+        	notnullpos; <br/>
+            </i>
+        </div>
+        
+        
+        <!-- Диалог отображения результатов в табличном виде -->
+        <div id="map_table" class="display-none" title="">
+            <table id=map_table_data>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

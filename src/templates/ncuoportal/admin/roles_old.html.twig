@@ -1,0 +1,67 @@
+{% extends "layout.html.twig" %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/admin/common.css') }}"/>
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/dataTables.bootstrap.css') }}"/> 
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block javascripts %}    
+    {{ parent() }}
+            
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/dialogen.plugin.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/jquery.dataTables.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/dataTables.bootstrap.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datepicker-ru.js') }}"></script>
+    <script>
+        var MSG_SERVICE_ERROR           = '{{ msg_service_error }}';
+        var DATATABLES_RU_JSON          = '{{ asset('bundles/ncuoportal/js/datatables/ru_Ru.json') }}';
+        
+        var URL_GET_ROLE_LIST           = '{{ path('admin_roles__get_list') }}';
+    </script>    
+    
+    <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/admin/roles.js') }}"></script>    
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block breadcrumb %}
+    <li><a href="{{ path('admin') }}">Администрирование</a></li>
+    <li>Настройка ролей</li>
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block content %}
+    {% if err_msg is defined %}
+        <div id="error_msg" class="alert alert-danger">{{ err_msg }}</div>
+    {% else %}
+        <h4>Настройка ролей:</h4>
+        <div id="table_div" class="margin-top-15">        
+            <table id="tbl_roles" class="table table-striped table-hover table-bordered">
+                <thead style="background-color: #AAA;">
+                <tr>
+                    <th width="2%">ID</th>
+                    <th width="30%">Наименование</th>
+                    <th width="68%">Описание</th>
+                </tr>
+                </thead>
+
+                <tfoot>
+                </tfoot>
+
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

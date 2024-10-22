@@ -1,0 +1,157 @@
+{% extends 'ncuofoiv/layout.html.twig' %}  
+
+{% block foivContent %}
+    <div class="row"  style="margin-top: 10px; margin-bottom: 4px;">
+        <div class="col-md-10">
+            <h4>
+                <i class="fa fa-database fa-fw"></i>&nbsp;<i class="fa fa-angle-right"></i>&nbsp;
+                Описание
+            </h4>
+        </div>
+        <div class="col-md-2">
+        </div>
+    </div>
+    
+    <table class="table">
+        <tr>
+            <td style="width: 25%;">
+                <b>Полное наименование:</b>
+            </td>
+            <td style="width: 75%;">
+                {{ foiv.name }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>Сокращённое наименование:</b>
+            </td>
+            <td>
+                {{ foiv.shortname }}
+            </td>
+        </tr>
+        
+            <tr>
+                <td>
+                    <b>Руководящий орган:</b>
+                </td>
+                <td>
+                    <a href="/foiv/{{ foiv.superfoiv.id }}">
+                        <img src="{{ foiv_upload_url }}/logos/{{ foiv.superfoiv.id }}.png" style="width: 35px;"/>
+                        {{ foiv.superfoiv.name }}
+                    </a>
+                </td>
+            </tr>
+        
+        <tr>
+            <td>
+                <b>{{ foiv.sitename }}:</b>
+            </td>
+            <td>
+                <a id="siteUrl" href="{{ foiv.siteurl }}" target="_blank">{{ foiv.siteurl }}</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>Категория:</b>
+            </td>
+            <td>
+                {{ foiv.type }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>Руководитель:</b>
+            </td>
+            <td>
+                {% if foiv.director.getPhotoFilename(foiv_upload_dir) %}
+                    <img style="width: 150px;" src="{{ foiv_upload_url }}/persons/{{ foiv.director.getPhotoFilename(foiv_upload_dir) }}"/>
+                {% else %}
+                    <img style="width: 150px;" src="{{ foiv_upload_url }}/persons/no-user.jpg"/>
+                {% endif %}    
+    
+                <span class="_label">{{ foiv.director.fio }}</span>
+                <p>
+                    <span class="_label">Должность: </span>
+                    {{ foiv.director.position }}
+                </p>
+                <p>
+                    <span class="_label">Контактные телефоны: </span>
+                    {{ foiv.director.phone }}
+                </p>
+                <p>
+                    <span class="_label">Электронная почта: </span>
+                    {{ foiv.director.email }}
+                </p>
+                
+            </td>
+        </tr>
+        
+        {% if foiv.stateLink %}
+            <tr>
+                <td>
+                    <b>Положение по ФОИВ:</b>
+                </td>
+                <td>
+                    <a href="{{ foiv.stateLink }}" target="_blank">Просмотр</a>
+                </td>
+            </tr>
+        {% endif %}
+        
+        <tr>
+            <td>
+                <b>Назначение:</b>
+            </td>
+            <td>
+                {{ foiv.descriptionText | raw }}    
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <b>Адрес:</b>
+            </td>
+            <td>
+                <table class="_table table-striped" style="width: 100%;">
+                    <tr><td>Код по КЛАДР:</td>     <td>{{ foiv.address.kladrCode }}</td></tr>
+                    <tr><td>Код по ОКАТО:</td>     <td>{{ foiv.address.okatoCode }}</td></tr>
+                    <tr><td>Индекс:</td>           <td>{{ foiv.address.index }}</td></tr>
+                    <tr><td>Регион:</td>           <td>{{ foiv.address.region }}</td></tr>
+                    <tr><td>Населенный пункт:</td> <td>{{ foiv.address.city }}</td></tr>
+                    <tr><td>Улица:</td>            <td>{{ foiv.address.street }}</td></tr>
+                    <tr><td>Дом:</td>              <td>{{ foiv.address.houseNumber }}</td></tr>
+                    <tr><td>Корпус:</td>           <td>{{ foiv.address.houseSubNumber }}</td></tr>
+                    <tr><td>Строение:</td>         <td>{{ foiv.address.buildingNumber }}</td></tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <a id="edit" href="{{ path('foiv_edit', { 'id': foiv.id }) }}" class="btn btn-warning btn-sm"><i class="fa fa-pencil fa-fw"></i>Редактировать</a>
+    
+    <a style="cursor: pointer;" class="btn f_option btn-danger btn-sm" id="deleteFoiv_{{ foiv.id }}" data-toggle="tooltip" data-placement="top">
+        <i class="fa fa-trash-o"></i> Удалить
+    </a>
+    
+    <div id="dialogHolder_{{ foiv.id }}" class="dialogBoxHolder">
+        <div id="removeFoivDialog_{{ foiv.id }}" class="dialogBox">
+            <legend>
+                <h4>
+                    Удаление ФОИВ
+                    <div class="dialogCloser pull-right">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </div>
+                </h4>
+            </legend>
+            <p>
+                Вы уверены что хотите удалить Федеральная служба по экологическому, технологическому и атомному надзору? Данное действие
+                невозможно отменить.
+            </p>
+            <a class="btn btn-danger btn-sm" href="/foiv/delete/{{ foiv.id }}">
+                <i class="fa fa-trash-o fa-fw"></i>&nbsp;
+                Удалить
+            </a>
+            <a id="cancelDeletion_{{ foiv.id }}" class="btn btn-primary btn-sm">
+                <i class="fa fa-arrow-circle-left fa-fw"></i>&nbsp;
+                Отмена
+            </a>
+        </div>
+    </div> 
+{% endblock %}

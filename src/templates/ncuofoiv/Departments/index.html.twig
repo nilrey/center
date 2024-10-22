@@ -1,0 +1,64 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li>Структура</li>
+    <li>Структурные подразделения</li>
+{% endblock %}
+
+{% block subtitle %}
+	<h5>Структурные подразделения</h5>
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrTabs = ["tab_foiv_struct", "tab_foiv_departments"];
+{% endblock %}
+
+{% block foivContent %}
+	<div class="list-buttons-top">
+		<button type="button" class="btn btn-add" id="btn_add_source" title="Добавить" onclick="window.location.replace('{{ createURL }}')"></button>   
+	</div> 
+        
+        <div id="dialog_msg_info" class="display-none" hidden>Запись успешно обновлена.</div>
+        <div id="dialog_rec_delete" class="display-none"  title="Внимание" hidden>Вы действительно хотите удалить запись?</div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <table id="dTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Название</th>
+					<th>Изменено</th>
+                    <th width="8%">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if entities is defined %}
+				{% set counter = 0 %}
+                {% for entity in entities %}
+					{% if entity is defined %}
+						{% set counter = counter + 1 %}
+                <tr id="item_{{ entity.id }}">
+                    <td>{{ counter }}</td>
+                    <td>{{ entity.name }}</td>
+					<td>{% if entity.ModifiedDate is defined %}{{ entity.ModifiedDate|date("d.m.Y H:i:s")}}{% endif %}</td>
+                    <td>
+                        {% include 'ncuofoiv_icons_list.twig' ignore missing with {
+                            'urlEdit': path('foiv_department_edit', { 'foivid': entity.foiv.id , 'id': entity.id }),
+                            'urlView': path('foiv_department_view', { 'foivid': entity.foiv.id , 'id': entity.id }),
+                            'entity_id' : entity.id,
+                            'urlDelete' : path('foiv_department_delete', { 'foivid': foiv.id , 'id': entity.id })
+                        } %}
+                    </td>
+                </tr>
+					{% endif %}
+				{% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+{% for flashMessage in app.session.flashbag.get('notice') %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ flashMessage }}');
+        </script>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li>Информационное взаимодействие</li>
+    <li>Информационные системы</li>
+{% endblock %}
+
+{% block subtitle %}
+	<h5>Информационные системы</h5>
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrTabs = ["tab_foiv_interaction", "tab_foiv_resources"];
+{% endblock %}
+
+{% block foivContent %}
+        <table id="dTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+            <thead>
+                <tr >
+                    <th>№</th>
+                    <th>UID протокола</th>
+                    <th width = "70%">Протоколы сопряжения</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if entities is defined %}
+				{% set counter = 0 %}
+                {% for entity in entities %}
+					{% if entity is defined %}
+						{% set counter = counter + 1 %}
+                <tr id="item_{{ counter }}">
+                    <td>{{ counter }}</td>
+                    <td nowrap>{{ entity.IdProtocol }}</td>
+                    <td>{{ entity.protocolName }}</td>
+                </tr>
+					{% endif %}
+				{% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+        <div class="list-buttons mt10">
+            {% if entities is defined and entities|length > 0 %}
+            <a class="btn btn-info" href="{{ urlProtocol }}?id_source={{ attribute(entities, 0).Source.IdSource  }}">Перейти к списку информационных систем &raquo;</a>
+            {% endif %}
+        </div>
+{% endblock %}

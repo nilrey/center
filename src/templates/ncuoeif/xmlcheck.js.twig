@@ -1,0 +1,43 @@
+$(document).ready(function() {
+   
+    // Обработка файлов
+    $('#btn_process').click(function() {
+        $('#lock_pane').attr('class', 'lock_on');
+        
+        var objPrc = new FormData();
+        objPrc.append('xml_file', $('#xml_file')[0].files[0]);
+        objPrc.append('xsd_file', $('#xsd_file')[0].files[0]);
+        objPrc.append('xslt_file', $('#xslt_file')[0].files[0]);
+        
+        $.ajax({
+            url: URL_FILES_PROCESS,
+            method: 'POST',
+            data: objPrc,
+            async: false,
+            cache: false,
+            processData: false,
+            contentType: false, 
+            success: function (e) {
+                $('#lock_pane').attr('class', 'lock_off');
+                
+                $('#xml_result').val(e['content']);
+            },
+            error: function (e) {
+                $('#lock_pane').attr('class', 'lock_off');
+
+                $('#xml_result').val(MSG_SERVICE_ERROR);
+            }                                                                                           
+        });        
+    });
+    
+    // Форматирование
+    $('#btn_format').click(function() {
+        $('#xml_result').val(vkbeautify.xml($('#xml_result').val()));
+    });
+    
+    // Очистка полей файлов
+    $('.clear_file').click(function() {
+        inp = $('#' + $(this).attr('data-id'));
+        inp.replaceWith(inp.val('').clone(true));          
+    });
+});

@@ -1,0 +1,7 @@
+        {% if rolePerms is defined %}
+                {% if rolePerms["update"] == true %}
+<div class="list-buttons">
+    <button class="btn btn-edit ml0" onclick="window.location.replace('{{urlEdit}}')"  title="Редактировать" />
+</div>
+                {% endif %}
+        {% endif %}

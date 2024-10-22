@@ -1,0 +1,358 @@
+$(document).ready(function() {            
+      
+    /*
+     * Таблица форм
+     */
+    
+    var tblForms = $('#tbl_forms').DataTable({
+        language: {
+            url: DATATABLES_RU_JSON            
+        },
+        ordering: false,
+        serverSide: true,
+        processing: true,
+        ajax: {
+            url: URL_GET_FORM_LIST,
+            method: 'POST',
+            data: function(d) {
+                d['id_protocol'] = $('#id_protocol').val();
+            }
+        },
+        columnDefs: [{className: 'text-center', targets: [2, 3]}] 
+    });
+    
+    {% if not is_granted('ROLE_ADMIN') %} 
+        tblForms.column(0).visible(false); // ID
+    {% endif %}
+    
+{% if is_granted('ROLE_ADMIN') %}
+    
+    /**
+     * Добавление формы
+     */
+    
+    $('#btn_add_form').click(function() {
+        // Открываем диалог
+        var dlg_edit = $('#form_edit_dlg');
+        dlg_edit.attr('title', 'Создание');
+        
+        dlg_edit.find('#form_name').val('');
+        dlg_edit.find('#form_descr').val('');
+        dlg_edit.find('#form_data_act_control_interval').val('0');
+        dlg_edit.find('#xml_xslt_protocol_file_import_download').hide();
+        var inp = dlg_edit.find('#xml_xslt_protocol_file_import');
+        inp.replaceWith(inp.val('').clone(true));
+        dlg_edit.find('#xml_xslt_protocol_file_import').show();        
+        
+        dlg_edit.dialog({
+            closeOnEscape: true,
+            resiziable: false,
+            width: 550,
+            height: 500,
+            position: {at: 'center center-200'},
+            modal: true, 
+            buttons: {
+                Сохранить: function() {
+                    var f_lst      = dlg_edit.find('#xml_xslt_protocol_file_import')[0].files;
+                    
+                    // Сохраняем на сервер, multipart-form/data
+                    objSave = new FormData();
+                    objSave.append('id_form', -1);
+                    objSave.append('id_protocol', $('#id_protocol').val());                    
+                    objSave.append('form_name', dlg_edit.find('#form_name').val());
+                    objSave.append('form_descr', dlg_edit.find('#form_descr').val());
+                    objSave.append('form_data_act_control_interval', dlg_edit.find('#form_data_act_control_interval').val());
+                    objSave.append('xml_xslt_protocol_file_import_save', 1);        
+                    if (f_lst.length > 0)
+                        objSave.append('xml_xslt_protocol_file_import', f_lst[0]);
+
+                    // Сохранение
+                    $.ajax({
+                        url: URL_FORM_SAVE,
+                        method: 'POST',
+                        data: objSave,
+                        async: false,
+                        cache: false,
+                        processData: false,
+                        contentType: false,                            
+                        success: function (e) {
+                            $('#lock_pane').attr('class', 'lock_off');                           
+
+                            if (e['err_id'] == 0) {
+                                tblForms.draw(false);
+                                dlg_edit.dialog('destroy');
+                            }
+                            else
+                                $.dialogen('okdlg', {text: e['content']});                            
+                        },
+                        error: function (e) {
+                            $('#lock_pane').attr('class', 'lock_off');
+
+                            $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                        }                                                                                           
+                    }); 
+                },
+                Отмена: function() {
+                    $(this).dialog('destroy');
+                }
+            }
+        });        
+    });
+        
+    /**
+     * Редактирование формы
+     */
+    
+    $('#tbl_forms').on('click', '.form_edit', function() {
+        // Идентификатор протокола
+        var row_index  = tblForms.row($(this).closest('tr')).index();
+        var id_form = tblForms.cell(row_index, 0).data();
+               
+        // Запрашиваем информацию по источнику
+        $('#lock_pane').attr('class', 'lock_on');
+        $.ajax({
+            url: URL_GET_FORM,
+            method: 'GET',
+            async: false,
+            cache: false,
+            data: {
+                id_form: id_form
+            },
+            success: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+                
+                if (e['err_id'] != 0) {
+                    $.dialogen('okdlg', {text: e['content']});
+                    return;
+                }
+                
+                // Открываем диалог
+                var dlg_edit = $('#form_edit_dlg');
+                dlg_edit.attr('title', 'Редактирование');
+
+                dlg_edit.find('#form_name').val(e['content']['form_name']);
+                dlg_edit.find('#form_descr').val(e['content']['form_descr']);
+                dlg_edit.find('#form_data_act_control_interval').val(e['content']['form_data_act_control_interval']);
+                                
+                var inp = dlg_edit.find('#xml_xslt_protocol_file_import');
+                inp.replaceWith(inp.val('').clone(true));                
+                
+                var download_link = dlg_edit.find('#xml_xslt_protocol_file_import_download');
+                if (e['content']['xml_xslt_protocol_file_import'] == 1) {
+                    download_link.show();
+                    download_link.find('a').attr('href', URL_FORM_XSLT_DOWNLOAD + id_form);
+                    dlg_edit.find('#xml_xslt_protocol_file_import').hide();
+                }
+                else {
+                    download_link.hide();
+                    dlg_edit.find('#xml_xslt_protocol_file_import').show();
+                }
+                
+                $('#form_edit_dlg').dialog({
+                    closeOnEscape: true,
+                    resiziable: false,
+                    width: 550,
+                    height: 500,
+                    position: {at: 'center center-200'},
+                    modal: true, 
+                    buttons: {
+                        Сохранить: function() {
+                            var f_lst      = dlg_edit.find('#xml_xslt_protocol_file_import')[0].files;
+
+                            // Сохраняем на сервер. multipart-form/data
+                            objSave = new FormData();
+                            objSave.append('id_form', id_form);
+                            objSave.append('id_protocol', $('#id_protocol').val());                    
+                            objSave.append('form_name', dlg_edit.find('#form_name').val());
+                            objSave.append('form_descr', dlg_edit.find('#form_descr').val());
+                            objSave.append('form_data_act_control_interval', dlg_edit.find('#form_data_act_control_interval').val());
+                            objSave.append('xml_xslt_protocol_file_import_save', dlg_edit.find('#xml_xslt_protocol_file_import').is(':visible') ? 1 : 0);        
+                            if (f_lst.length > 0)
+                                objSave.append('xml_xslt_protocol_file_import', f_lst[0]);
+                           
+                            // Сохранение
+                            $.ajax({
+                                url: URL_FORM_SAVE,
+                                method: 'POST',
+                                data: objSave,
+                                async: false,
+                                cache: false,
+                                processData: false,
+                                contentType: false, 
+                                success: function (e) {
+                                    $('#lock_pane').attr('class', 'lock_off');                                   
+
+                                    if (e['err_id'] == 0) {
+                                        tblForms.draw(false);
+                                        dlg_edit.dialog('destroy');
+                                    }
+                                    else
+                                        $.dialogen('okdlg', {text: e['content']});                                    
+                                },
+                                error: function (e) {
+                                    $('#lock_pane').attr('class', 'lock_off');
+
+                                    $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                                }                                                                                           
+                            });                        
+                        },
+                        Отмена: function() {
+                            $(this).dialog('destroy');
+                        }
+                    }
+                });                
+            },
+            error: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+
+                $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});                 
+            }
+        });            
+    });
+        
+    /*
+     * Удаление формы
+     */
+    
+    $('#tbl_forms').on('click', '.form_delete', function() {
+        // Идентификатор источника
+        var row_index  = tblForms.row($(this).closest('tr')).index();
+        var id_form = tblForms.cell(row_index, 0).data();
+        
+        $.dialogen(
+            'yesnodlg',
+            {text: 'Вы действительно хотите удалить форму?'},
+            function() {
+                // Отправляем запрос на удаление
+                var objDel = {};
+                objDel['id_form'] = id_form;
+                
+                $('#lock_pane').attr('class', 'lock_on');
+                $.ajax({
+                    url: URL_FORM_DELETE,
+                    method: 'POST',
+                    data: objDel,
+                    async: false,
+                    cache: false,
+                    success: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+                        
+                        if (e['err_id'] == 0)
+                            tblForms.draw(false);
+                        else
+                            $.dialogen('okdlg', {text: e['content']});                            
+                    },
+                    error: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+
+                        $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                    }                                                                   
+                });                
+            }
+        );
+    });
+    
+    /**
+     * Диалог редактирования формы
+     */
+    
+    $('#form_edit_dlg #xml_xslt_protocol_file_import_download i').click(function() {
+        $('#form_edit_dlg #xml_xslt_protocol_file_import').show();
+        $(this).parent().hide();
+    });
+    
+    $('#form_edit_dlg #form_data_act_control_interval').numeric();    
+         
+{% else %}
+    
+    /**
+     * Информация о форме
+     */
+    
+    $('#tbl_forms').on('click', '.form_info', function() {
+        // Идентификатор протокола
+        var row_index  = tblForms.row($(this).closest('tr')).index();
+        var id_form = tblForms.cell(row_index, 0).data();
+               
+        // Запрашиваем информацию по источнику
+        $('#lock_pane').attr('class', 'lock_on');
+        $.ajax({
+            url: URL_GET_FORM,
+            method: 'GET',
+            async: false,
+            cache: false,
+            data: {
+                id_form: id_form
+            },
+            success: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+                
+                if (e['err_id'] != 0) {
+                    $.dialogen('okdlg', {text: e['content']});
+                    return;
+                }
+                
+                // Открываем диалог
+                var dlg_info = $('#form_info_dlg');
+
+                dlg_info.find('#form_name').val(e['content']['form_name']);
+                dlg_info.find('#form_descr').val(e['content']['form_descr']);
+                dlg_info.find('#form_data_act_control_interval').val(e['content']['form_data_act_control_interval']);
+                                                
+                dlg_info.dialog({
+                    closeOnEscape: true,
+                    resiziable: false,
+                    width: 550,
+                    height: 450,
+                    position: {at: 'center center-200'},
+                    modal: true, 
+                    buttons: {                        
+                        Закрыть: function() {
+                            $(this).dialog('destroy');
+                        }
+                    }
+                });                
+            },
+            error: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+
+                $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});                 
+            }
+        });            
+    });      
+    
+{% endif %}
+                
+    /**
+     * Переход к полям формы
+     */
+    
+    $('#tbl_forms').on('click', '.to_form_fields', function() {
+        // Идентификатор
+        var row_index  = tblForms.row($(this).closest('tr')).index();
+        var id_form = tblForms.cell(row_index, 0).data();        
+        window.location.assign(URL_FORM_FIELDS + id_form);
+    });   
+    
+    /**
+     * Переход к просмотру данных формы по импортированным файла
+     */
+    
+    $('#tbl_forms').on('click', '.to_form_view', function() {
+        // Идентификатор
+        var row_index  = tblForms.row($(this).closest('tr')).index();
+        var id_form = tblForms.cell(row_index, 0).data();        
+        window.location.assign(URL_FORM_VIEW + id_form);
+    });
+    
+    /**
+     * Переход к просмотру всех данных формы на дату актуальности
+     */
+    
+    $('#tbl_forms').on('click', '.to_form_view_act', function() {
+        // Идентификатор
+        var row_index  = tblForms.row($(this).closest('tr')).index();
+        var id_form = tblForms.cell(row_index, 0).data();        
+        window.location.assign(URL_FORM_VIEW_ACT + id_form);
+    });                      
+});

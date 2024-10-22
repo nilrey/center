@@ -1,0 +1,128 @@
+{% extends 'ncuofoiv/layout.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {# Подключаем скрипт с вспомогательными функциями по работе с  всплывающими диалоговыми окнами (MessageBox) #}
+      <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/DialogHelpers.js')}}"></script>
+      <script type="text/javascript" src="{{asset('bundles/ncuofoiv/js/foivContacts.js')}}"></script>
+ {% endblock %}
+ 
+{% block foivContent%}
+ <style>.fa-angle-right{padding-right: 5px}</style>
+    <div class="row" style="margin-top: 10px; margin-bottom: 4px;">
+        <div class="col-md-9">
+            <h4>
+				<i class="fa fa-database fa-fw"></i>&nbsp;<i class="fa fa-angle-right"></i><a href="#"> Общая информация </a>
+				<i class="fa fa-angle-right"></i><a href="{{ path('foiv_contacts_list', {'foivid' : foiv.id}) }}"> Список контактной информации </a>
+                <i class="fa fa-angle-right"></i>{{ActionTitle}}
+            </h4>
+        </div>
+    </div>
+    <style> .contentHolder input[type=text] { width: 100% } </style>
+    
+    <div class="contentHolder">
+		        {% if SelectedContact.person.ModifiedDate is defined %}<p style="padding-left: 5px"><small>Дата последнего изменения: {{ SelectedContact.person.ModifiedDate|date("d.m.Y (H:i:s)")}}</small></p>{% endif %}
+
+     {# Нижеследующий div является элементом для создания диалогового окна. Ключевое слово "hidden" не убирать - иначе далог будет вести непредсказуемо #}
+     <div id="msg_dialog" class="display-none"  title="Внимание" hidden></div>
+     <form id="create_data" class="form-horizontal" action="{{ActionURL}}"  method="POST" >
+    <table class="table" cols=2>
+            <tbody>
+				{% if IsCreateAction != true and SelectedContact.person is defined  %}
+					<input type="text"  name="PERSON_ID" hidden="true" value="{{SelectedContact.person.id}}"/>
+				{% endif %}
+                <tr>
+					<td width="15%"><b>Фамилия</b></td>
+					<td align="left" class="td_control">
+					{% if IsCreateAction != true and SelectedContact.person is defined  %}
+						<input class="form-control" type="text"  style="width: 50%"  name="SURNAME" value="{{SelectedContact.person.Surname}}" />
+					{% else %}
+						<input class="form-control" type="text"   style="width: 50%" name="SURNAME"  />
+					{% endif %}
+					</td>
+				</tr>
+				<tr>
+					<td width="15%"><b>Имя</b></td>
+					<td align="left" class="td_control">
+					{% if IsCreateAction != true and SelectedContact.person is defined  %}
+						<input class="form-control" type="text" style="width: 50%"  name="NAME" value="{{SelectedContact.person.name}}" />
+					{% else %}
+						<input class="form-control" type="text" style="width: 50%"  name="NAME" />
+					{% endif %}
+					</td>
+				</tr>
+				<tr>
+					<td width="15%"><b>Отчество</b></td>
+					<td align="left" class="td_control">
+					{% if IsCreateAction != true and SelectedContact.person is defined  %}
+						<input class="form-control" type="text" style="width: 50%"  name="PATRONYMIC" value="{{SelectedContact.person.patronymic}}" />
+					{% else %}
+						<input class="form-control" type="text"  style="width: 50%" name="PATRONYMIC" />
+					{% endif %}
+					</td>
+				</tr>
+				<tr>
+					<td width="15%"><b>Телефон</b></td>
+					<td align="left" class="td_control">
+					{% if IsCreateAction != true and SelectedContact.person is defined  %}
+						<input class="form-control" type="text" style="width: 50%"  name="PHONE" value="{{SelectedContact.person.phone}}"/>
+					{% else %}
+						<input class="form-control" type="text" style="width: 50%"  name="PHONE" />
+					{% endif %}
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="15%"><b>Адрес</b></td>
+					<td align="left" class="td_control">
+					{% if IsCreateAction != true and SelectedContact.person is defined  %}
+						<input class="form-control" type="text" style="width: 50%"  name="ADDRESS" value="{{SelectedContact.person.address}}" />
+					{% else %}	
+						<input class="form-control" type="text" style="width: 50%"  name="ADDRESS" />
+					{% endif %}
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="15%"><b>Эл. почта</b></td>
+					<td align="left" class="td_control">
+					{% if IsCreateAction != true and SelectedContact.person is defined  %}
+						<input class="form-control" type="text" style="width: 50%" name="EMAIL" value="{{SelectedContact.person.email}}" />
+					{% else %}	
+						<input class="form-control" type="text" style="width: 50%" name="EMAIL" />
+					{% endif %}
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="15%"><b>Должность</b></td>
+					<td align="left" class="td_control">
+					{% if IsCreateAction != true and SelectedContact.person is defined  %}
+						<input class="form-control" style="width: 50%" type="text"  name="POSITION" value="{{SelectedContact.person.position}}" />
+					{% else %}	
+						<input class="form-control" style="width: 50%" type="text"  name="POSITION" />
+					{% endif %}
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="15%"><b>Служба</b></td>
+					<td align="left" class="td_control">
+					{% if IsCreateAction != true and SelectedContact.person is defined  %}
+						<input class="form-control" style="width: 50%" type="text"  name="SERVICE" value="{{SelectedContact.person.service}}" />
+					{% else %}	
+						<input class="form-control" style="width: 50%" type="text"  name="SERVICE" />
+					{% endif %}
+					</td>
+				</tr>
+            </tbody>
+    </table>
+    </form>
+    </div>
+    <div>
+            <button type="button" class="btn btn-primary" form="create_data" onclick="{{SaveFunctionName}}"> Сохранить </button>
+			{#<button type="button" class="btn btn-primary" form="create_data"> Сохранить </button>#}
+            <a class="btn btn-default" href="{{RetunedURL}}" >Вернуться к списку</a>
+</div>
+
+{% endblock %}

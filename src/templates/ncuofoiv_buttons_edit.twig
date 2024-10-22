@@ -1,0 +1,11 @@
+<div class="list-buttons">
+{% if is_granted('ROLE_FOIV') or is_granted('ROLE_ADMIN') %}
+{% endif %}
+        <button type="submit" class="btn btn-save" form="create_data" title="Сохранить" />
+        {% if urlView is defined and urlView != "" %}
+        <button class="btn btn-view" onclick="window.location.replace('{{urlView}}')"  title="Просмотреть сохраненный вариант" />
+        {% endif %}
+        {% if urlBack is defined and urlBack != "" %}
+        <button class="btn btn-list" onclick="window.location.replace('{{urlBack}}')"  title="Вернуться к списку" />
+       {% endif %}
+</div>

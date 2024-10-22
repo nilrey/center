@@ -1,0 +1,53 @@
+{% extends 'new_layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}  
+
+{% block javascripts %}
+    {{ parent() }}
+     
+{% endblock %}  
+
+
+{% block content %}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-8" style="font-weight: 600;font-size: 16px; margin-left: 34px">
+        Паспорт Федеральных органов исполнительной власти (ФОИВ)
+    </div>
+    <div class="col" style="text-align: right; padding-right: 38px">
+        <button onclick="window.location.replace('{{ path('oiv_new', {}) }}')" title="Создать паспорт ФОИВ" type="button" class="btn btn-primary" style="background: none; color: #0d6efd; width: 140px">+ Добавить</button>
+    </div>
+  </div>
+</div>
+<div style="width: 95%; margin: auto">
+        {% block foivContent %}
+        {% endblock %}
+
+</div>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#example').DataTable( {
+        //"dom": '<"top"i>rt<"bottom"flp><"clear">'
+        "dom": '<"#dt-search"f><t><"#dt-bottom"pl>',
+            "language": {
+                searchPlaceholder: "Фильтр по названию ФОИВ",
+                sInfoEmpty: "Записи с 0 до 0 из 0 записей",
+                sInfo: "Записи с _START_ до _END_ из _TOTAL_ записей",
+                sLengthMenu: "Отображать на странице _MENU_",
+                //"url": '/public/bundles/light/js/ru_Ru_search.json',
+                //"url": "http://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Russian.json",
+                paginate: {
+                    "previous": '<i class="fa fa-angle-left"></i>',
+                    "next": '<i class="fa fa-angle-right"></i>',
+                },
+                search: '<i id="search-placeholder" class="fa fa-search"></i>',
+            },
+
+    } );
+} );
+</script>
+
+{% endblock %}

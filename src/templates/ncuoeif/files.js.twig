@@ -1,0 +1,312 @@
+$(document).ready(function() {
+      
+    /*
+     * Таблица файлов
+     */
+    
+    var tblFiles = $('#tbl_files').DataTable({
+        language: {
+            url: DATATABLES_RU_JSON            
+        },
+        ordering: false,
+        serverSide: true,
+        processing: true,
+        ajax: {
+            url: URL_GET_FILE_LIST,
+            method: 'POST',
+            data: function(d) {
+                d['id_protocol'] = $('#id_protocol').val();
+            }
+        },
+        columnDefs: [{className: 'text-center', targets: [2, 3, 4, 5, 6]}],
+        rowCallback: function(row, data, index) {
+            // Установка стиля для колонки статуса
+            if (data[5] == 'Ошибка')
+                $('td:eq(5)', row).css('background-color', '#d9534f');
+            else if (data[5] == 'Импортирован в формы данных')
+                $('td:eq(5)', row).css('background-color', '#5cb85c');
+            else if (data[5] == 'Импортирование')
+                $('td:eq(5)', row).css('background-color', '#f0ad4e');
+            else if (data[5] == 'В очереди на импорт')
+                $('td:eq(5)', row).css('background-color', '#337ab7');
+            else if (data[5] == 'Загружен')
+                $('td:eq(5)', row).css('background-color', '#777');
+            
+            $('td:eq(5)', row).css('color', 'white');
+        }
+    });
+    {% if not is_granted('ROLE_ADMIN') %}
+        tblFiles.column(0).visible(false); // ID
+    {% endif %}
+    
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_FOIV') %}    
+    
+    /**
+     * Добавление файлов
+     */
+    
+    $('#btn_add_files').click(function() {
+        $('#inp_file').click();
+    });
+    
+    $('#inp_file').change(function() {
+        var f_lst = $(this)[0].files;
+        
+        var id_protocol = $('#id_protocol').val();
+        
+        // Сбрасываем поле процесса загрузки
+        $('#lbl_load_msg').text('');
+        $('#lock_pane').attr('class', 'lock_on');   
+        
+        var br = false;
+        for(var i = 0; i < f_lst.length; i++) {
+            // Создаем объект multipart-form/data
+            var data = new FormData();
+            data.append('file', f_lst[i]);
+            data.append('id_protocol', id_protocol);
+
+            // Отправляем выбранные файлы по одному на сервер
+            $.ajax({
+                url: URL_FILE_UPLOAD,
+                method: 'POST',
+                data: data,
+                async: false,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function (e) {                                        
+                    if (e['err_id'] != 0) {
+                        $('#lbl_load_msg').text('');
+                        $('#lock_pane').attr('class', 'lock_off');
+
+                        $.dialogen('okdlg', {text: e['content']});                    
+                        br = true;
+                    } else {                                                                          
+                        // Обновляем поле процесса загрузки
+                        $('#lbl_load_msg').text('Загружено ' + (i + 1) + ' из ' + f_lst.length);                                                            
+                    }                       
+                },
+                error: function (e) {
+                    $('#lock_pane').attr('class', 'lock_off');
+                    $('#lbl_load_msg').text('');
+                    br = true;
+
+                    $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                }                                                                   
+            }); 
+
+            if (br)
+                break;
+        }
+
+        tblFiles.draw(false);            
+        $('#chb_select_all').prop('checked', false);
+
+        $('#lbl_load_msg').removeClass('display-block').addClass('display-none').text('');
+        $('#lock_pane').attr('class', 'lock_off');
+    });
+    
+    /**
+     * Удаление файла
+     */
+    
+    $('#tbl_files').on('click', '.file_delete', function() {
+        // Идентификатор файла
+        var row_index  = tblFiles.row($(this).closest('tr')).index();
+        var id_file = tblFiles.cell(row_index, 0).data();
+        
+        $.dialogen(
+            'yesnodlg',
+            {text: 'Вы действительно хотите удалить файл?'},
+            function() {
+                // Отправляем запрос на удаление
+                var objDel = {};
+                objDel['id_file'] = id_file;
+                
+                $('#lock_pane').attr('class', 'lock_on');
+                $.ajax({
+                    url: URL_FILE_DELETE,
+                    method: 'POST',
+                    data: objDel,
+                    async: false,
+                    cache: false,
+                    success: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+                        
+                        if (e['err_id'] == 0)
+                            tblFiles.draw(false);
+                        else
+                            $.dialogen('okdlg', {text: e['content']});
+                        
+                        $('#chb_select_all').prop('checked', false);
+                    },
+                    error: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+
+                        $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                    }                                                                   
+                });                
+            }
+        );
+    });
+	
+{% endif %}    
+    
+{% if is_granted('ROLE_ADMIN') %}
+
+    /**
+     * Сброс флага миграции
+     */
+    
+    $('#tbl_files').on('click', '.file_clear_migration_flag', function() {
+        // Идентификатор файла
+        var row_index  = tblFiles.row($(this).closest('tr')).index();
+        var id_file = tblFiles.cell(row_index, 0).data();
+        
+        $.dialogen(
+            'yesnodlg',
+            {text: 'Вы действительно хотите сбросить флаг выгрузки в Капитан?'},
+            function() {
+                // Отправляем запрос на удаление
+                var objReq = {};
+                objReq['id_file'] = id_file;
+                
+                $('#lock_pane').attr('class', 'lock_on');
+                $.ajax({
+                    url: URL_FILE_CLEAR_MIGRATION_FLAG,
+                    method: 'POST',
+                    data: objReq,
+                    async: false,
+                    cache: false,
+                    success: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+                        
+                        if (e['err_id'] == 0)
+                            tblFiles.draw(false);
+                        else
+                            $.dialogen('okdlg', {text: e['content']});
+                    },
+                    error: function (e) {
+                        $('#lock_pane').attr('class', 'lock_off');
+
+                        $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                    }                                                                   
+                });                
+            }
+        );
+    });	
+    
+    /**
+     * Установка статуса файла
+     */
+    
+    $('#tbl_files').on('click', '.file_set_status', function() {
+        // Идентификатор файла
+        var row_index  = tblFiles.row($(this).closest('tr')).index();
+        var id_file = tblFiles.cell(row_index, 0).data();
+        
+        // Запрашиваем  статус файла
+        $('#lock_pane').attr('class', 'lock_on');
+        $.ajax({
+            url: URL_FILE_GET_STATUS,
+            method: 'GET',
+            async: false,
+            cache: false,
+            data: {
+                id_file: id_file
+            },
+            success: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+                
+                if (e['err_id'] != 0) {
+                    $.dialogen('okdlg', {text: e['content']});
+                    return;
+                }                
+                
+                // Открываем диалог
+                var dlg_edit    = $('#file_status_dlg');
+                var status_fld  = $('#file_status_dlg #status');
+                status_fld.val(e['content']['file_id_status']);
+                
+                dlg_edit.dialog({
+                    closeOnEscape: true,
+                    resiziable: false,
+                    width: 500,
+                    height: 200,
+                    position: {at: 'center center-200'},
+                    modal: true, 
+                    buttons: {
+                        Сохранить: function() {
+                            // Сохраняем на сервер
+                            objSave = {};
+                            objSave['id_file']   = id_file;
+                            objSave['id_status'] = status_fld.val();
+                            
+                            $('#lock_pane').attr('class', 'lock_on');
+                            $.ajax({
+                                url: URL_FILE_SET_STATUS,
+                                method: 'POST',
+                                data: objSave,
+                                async: false,
+                                cache: false,
+                                success: function (e) {
+                                    $('#lock_pane').attr('class', 'lock_off');
+                                   
+                                    if (e['err_id'] == 0) {
+                                        tblFiles.draw(false);
+                                        dlg_edit.dialog('destroy');
+                                    }
+                                    else
+                                        $.dialogen('okdlg', {text: e['content']});
+                                },
+                                error: function (e) {
+                                    $('#lock_pane').attr('class', 'lock_off');
+        
+                                    $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});
+                                }                                                                                           
+                            });                    
+                        },
+                        Отмена: function() {
+                            $(this).dialog('destroy');
+                        }
+                    }
+                });                
+            },
+            error: function(e) {
+                $('#lock_pane').attr('class', 'lock_off');
+
+                $.dialogen('okdlg', {text: MSG_SERVICE_ERROR});                                 
+            }
+        });        
+    });
+    
+{% endif %}    
+    
+    /**
+     * Просмотр ошибки файла
+     */
+    
+    $('#tbl_files').on('click', '.file_view_error', function() {
+        $.dialogen('okdlg', {text: $(this).attr('data-descr'), width: 400, height: 500});
+    });
+    
+    /**
+     * Переход к просмотру файла
+     */
+    
+    $('#tbl_files').on('click', '.to_file_view', function() {
+        // Идентификатор файла
+        var row_index  = tblFiles.row($(this).closest('tr')).index();
+        var id_file = tblFiles.cell(row_index, 0).data();
+        
+        window.location.assign(URL_FILE_VIEW + '?id_file=' + id_file);
+    });
+    
+    /*
+     * Интервал обновления таблицы файлов (для обновления меняющихся фоном статусов)
+     */
+    
+    setInterval(function() {
+        tblFiles.draw(false);
+    }, 30000);
+});

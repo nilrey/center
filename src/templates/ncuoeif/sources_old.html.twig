@@ -1,0 +1,163 @@
+{% extends "layout.html.twig" %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {% if not err_msg is defined %}    
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoeif/css/common.css') }}"/>    
+		<link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/dataTables.bootstrap.css') }}"/> 
+    {% endif %}
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block javascripts %}    
+    {{ parent() }}
+    
+    {% if not err_msg is defined %}        
+        <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/dialogen.plugin.js') }}"></script>    
+        <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/jquery.dataTables.min.js') }}"></script>
+		<script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datatables/dataTables.bootstrap.js') }}"></script>        			
+        <script>
+            var DATATABLES_RU_JSON          = '{{ asset('bundles/ncuoportal/js/datatables/ru_Ru.json') }}';
+            
+            var URL_GET_SOURCE_LIST         = '{{ path('eif_sources__get_list') }}';
+            var URL_GET_SOURCE              = '{{ path('eif_sources__get') }}';
+			
+			{% if is_granted('ROLE_ADMIN') %}
+				var URL_SOURCE_SAVE             = '{{ path('eif_sources__save') }}';
+	            var URL_SOURCE_DELETE           = '{{ path('eif_sources__delete') }}';
+				var URL_SOURCE_FILE_UPLOAD		= '{{ path('eif_sources__import') }}';
+			{% endif %}
+			
+			var URL_PROTOCOL_LIST           = '{{ path('eif_protocols') }}?id_source=';			
+            
+            var MSG_SERVICE_ERROR           = '{{ msg_service_error }}';        
+        </script>    
+        
+        <script type="text/javascript" src="{{ path('eif_js', {'file': 'sources'}) }}"></script>
+    {% endif %}
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block breadcrumb %}
+    <li>Контроль и управление функционированием</li>
+    <li>Данные</li>
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block content %}
+    {% if err_msg is defined %}
+		<h4>Ошибка:</h4>
+        <div id="error_msg" class="alert alert-danger">{{ err_msg }}</div>
+    {% else %}    
+        <h4>Данные (cписок источников):</h4>
+		
+		{% if is_granted('ROLE_ADMIN') %}
+		<!--
+		<div class="list-buttons-top">
+			<button type="button" class="btn btn-add" id="btn_add_source" title="Добавить источник"></button>   
+			<button type="button" class="btn btn-import" id="btn_import_source" title="Импортировать источник"></button>
+		</div> 
+		
+		<button type="button" class="btn btn-success" id="btn_add_source" title="Добавить источник">Добавить источник <i class="fa fa-plus"></i></button>   
+		<button type="button" class="btn btn-success" id="btn_import_source" title="Импортировать источник">Импортировать источник <i class="fa fa-upload"></i></button>
+		-->
+		<input type="file" id="inp_source_file" style="display: none;"/>
+		{% endif %}
+		
+        <div id="table_div" class="margin-top-15">        
+            <table id="tbl_sources" class="table table-striped table-hover table-bordered">
+                <thead class="table-thead">
+                <tr>
+                    <th width="25%">ID</th>
+                    <th width="40%">Наименование источника</th>
+                    <th width="20%">Дата создания</th>
+                    <th width="15%" class="text-center">Действие</th>
+                </tr>
+                </thead>
+
+                <tfoot>
+                </tfoot>
+
+                <tbody>
+                </tbody>
+            </table>
+        </div>   
+
+		{% if is_granted('ROLE_ADMIN') %}
+			<!-- Диалог редактирования источника -->
+			<div id="source_edit_dlg" class="display-none" title="">
+				<form>
+					<div class="form-group">
+						<label for="source_name">Наименование источника:</label>
+						<input type="text" class="form-control" id="source_name">
+					</div>
+					<div class="form-group">
+						<label for="source_descr">Описание источника:</label>
+						<textarea class="form-control" id="source_descr" rows="3"></textarea>
+					</div>
+					<label>Привязка к ФОИВ/РОИВ:</label>
+					<br>
+					<label class="radio-inline">
+						<input type="radio" name="inlineRadioOptions" class="fr_attach" id="fr_no" value="NONE"> Не привязан
+					</label>
+					<label class="radio-inline">
+						<input type="radio" name="inlineRadioOptions" class="fr_attach" id="fr_foiv" value="FOIV"> ФОИВ
+					</label>
+					<label class="radio-inline">
+						<input type="radio" name="inlineRadioOptions" class="fr_attach" id="fr_roiv" value="ROIV"> РОИВ
+					</label>
+					<div class="margin-top-10">
+						<select id="foiv_lst" class="form-control display-none">
+							<option value="-1">&lt;&lt;&lt; Выберите из списка &gt;&gt;&gt;</option>
+							{% for foiv in foiv_lst %}
+								<option value="{{ foiv.Id }}">{{ foiv.Name }}</option>
+							{% endfor %}
+						</select>
+						<select id="roiv_lst" class="form-control display-none">
+							<option value="-1">&lt;&lt;&lt; Выберите из списка &gt;&gt;&gt;</option>
+							{% for roiv in roiv_lst %}
+								<option value="{{ roiv.Id }}">{{ roiv.Name }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</form>
+			</div>
+		{% else %}
+			<!-- Диалог просмотра источника -->
+			<div id="source_info_dlg" class="display-none" title="Информация">
+				<form>
+					<div class="form-group">
+						<label for="source_name">Наименование источника:</label>
+						<input type="text" class="form-control" id="source_name">
+					</div>
+					<div class="form-group">
+						<label for="source_descr">Описание источника:</label>
+						<textarea class="form-control" id="source_descr" rows="3"></textarea>
+					</div>
+					<label>Привязка к ФОИВ/РОИВ:</label>
+					<br>
+					<label class="radio-inline">
+						<input type="radio" name="inlineRadioOptions" id="fr_no" disabled> Не привязан
+					</label>
+					<label class="radio-inline">
+						<input type="radio" name="inlineRadioOptions" id="fr_foiv" disabled> ФОИВ
+					</label>
+					<label class="radio-inline">
+						<input type="radio" name="inlineRadioOptions" id="fr_roiv" disabled> РОИВ
+					</label>
+					<input type="text" class="form-control margin-top-10" id="fr_name"/>
+				</form>
+			</div>			
+		{% endif %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "layout.html.twig" %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {% if not err_msg is defined %}
+        <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoeif/css/common.css') }}"/>    
+    {% endif %}
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block javascripts %}
+    {{ parent() }}
+    
+    {% if not err_msg is defined %}
+        <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/dialogen.plugin.js') }}"></script>    
+        <script type="text/javascript" src="{{ asset('bundles/ncuoportal/js/datepicker-ru.js') }}"></script>
+        <script>
+            var URL_GET_FILE_DATE_LIST      = '{{ path('eif_forms_clear__get_file_date_list') }}';
+            var URL_CLEAR_ALL               = '{{ path('eif_forms_clear__clear_all') }}';
+            var URL_CLEAR_SEL               = '{{ path('eif_forms_clear__clear_sel') }}';
+            
+            var MSG_SERVICE_ERROR           = '{{ msg_service_error }}';        
+        </script>    
+        
+        <script type="text/javascript" src="{{ path('eif_js', {'file': 'forms_clear'}) }}"></script>
+    {% endif %}
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block breadcrumb %}
+    <li><a href="{{ path('eif_sources') }}" title="Вернуться к списку источников">Данные ЕИФ</a></li>
+    
+    {% if not err_msg is defined %}
+        <li><a href="{{ path('eif_protocols') }}?id_source={{ source.IdSource }}" title="Вернуться к списку протоколов источника">Источник [{{ source.SourceName }}]</a></li>
+        <li><a href="{{ path('eif_forms') }}?id_protocol={{ protocol.IdProtocol }}" title="Вернуться к списку форм протокола">Протокол [{{ protocol.ProtocolName }}]</a></li>
+        <li class="active">Очистка форм</li>
+    {% endif %}
+{% endblock %}
+
+
+{# ########################################################################## #}
+
+
+{% block content %}
+    {% if err_msg is defined %}
+        <div id="error_msg" class="alert alert-danger">{{ err_msg }}</div>
+        <a href="{{ path('eif_sources') }}" title="Вернуться к списку источников"><button type="button" class="btn btn-default" title="Назад">Назад <i class="fa fa-reply"></i></button></a>
+    {% else %}            
+        <input type="hidden" id="id_protocol" value="{{ protocol.IdProtocol }}">
+        
+        <h4>Очистка форм протокола:</h4>
+            
+        <form class="form-inline">
+            <div class="form-group">                    
+                <label>Дата загрузки файла протокола в хранилище:</label>
+                <input id="dt_start" type="text" class="form-control width-100" readonly="true">
+                <label>по:</label>
+                <input id="dt_end" type="text" class="form-control width-100" readonly="true">                    
+            </div>                
+            <button type="button" id="btn_search" class="btn btn-default" title="Поиск"><i class="fa fa-search"></i></button>
+        </form>            
+        <select id="date_lst" class="form-control margin-top-10 width-600" size="20" autofocus multiple></select>
+        
+        <div class="margin-top-10">
+            <button id="btn_clear_sel" type="button" class="btn btn-default" title="Очистка форм протокола согласно выбранного среза данных">Удалить выбранный срез данных</button>
+            <button id="btn_clear_all" type="button" class="btn btn-default" title="Полная очистка форм протокола по всем загруженным файлам">Удалить все данные</button>
+        </div>
+    {% endif %}
+{% endblock %}

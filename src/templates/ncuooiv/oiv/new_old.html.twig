@@ -1,0 +1,111 @@
+{% extends 'ncuooiv/layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/foiv.form.css') }}" />
+    <style>.imagePreview img{max-width: 200px} table.dataTable input[type="file"]{ margin-left: 20px}</style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/ncuooiv/js/imgBase64.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+   <div class="contentHolder" style="margin-top: 40px">
+    <h3>Форма создания нового паспорта ФОИВ</h3>
+                <p>* Поля отмеченные звездочкой обязательны к заполнению</p>
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <form class="form-inline" id="create_data" method="post" action="{{urlAction}}">
+
+            <table class="table table-striped table-bordered dataTable editForm">
+                    <tbody>
+  
+                        <tr>
+                            <td>
+                                Идентификатор ОИВ *:<p style="font-size: 11px">Только латинские буквы в верхнем регистре и знак нижнего подчеркивания _</p>
+                            </td>
+                            <td>
+                                <textarea name="FIELDS[id_oiv]" cols=100 rows=1>{{FIELDS['id_oiv']}}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Полное наименование ОИВ *:
+                            </td>
+                            <td>
+                                <textarea name="FIELDS[name]" cols=100 rows=1>{{FIELDS['name']}}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Краткое название ОИВ :
+                            </td>
+                            <td>
+                                <textarea name="FIELDS[name_short]" cols=100 rows=1>{{FIELDS['name_short']}}</textarea>
+                            </td>
+                        </tr>
+                        {#}
+                        <tr>
+                            <td>
+                                Описание ОИВ :
+                            </td>
+                            <td>
+                                <textarea name="FIELDS[descr]" cols=100 rows=1>{{FIELDS['descr']}}</textarea>
+                            </td>
+                        </tr>
+                        {#}
+                        <tr>
+                            <td>
+                                Герб ОИВ (формат base64) :
+                            </td>
+                            <td>
+                                <input id="fileUpload__heraldic_img" type="file" onchange="encodeImageFileAsURL('heraldic_img');" value="Новое фото" /><br>
+                                <div id="img__heraldic_img" class="imagePreview">{{ FIELDS['heraldic_img']|raw }}</div><br>
+                                <textarea id="heraldic_img" name="FIELDS[heraldic_img]" cols=100 rows=1>{{FIELDS['heraldic_img']}}</textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Флаг ОИВ (формат base64) :
+                            </td>
+                            <td>
+                                <input id="fileUpload__flag_img" type="file" onchange="encodeImageFileAsURL('flag_img');" value="Новое фото" /><br>
+                                <div id="img__flag_img" class="imagePreview">{{ FIELDS['flag_img']|raw }}</div><br>
+                                <textarea id="flag_img" name="FIELDS[flag_img]" cols=100 rows=1>{{FIELDS['flag_img']}}</textarea>
+                            </td>
+                        </tr>
+<!--
+                        <tr>
+                            <td>
+                                Указать если ОИВ неактивен (исключен из списка) :
+                            </td>
+                            <td style="text-align: left; padding-left: 30px;">
+                                <select name="FIELDS[enabled]">
+                                    <option value="1" selected>Активен</option>
+                                    <option value="2">Не активен</option>
+                                </select>
+                            </td>
+                        </tr>
+                        -->
+                    </tbody>
+            </table>
+        </form>
+
+<div class="list-buttons" style="margin: 20px 0px 30px 0px">
+        <button type="submit" class="btn btn-save" form="create_data" title="Сохранить"></button>
+         <button class="btn btn-return" onclick="window.location.replace('{{ path('oiv', {}) }}')" title="Вернуться к списку ФОИВ"></button>
+</div>
+
+
+
+</div>
+
+
+        {% if message is defined and message.message_text is defined %}
+        <script>
+            showInfoDialog('dialog_msg_info', '{{ message.message_text }}');
+        </script>
+        {% endif %}
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'ncuoregion/layout.html.twig' %}  
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/oiv.css') }}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/oiv_table_ncu.css') }}" />
+    <style type="text/css">
+    #heraldic_img img, #flag_img img { width: 80px}
+    #name_full { font-weight: 600 }
+    .table td {
+        border-bottom: 1px solid #cdcdcd !important;
+        height: 50px !important;
+    }
+    .container-fluid h5{
+        line-height: 32px;
+    }
+    table.form_ncu tr td:nth-child(2),
+    table.form_ncu tr td:nth-child(3)
+    {
+        text-align: left
+    }
+
+    table.form_ncu tr:nth-child(1) td:nth-child(2),
+    table.form_ncu tr:nth-child(2) td:nth-child(2),
+    table.form_ncu tr:nth-child(3) td:nth-child(2),
+    table.form_ncu tr:nth-child(4) td:nth-child(2),
+    table.form_ncu tr:nth-child(1) td:nth-child(3),
+    table.form_ncu tr:nth-child(2) td:nth-child(3),
+    table.form_ncu tr:nth-child(3) td:nth-child(3),
+    table.form_ncu tr:nth-child(4) td:nth-child(3),
+    table.form_ncu tr:last-child td
+    {
+        text-align: center
+    }
+    
+    table.form_ncu tr:last-child td:first-child
+    {
+        text-align: right
+    }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {% if oiv is defined %}
+    <script> $( document ).ready(function() { ncuFormTitleAppendRegion('{{oiv.name}}') }); </script>
+    {% endif %}
+    
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li>Формы НЦУ</li>
+    <li>Сведения о численности участников регионального отделения Всероссийского детско-юношеского военно-патриотического общественного движения «ЮНАРМИЯ», количестве территориальных организаций и отрядов {% if oiv is defined %} в регионе {{oiv.name}} {% endif %}</li>
+{% endblock %}
+
+{% block subtitle %}
+	<h5>Сведения о численности участников регионального отделения Всероссийского детско-юношеского военно-патриотического общественного движения «ЮНАРМИЯ», количестве территориальных организаций и отрядов {% if oiv is defined %} в регионе {{oiv.name}} {% endif %}</h5>
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrTabs = ["tab_form_ncu", "tab_ncu_3"];
+{% endblock %}
+
+{% block foivContent %}
+   
+    <div class="contentHolder">
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+     
+   {# ----------------------------------------------------------- </br> }
+   
+   {% dump(oiv) %}</br>
+    
+   {# ----------------------------------------------------------- </br> #}
+
+        
+        {#% if foiv.ModifiedDate  is defined %}<p>Дата последнего изменения: {{ foiv.ModifiedDate|date("d.m.Y (H:i:s)")}}</p>{% endif %#}
+        
+        
+         
+    {% if fields is defined %}
+        {% for field in fields %}      
+            {% if field.data is defined %}   
+                {% autoescape %}
+                    {{ field.data|raw }}
+                {% endautoescape %}
+            {% endif %}
+       {% endfor %}
+    {% endif %}
+        
+        
+        {% include 'ncuooiv_buttons_show.twig' ignore missing with {
+            'urlEdit': urlEdit
+        } %}
+        
+    </div> <!-- \ contentHolder -->
+
+{% endblock %}

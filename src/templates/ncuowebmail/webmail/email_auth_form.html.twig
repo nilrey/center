@@ -1,0 +1,79 @@
+{% extends 'ncuowebmail/new_layout.html.twig' %}
+
+
+{% block javascripts %}
+    {{ parent() }}   
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}      
+
+{% block subtitle %}
+    <h5>Пожалуйста авторизуйтесь для доступа к почтовым сообщениям</h5>
+{% endblock %}
+
+
+{% block foivContent %}
+    <div class="contentHolder">
+        {#% if entity.ModifiedDate is defined and entity.id > 0 %}<p>Дата последнего изменения: {{ entity.ModifiedDate|date("d.m.Y (H:i:s)")}}</p>{% endif %#}
+        <p>* Поля отмеченные звездочкой обязательны к заполнению</p>
+        <div id="dialog_msg_info" class="display-none" hidden title="Инфо"></div>
+        <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+        <form class="form-inline" id="create_data" method="post" action="{{urlAction}}">
+            <table class="table table-striped table-bordered dataTable ">
+                    <tbody>
+
+                        <tr>
+                            <td id="td_name_full">
+                                <table>
+                                    <tr>
+                                        <td style="border:0px !important; padding: 0px 15px; text-align: left; min-width: 200px">
+                                Логин почты *:
+                                        </td>
+                                        <td style="border:0px !important">
+                                            <input type='text' name="FIELDS[user_email_login]" style='width: 850px' > 
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border:0px !important; padding: 0px 15px; text-align: left; min-width: 200px">
+                                Пароль почты *:
+                                        </td>
+                                        <td style="border:0px !important">
+                                            <input type='password' name="FIELDS[user_email_pass]" style='width: 850px' > 
+                                        </td>
+                                    </tr>
+                                 </table>
+                            </td>
+                        </tr>
+                    </tbody>
+            </table>
+        </form>
+    
+        <script>initSample();</script>  
+
+        <script>
+        $('#toptab_mail_main').addClass('active');
+        $('#leftab_inbox').addClass('active');
+        $('#toptab_mail_new').css('display', 'none');
+        </script>  
+        
+        
+        {% include 'buttons_email_send.twig' ignore missing with {
+            'urlList': urlList
+        } %}
+        
+
+        {% if message is defined and message.message_text is defined and message.message_text|length > 0 %}
+        <script>
+        $(document).ready( function (){
+            getModalDialogInfo('{{ message.message_text }}');
+        } )
+        </script>
+        {% endif %}
+
+
+    </div> <!-- \ contentHolder -->
+
+{% endblock %}
+

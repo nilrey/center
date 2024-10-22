@@ -1,0 +1,206 @@
+body {
+    background-color: #3a3633;
+ /*   color: #555;
+    font-family: 'Helvetica Neue', Helvetica, Arial !important;
+    font-weight: 300;
+    font-size: 12px;
+*/
+    overflow-x: hidden;
+}
+/*
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 300;
+}
+*/
+#page-wrapper {
+    background: url(../img/mybg.png) #fff;
+    position: relative;
+}
+#nav {
+    border-top: 3px solid #ccc;
+}
+.navbar-brand {
+    float: left;
+    padding: 5px 17px;			
+    font-size: 15px;
+    height: 50px;
+    color: #555 !important;
+    font-weight: 400;
+}
+.navbar-brand img {
+    float: left;
+    width: 49px; 
+    height: 43px;
+    margin-right: 9px;
+}
+.navbar-brand span {		
+    font-size: 12px;
+    font-weight: 300;
+}
+.navbar-default {
+    background-color: #f3f3f3;
+    border-color: #e7e7e7;
+}
+.nav>li>a:hover, .nav>li>a:focus {
+    text-decoration: none;
+    background-color: transparent;
+    color: white;
+}
+.navbar-right>li>a:hover, .navbar-right>li>a:focus {
+    text-decoration: none;
+    background-color: transparent;
+    color: #d33834;
+}
+.navbar-right a {
+    color: white;
+    color: #555;
+    font-weight: 300;
+}
+.navbar-right a:hover {
+    color: #d9534f;
+}
+.form-control {
+    box-shadow: none !important;
+    /*background-color: #EDF2F3;*/
+}
+.form-control:focus {
+    background-color: white;
+}
+#sibebar-search {
+    border: none;
+    background-color: #555;
+}
+.row .col-lg-12 .breadcrumb {
+    padding: 10px 15px 9px 15px;
+    list-style: none;
+    margin-left: 0px;
+    background-color: #555;
+    border-radius: 0px;
+    border-bottom: 1px solid #1A1817;
+    color: #ddd;
+    width: 105.4%;
+    position: fixed;
+    z-index: 100;
+}
+
+.breadcrumb > .active {
+    color: #FFEA81;
+}
+
+.breadcrumb > li + li:before {
+    color: #FFEA81;
+}
+
+h4.heading {
+    position: absolute;
+    left: 70px;
+    background-color: rgba(243, 243, 243, 0.9);
+    padding: 5px;
+    border-radius: 3px;
+    top: 30px;
+    font-weight: 300;
+    z-index: 1000;
+}
+.btn, .form-control {
+    border-radius: 2px;
+}
+.separator {
+    height: 2px; 
+    border-top: 1px solid #ccc; 
+    border-bottom: 1px solid whitesmoke; 
+    margin: 5px 0;
+}
+.separator-light {
+    height: 1px; 
+    border-top: 1px solid #ccc; 
+    margin: 5px 0;
+}
+.nav-pills {
+    margin-bottom: 15px;
+}
+.nav-pills a {
+    padding: 5px 9px !important;
+    font-size: 100%;
+}
+.nav-pills a:hover {
+    color: #555 !important;
+}
+.nav-pills li.active>a:hover {
+    color: #fff !important;
+}
+.contentHolder {
+    margin: 15px 0px;
+    background-color: white;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    box-shadow: -1px -1px 12px 3px rgba(204, 204, 204, 1.0);
+    -webkit-box-shadow: -1px -1px 12px 3px rgba(204, 204, 204, 1.0);
+    -moz-box-shadow: -1px -1px 12px 3px rgba(204, 204, 204, 1.0);
+}
+.formLabel {
+    color: #999; 
+    font-size: 90%;
+}
+.simpleLink {
+    color: #555;
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 3px;
+}
+.simpleLink:hover {
+    background-color: #f1f1f1;
+    color: #d33834;
+    text-decoration: none;
+}
+._table td {
+    padding: 4px 8px;
+}
+._table tr td:first-child {
+    font-weight: 400;
+    width: 25%;
+}
+.prettyLink {
+    display: inline-block;
+    width: 35%;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    color: #555;
+    padding: 11px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+.prettyLink:hover {
+    text-decoration: none;
+    background-color: whitesmoke;
+    color: #333;
+}
+form .form-control {
+    font-size: 12px !important;
+}
+form .form-control:focus {
+    background-color: #FAFFBD;
+}
+
+.lock_off {
+    display: none;
+    visibility: hidden;
+}
+
+.lock_on {
+    display: block;
+    visibility: visible;
+    position: fixed;
+    z-index: 9999;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: #ccc;
+    text-align: center;
+    padding-top: 20%;
+    filter: alpha(opacity=75);
+    opacity: 0.75;
+}

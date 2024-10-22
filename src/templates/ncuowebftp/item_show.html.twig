@@ -1,0 +1,32 @@
+{% extends 'ncuowebftp/item_show_tpl.html.twig' %}  
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block btnExportImport %}
+        <div style="float: right;  margin-bottom: 35px">
+            <a href="{{ path('ncu1_export', { 'id_reg': oiv.Id }) }}" class="btn btn-primary" style="background: none; color: #228BE6; width: 170px; margin-top: 15px; white-space: nowrap; margin-right: 30px">Выгрузка данных</a>
+            <a href="javascript:void(0)" onclick="openImportDialog()" class="btn btn-primary" style="background: none; color: #228BE6; width: 170px; margin-top: 15px; white-space: nowrap; margin-right: 10px">Загрузка данных</a>
+        </div>
+{% endblock %}
+
+{% block foivContent %}
+
+    {% if fields is defined %}
+        {% for field in fields %}      
+            {% if field.data is defined %}   
+                {% autoescape %}
+                    {{ field.data|raw }}
+                {% endautoescape %}
+            {% endif %}
+       {% endfor %}
+    {% endif %}
+
+    {{ parent() }}
+            
+{% endblock %}

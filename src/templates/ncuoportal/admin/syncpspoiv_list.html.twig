@@ -1,0 +1,47 @@
+{% extends 'ncuoportal/list_layout.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}  
+
+{% block pageTitle %}Синхронизация хранилищ паспортов ФОИВ{% endblock %}
+
+{% block addNewLink %}{{ path('syncpspoiv_new') }}{% endblock %}
+
+{% block foivContent %}
+
+    <table id="example" class="row-border flag-list" style="width:100%; border-bottom: 0px !important">
+            <thead>
+                <tr >
+                    <th>ID параметра</th>
+                    <th class="text-center">Наименование </th>
+                    <th class="text-center">Значение</th>
+                    <th class="text-center">Комментарий к параметру</th>
+                    <th class="text-center">Действия</th>
+                </tr>
+            </thead>
+        <tbody>
+         {% if listRoles is defined %}
+        {% for item in listRoles %}
+            <tr>
+                <td>{{item['id']}}</td>
+                <td><a href="{{ path('syncpspoiv_edit', { 'id_param': item['id'] }) }}">{{item['name']}}</a></td>
+                <td><a href="{{ path('syncpspoiv_edit', { 'id_param': item['id'] }) }}">{{item['value']}}</a></td>
+                <td>{{item['comment']}}</td>
+                <td nowrap>
+                    <a href="{{ path('syncpspoiv_edit', { 'id_param': item['id'] }) }}">Редактировать</a>
+                        <a class="ml30" href="javascript: void(0)" onclick="confirmDelete('{{ item['name'] }}', '{{ path('syncpspoiv_delete', {'id_param': item['id']}) }}')" >Удалить запись</a>                    
+                </td>
+            </tr>
+        {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+    
+   
+
+
+{% endblock %}

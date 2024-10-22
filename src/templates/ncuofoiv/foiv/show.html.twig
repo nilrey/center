@@ -1,0 +1,278 @@
+{% extends 'ncuofoiv/layout.html.twig' %}  
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('bundles/ncuoportal/css/foiv.info.css') }}" />
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ parent() }}
+    <li>Общая информация</li>
+    <li>Описание</li>
+{% endblock %}
+
+{% block subtitle %}
+	<h5>Описание</h5>
+{% endblock %}
+
+{% block foivTabMenuActive %}
+    var arrTabs = ["tab_foiv_common", "tab_foiv_show"];
+{% endblock %}
+
+{% block foivContent %}
+    <script>
+        $(document).ready(function() {
+            $('table.display').DataTable({
+                language: {
+                    url: DATATABLES_RU_JSON,
+                    searchPlaceholder: ""
+                }
+            });
+        } );
+		{# Отключена сортировка по ФИО.
+		   Данные теперь сортируются по весу и ФИО
+		,
+                order: [[1, 'asc']],
+		#}
+    </script>
+    <div class="contentHolder">
+     
+   {# ----------------------------------------------------------- </br> #}
+   
+   {# dump() #}</br>
+    
+   {# ----------------------------------------------------------- </br> #}
+
+        
+        {% if foiv.ModifiedDate  is defined %}<p>Дата последнего изменения: {{ foiv.ModifiedDate|date("d.m.Y (H:i:s)")}}</p>{% endif %}
+        
+        {% if foiv.director.__isInitialized__  != false   %} {#Начало: Проверка на наличие директора 08.10.2019 Деревянский И.В#}
+        
+        <table class="table table-director">
+            <tr>
+                <td rowspan="6">
+                
+                <img class="photo-dir"
+                    {% if foiv.director.photoUrl != null %}
+                        src="{{ foiv.director.photoUrl}}"
+                    {% else %}
+                        src="/img/foiv/persons/no-user.jpg" 
+                    {% endif %}
+                    onerror="this.src='/img/foiv/persons/no-user.jpg'">        
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Руководитель: 
+                </td>
+                <td>
+                    {% if foiv.director.fio is defined and foiv.director.fio|trim %}
+                        {{ foiv.director.fio }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Должность: 
+                </td>
+                <td>
+                    {% if foiv.director.position is defined and foiv.director.position|trim != "" %}
+                        {{ foiv.director.position }}
+                    {% endif %}
+                    
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Телефон: 
+                </td>
+                <td>
+                    {% if foiv.director.phone is defined and foiv.director.phone|trim != "" %}
+                        {{ foiv.director.phone }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Электронная почта: 
+                </td>
+                <td>
+                    
+                    {% if  foiv.director.email is defined and foiv.director.email|trim != "" %}
+                        {{ foiv.director.email }}
+                    {% endif %}
+                    
+                </td>
+            </tr>
+            <tr><td></td><td></td></tr>
+        </table>
+            
+        {% endif %} {#Конец: Проверка на наличие директора 08.10.2019 Деревянский И.В#}
+        
+        
+        <table class="table table-info">
+            <tr>
+                <td>
+                    Полное наименование:
+                </td>
+                <td>
+                    {% if foiv.name is defined and foiv.name|trim %}
+                    {{ foiv.name }}
+                    {% endif %}
+                    
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Сокращённое наименование:
+                </td>
+                <td>
+                    {% if foiv.name is defined and foiv.shortname|trim %}
+                    {{ foiv.shortname }}
+                    {% endif %}
+                </td>
+            </tr>
+
+                <tr>
+                    <td>
+                        Руководящий орган:
+                    </td>
+                    <td>
+                        {% if foiv.superfoiv.id is defined  %}
+                        <a href="/foiv/{{ foiv.superfoiv.id }}">
+                            {{ foiv.superfoiv.name }}
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            
+            
+            <tr>
+                <td>
+                    Официальный сайт:
+                </td>
+                <td>
+                    <a id="siteUrl" href="{{ foiv.siteurl }}" target="_blank">{{ foiv.siteurl }}</a>
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                     Категория: 
+                </td>
+                <td>
+                     {% if foiv.type is defined and foiv.type|trim %}
+                    {{ foiv.type }}
+                    {% endif %}
+                </td>
+            </tr>
+            
+            {% if foiv.stateLink %}
+                <tr>
+                    <td>
+                         Положение по ФОИВ: 
+                    </td>
+                    <td>
+                        <a href="{{ foiv.stateLink }}" target="_blank">Просмотр</a>
+                    </td>
+                </tr>
+            {% endif %}
+            
+            <tr>
+                <td>
+                     Назначение: 
+                </td>
+                <td>
+                    {{ foiv.descriptionText | raw }}    
+                </td>
+            </tr>
+        </table>
+        <table class="table table-address">
+            <tr>
+                <td rowspan=10>
+                     Адрес: 
+                </td>
+                <tr><td>Индекс:</td>           <td>{% if foiv.address.index	    is defined  %} {{ foiv.address.index }} {% endif%}</td></tr>
+                <tr><td>Регион:</td>           <td>{% if foiv.address.region    is defined  %} {{ foiv.address.region }} {% endif%}</td></tr>
+                <tr><td>Населенный пункт:</td> <td>{% if foiv.address.city      is defined  %} {{ foiv.address.city }} {% endif%}</td></tr>
+                <tr><td>Улица:</td>            <td>{% if foiv.address.street    is defined  %} {{ foiv.address.street }} {% endif%}</td></tr>
+                <tr><td>Дом:</td>              <td>{% if foiv.address.houseNumber    is defined  %} {{ foiv.address.houseNumber }} {% endif%}</td></tr>
+                <tr><td>Корпус:</td>           <td>{% if foiv.address.houseSubNumber is defined  %} {{ foiv.address.houseSubNumber }} {% endif%}</td></tr>
+                <tr><td>Строение:</td>         <td>{% if foiv.address.buildingNumber is defined  %} {{ foiv.address.buildingNumber }} {% endif%}</td></tr>
+                <tr><td>Код по КЛАДР:</td>     <td>{% if foiv.address.kladrCode is defined  %} {{ foiv.address.kladrCode }} {% endif%}</td></tr>
+                <tr><td>Код по ОКАТО:</td>     <td>{% if foiv.address.okatoCode  is defined  %} {{ foiv.address.okatoCode }} {% endif%}</td></tr>
+            </tr>
+        </table>
+        <div class="list-buttons">
+            <button class="btn btn-edit ml0" onclick="window.location.replace('{{ path('foiv_edit', { 'id': foiv.id }) }}')"  title="Редактировать" />
+        </div>
+    </div> <!-- \ contentHolder -->
+
+    <h5 class="table-header">Руководство</h5>
+    <table id="" class="display table table-striped table-bordered dataTable">
+        <thead>
+            <tr>
+                <th>&nbsp;</th>
+                <th>Ф.И.О.</th>
+                <th>Должность</th>
+                <th width="90"><i class="fa fa-cog"></i></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for entity in entities %}
+    
+            <tr id="item_{{ entity.id }}">
+                <td>
+             
+                        <p><a href="{{ path('foiv_supervisory_view', { 'foivid': entity.fkFoiv.id , 'id': entity.id }) }}" target="_blank"><img 
+                        {% if entity.photoUrl != null %}
+                            src="{{ entity.photoUrl }}"
+                        {% else %}
+                            src="/img/foiv/persons/no-user.jpg" 
+                        {% endif %}
+                        onerror="this.src='/img/foiv/persons/no-user.jpg'"
+                        style="max-width: 180px"></a></p>
+                </td>
+                <td><a href="{{ path('foiv_supervisory_view', { 'foivid': entity.fkFoiv.id , 'id': entity.id }) }}" target="_blank">{{ entity.fio }}</a></td>
+                <td>{{ entity.position }}</td>
+                <td>
+                    <a href="{{ path('foiv_supervisory_view', { 'foivid': entity.fkFoiv.id , 'id': entity.id }) }}" target="_blank"><i class="fa fa-eye"></i></a>
+
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <h5 class="table-header">Организации</h5>
+    <table id="" class="display table table-striped table-bordered dataTable">
+        <thead>
+            <tr >
+                <th>Id</th>
+                <th {# width = "50%" #}>Наименование</th>
+                <th>Сокращенное наименование</th>
+                <th width="90"><i class="fa fa-cog"></i></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for entity in entityPvo %}
+            <tr id="item_{{ entity.id }}">
+                <td>{{ entity.id }}</td>
+                <td><a href="{{ path('foivpvo_view', { 'id': entity.id }) }}" target="_blank">{{ entity.name }}</a></td>
+                <td>{{ entity.shortName }}</td>
+                <td>
+                    <a href="{{ path('foivpvo_view', { 'id': entity.id }) }}" target="_blank"><i class="fa fa-eye"></i></a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+      {# Два нижеследующих div'a являются элементами для создания диалоговых окон. Ключевое слово "hidden" не убирать - иначе диалог будет вести непредсказуемо #}
+      <div id="dialog_msg_info" class="display-none" title="Внимание" hidden></div>
+      <div id="del_foiv_dialog" class="display-none"  title="Внимание" hidden>Вы действительно хотите удалить ФОИВ?</div>
+      <div id="error_msg_dialog" class="display-none"  title="Внимание" hidden></div>
+{% endblock %}
